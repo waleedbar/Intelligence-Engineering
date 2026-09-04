@@ -1,0 +1,1156 @@
+{
+  "source": "Arthur's HealthPlus AI v31 system — derived from Dr. Ali's old v32.2 FDA workbook",
+  "extracted_from": [
+    "HealthPlus_AI_v31_Input_Signals_Expanded_API.xlsx (sheets: Onboarding Inputs, Daily Inputs)",
+    "Live API at alifapps.com:8091 (openapi.json, /v1/onboard example response, /v1/signals contract)"
+  ],
+  "onboarding_signals": [
+    {
+      "category": "Anthropometrics",
+      "signal_name": "age",
+      "data_type": "int",
+      "description": "Age in years",
+      "source": "Step 1",
+      "example_range": "18-120",
+      "required": "Yes"
+    },
+    {
+      "category": "Anthropometrics",
+      "signal_name": "sex",
+      "data_type": "str",
+      "description": "Biological sex",
+      "source": "Step 1",
+      "example_range": "male/female/other",
+      "required": "Yes"
+    },
+    {
+      "category": "Anthropometrics",
+      "signal_name": "height_cm",
+      "data_type": "float",
+      "description": "Height (cm)",
+      "source": "Step 1",
+      "example_range": "140-220",
+      "required": "Yes"
+    },
+    {
+      "category": "Anthropometrics",
+      "signal_name": "weight_kg",
+      "data_type": "float",
+      "description": "Weight (kg)",
+      "source": "Step 1",
+      "example_range": "30-300",
+      "required": "Yes"
+    },
+    {
+      "category": "Anthropometrics",
+      "signal_name": "waist_cm",
+      "data_type": "float",
+      "description": "Waist circumference",
+      "source": "Step 1",
+      "example_range": "50-200",
+      "required": "Recommended"
+    },
+    {
+      "category": "Anthropometrics",
+      "signal_name": "neck_cm",
+      "data_type": "float",
+      "description": "Neck circumference",
+      "source": "Step 1",
+      "example_range": "25-60",
+      "required": "No"
+    },
+    {
+      "category": "Anthropometrics",
+      "signal_name": "bmi",
+      "data_type": "float",
+      "description": "Body Mass Index",
+      "source": "Step 1",
+      "example_range": "15-60",
+      "required": "Calculated"
+    },
+    {
+      "category": "Anthropometrics",
+      "signal_name": "whr",
+      "data_type": "float",
+      "description": "Waist-to-Height Ratio",
+      "source": "Step 1",
+      "example_range": "0.3-0.8",
+      "required": "Calculated"
+    },
+    {
+      "category": "Labs",
+      "signal_name": "HbA1c",
+      "data_type": "float",
+      "description": "Glycated hemoglobin %",
+      "source": "Step 12",
+      "example_range": "4.0-15.0",
+      "required": "Highly recommended"
+    },
+    {
+      "category": "Labs",
+      "signal_name": "LDL_mg_dL",
+      "data_type": "float",
+      "description": "LDL cholesterol",
+      "source": "Step 12",
+      "example_range": "30-300",
+      "required": "No"
+    },
+    {
+      "category": "Labs",
+      "signal_name": "CRP_mg_L",
+      "data_type": "float",
+      "description": "hs-CRP (inflammation)",
+      "source": "Step 12",
+      "example_range": "0.1-50",
+      "required": "No"
+    },
+    {
+      "category": "Labs",
+      "signal_name": "ferritin_ng_mL",
+      "data_type": "float",
+      "description": "Ferritin (iron stores)",
+      "source": "Step 12",
+      "example_range": "5-1000",
+      "required": "No"
+    },
+    {
+      "category": "Labs",
+      "signal_name": "25OHD_ng_mL",
+      "data_type": "float",
+      "description": "25-OH Vitamin D",
+      "source": "Step 12",
+      "example_range": "5-100",
+      "required": "No"
+    },
+    {
+      "category": "Labs",
+      "signal_name": "Hcy_umol_L",
+      "data_type": "float",
+      "description": "Homocysteine",
+      "source": "Step 12",
+      "example_range": "3-50",
+      "required": "No"
+    },
+    {
+      "category": "Labs",
+      "signal_name": "eGFR",
+      "data_type": "float",
+      "description": "Estimated GFR",
+      "source": "Step 12",
+      "example_range": "5-150",
+      "required": "No"
+    },
+    {
+      "category": "Family History",
+      "signal_name": "FH_T2D",
+      "data_type": "bool",
+      "description": "Family history T2D",
+      "source": "Step 6",
+      "example_range": "True/False",
+      "required": "No"
+    },
+    {
+      "category": "Family History",
+      "signal_name": "FH_CVD",
+      "data_type": "bool",
+      "description": "Family history CVD",
+      "source": "Step 6",
+      "example_range": "True/False",
+      "required": "No"
+    },
+    {
+      "category": "Family History",
+      "signal_name": "FH_stroke",
+      "data_type": "bool",
+      "description": "Family history stroke",
+      "source": "Step 6",
+      "example_range": "True/False",
+      "required": "No"
+    },
+    {
+      "category": "Family History",
+      "signal_name": "FH_cancer",
+      "data_type": "bool",
+      "description": "Family history cancer",
+      "source": "Step 6",
+      "example_range": "True/False",
+      "required": "No"
+    },
+    {
+      "category": "Family History",
+      "signal_name": "FH_AD",
+      "data_type": "bool",
+      "description": "Family history Alzheimer's",
+      "source": "Step 6",
+      "example_range": "True/False",
+      "required": "No"
+    },
+    {
+      "category": "Medications",
+      "signal_name": "medications_list",
+      "data_type": "list[str]",
+      "description": "Current medications",
+      "source": "Step 7",
+      "example_range": "['metformin', 'lisinopril']",
+      "required": "Yes"
+    },
+    {
+      "category": "Medications",
+      "signal_name": "supplements_dict",
+      "data_type": "dict",
+      "description": "Supplements with doses",
+      "source": "Step 7",
+      "example_range": "{'vit_d_iu':2000}",
+      "required": "No"
+    },
+    {
+      "category": "Diet",
+      "signal_name": "diet_pattern",
+      "data_type": "dict[80]",
+      "description": "Typical daily nutrient intake (80 nutrients)",
+      "source": "Step 3 / O7",
+      "example_range": "See expanded nutrients",
+      "required": "Yes (priors)"
+    },
+    {
+      "category": "Lifestyle",
+      "signal_name": "activity_level",
+      "data_type": "str",
+      "description": "Activity level",
+      "source": "Step 2",
+      "example_range": "sedentary/light/moderate/active",
+      "required": "Yes"
+    },
+    {
+      "category": "Lifestyle",
+      "signal_name": "sleep_hours_avg",
+      "data_type": "float",
+      "description": "Average sleep (hours)",
+      "source": "Step 9",
+      "example_range": "3-12",
+      "required": "Yes"
+    },
+    {
+      "category": "Lifestyle",
+      "signal_name": "stress_pss10",
+      "data_type": "int",
+      "description": "PSS-10 stress score",
+      "source": "Step 8",
+      "example_range": "0-40",
+      "required": "Yes"
+    },
+    {
+      "category": "Goals",
+      "signal_name": "goals_list",
+      "data_type": "list[str]",
+      "description": "Health priority goals",
+      "source": "Step 4+11",
+      "example_range": "['heart_health','longevity']",
+      "required": "Yes"
+    },
+    {
+      "category": "GLP-1",
+      "signal_name": "glp1_status",
+      "data_type": "int",
+      "description": "GLP-1 usage status",
+      "source": "Step 7b",
+      "example_range": "0=None,1=WL,2=DM,3=both,4=stopped",
+      "required": "Yes"
+    },
+    {
+      "category": "GLP-1",
+      "signal_name": "glp1_drug",
+      "data_type": "str",
+      "description": "GLP-1 drug name",
+      "source": "Step 7b",
+      "example_range": "semaglutide/tirzepatide/...",
+      "required": "If active"
+    },
+    {
+      "category": "GLP-1",
+      "signal_name": "glp1_dose_mg",
+      "data_type": "float",
+      "description": "Current dose (mg)",
+      "source": "Step 7b",
+      "example_range": "Drug-specific",
+      "required": "If active"
+    },
+    {
+      "category": "GLP-1",
+      "signal_name": "glp1_duration_months",
+      "data_type": "float",
+      "description": "Months on therapy",
+      "source": "Step 7b",
+      "example_range": "0.1-60+",
+      "required": "If active"
+    },
+    {
+      "category": "Bariatric",
+      "signal_name": "bariatric_status",
+      "data_type": "int",
+      "description": "Surgery status",
+      "source": "Step 5b",
+      "example_range": "0=None,1=SG,2=RYGB,3=other,4=reversed",
+      "required": "Yes"
+    },
+    {
+      "category": "Bariatric",
+      "signal_name": "bariatric_type",
+      "data_type": "str",
+      "description": "Surgery type",
+      "source": "Step 5b",
+      "example_range": "SG / RYGB",
+      "required": "If surgery"
+    },
+    {
+      "category": "Bariatric",
+      "signal_name": "bariatric_months_ago",
+      "data_type": "float",
+      "description": "Time since surgery",
+      "source": "Step 5b",
+      "example_range": "0.1-240",
+      "required": "If surgery"
+    },
+    {
+      "category": "Conditions",
+      "signal_name": "conditions_list",
+      "data_type": "list[str]",
+      "description": "Diagnosed conditions",
+      "source": "Step 5",
+      "example_range": "['CKD','NAFLD','osteoporosis']",
+      "required": "No"
+    }
+  ],
+  "daily_signals": [
+    {
+      "category": "Activity",
+      "signal_name": "MET_minutes",
+      "data_type": "float",
+      "description": "Total MET-minutes today",
+      "model_reference": "O2, E5, C4",
+      "example_range": "0-2000+",
+      "notes": "Drives damage modulation"
+    },
+    {
+      "category": "Sleep",
+      "signal_name": "sleep_minutes",
+      "data_type": "float",
+      "description": "Sleep duration (min)",
+      "model_reference": "O3, E5",
+      "example_range": "180-720",
+      "notes": "Used for deficit calc"
+    },
+    {
+      "category": "Stress",
+      "signal_name": "stress_score",
+      "data_type": "float",
+      "description": "PSS-10 score today",
+      "model_reference": "O4, E5",
+      "example_range": "0-40",
+      "notes": "Amplifies damage pathways"
+    },
+    {
+      "category": "Hydration",
+      "signal_name": "hydration_L",
+      "data_type": "float",
+      "description": "Total fluids (L)",
+      "model_reference": "E5, O14",
+      "example_range": "0.5-6.0",
+      "notes": "Default 2.0L if missing"
+    },
+    {
+      "category": "Meals",
+      "signal_name": "meal_log",
+      "data_type": "list[dict]",
+      "description": "Detailed meals + timing",
+      "model_reference": "A2, A7",
+      "example_range": "Per-meal nutrient breakdown",
+      "notes": "Enables multi-meal convolution"
+    },
+    {
+      "category": "Wearable",
+      "signal_name": "avg_hr",
+      "data_type": "float",
+      "description": "Average heart rate",
+      "model_reference": "E5 (y_t)",
+      "example_range": "40-180",
+      "notes": "UKF measurement update"
+    },
+    {
+      "category": "Wearable",
+      "signal_name": "steps",
+      "data_type": "int",
+      "description": "Daily step count",
+      "model_reference": "E5 (y_t)",
+      "example_range": "0-50000",
+      "notes": "UKF measurement update"
+    },
+    {
+      "category": "Wearable",
+      "signal_name": "spo2",
+      "data_type": "float",
+      "description": "Avg SpO2 %",
+      "model_reference": "E5 (y_t)",
+      "example_range": "85-100",
+      "notes": "UKF measurement update"
+    },
+    {
+      "category": "Wearable",
+      "signal_name": "cgm_values",
+      "data_type": "list[float]",
+      "description": "CGM glucose readings",
+      "model_reference": "E5, A1",
+      "example_range": "List of mg/dL values",
+      "notes": "High value for absorption validation"
+    },
+    {
+      "category": "Subjective",
+      "signal_name": "symptoms",
+      "data_type": "list[str]",
+      "description": "Self-reported symptoms",
+      "model_reference": "E5 (y_t)",
+      "example_range": "['fatigue','brain_fog']",
+      "notes": "Supports gating & alerts"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "energy_kcal",
+      "data_type": "float",
+      "description": "Total energy intake",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Macro | Unit: kcal"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "carb_total_g",
+      "data_type": "float",
+      "description": "Total carbohydrates",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Macro | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "fiber_g",
+      "data_type": "float",
+      "description": "Dietary fiber",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Macro | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "sugar_added_g",
+      "data_type": "float",
+      "description": "Added sugars",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Macro | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "starch_g",
+      "data_type": "float",
+      "description": "Starch",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Macro | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "protein_g",
+      "data_type": "float",
+      "description": "Total protein",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Macro | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "fat_total_g",
+      "data_type": "float",
+      "description": "Total fat",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Macro | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "fat_sat_g",
+      "data_type": "float",
+      "description": "Saturated fat",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fat | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "fat_trans_g",
+      "data_type": "float",
+      "description": "Trans fat",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fat | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "fat_mufa_g",
+      "data_type": "float",
+      "description": "Monounsaturated fat",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fat | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "fat_pufa_g",
+      "data_type": "float",
+      "description": "Polyunsaturated fat",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fat | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "omega3_ala_g",
+      "data_type": "float",
+      "description": "Alpha-linolenic acid (ALA)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fatty Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "omega3_epa_g",
+      "data_type": "float",
+      "description": "Eicosapentaenoic acid (EPA)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fatty Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "omega3_dha_g",
+      "data_type": "float",
+      "description": "Docosahexaenoic acid (DHA)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fatty Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "omega6_la_g",
+      "data_type": "float",
+      "description": "Linoleic acid (LA)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Fatty Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "cholesterol_mg",
+      "data_type": "float",
+      "description": "Dietary cholesterol",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Lipid | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "water_l",
+      "data_type": "float",
+      "description": "Water/fluid intake",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Hydration | Unit: L"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "alcohol_g",
+      "data_type": "float",
+      "description": "Ethanol",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Other | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "caffeine_mg",
+      "data_type": "float",
+      "description": "Caffeine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Other | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "vit_a_rae_ug",
+      "data_type": "float",
+      "description": "Vitamin A (RAE)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: µg RAE"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "vit_d_iu",
+      "data_type": "float",
+      "description": "Vitamin D",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: IU"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "vit_e_mg",
+      "data_type": "float",
+      "description": "Vitamin E (alpha-tocopherol)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "vit_k_ug",
+      "data_type": "float",
+      "description": "Vitamin K",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "vit_c_mg",
+      "data_type": "float",
+      "description": "Vitamin C",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b1_mg",
+      "data_type": "float",
+      "description": "Thiamine (B1)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b2_mg",
+      "data_type": "float",
+      "description": "Riboflavin (B2)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b3_mg",
+      "data_type": "float",
+      "description": "Niacin (B3)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b5_mg",
+      "data_type": "float",
+      "description": "Pantothenic acid (B5)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b6_mg",
+      "data_type": "float",
+      "description": "Pyridoxine (B6)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b7_ug",
+      "data_type": "float",
+      "description": "Biotin (B7)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b9_ug",
+      "data_type": "float",
+      "description": "Folate (B9)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: µg DFE"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "b12_ug",
+      "data_type": "float",
+      "description": "Cobalamin (B12)",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "choline_mg",
+      "data_type": "float",
+      "description": "Choline",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Vitamin-like | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "calcium_mg",
+      "data_type": "float",
+      "description": "Calcium",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "phosphorus_mg",
+      "data_type": "float",
+      "description": "Phosphorus",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "magnesium_mg",
+      "data_type": "float",
+      "description": "Magnesium",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "sodium_mg",
+      "data_type": "float",
+      "description": "Sodium",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Electrolyte | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "potassium_mg",
+      "data_type": "float",
+      "description": "Potassium",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Electrolyte | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "chloride_mg",
+      "data_type": "float",
+      "description": "Chloride",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Electrolyte | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "iron_mg",
+      "data_type": "float",
+      "description": "Iron",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "zinc_mg",
+      "data_type": "float",
+      "description": "Zinc",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "copper_mg",
+      "data_type": "float",
+      "description": "Copper",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "selenium_ug",
+      "data_type": "float",
+      "description": "Selenium",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "iodine_ug",
+      "data_type": "float",
+      "description": "Iodine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "manganese_mg",
+      "data_type": "float",
+      "description": "Manganese",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "chromium_ug",
+      "data_type": "float",
+      "description": "Chromium",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "molybdenum_ug",
+      "data_type": "float",
+      "description": "Molybdenum",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "fluoride_mg",
+      "data_type": "float",
+      "description": "Fluoride",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "boron_mg",
+      "data_type": "float",
+      "description": "Boron",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Mineral | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_histidine_g",
+      "data_type": "float",
+      "description": "Histidine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_isoleucine_g",
+      "data_type": "float",
+      "description": "Isoleucine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_leucine_g",
+      "data_type": "float",
+      "description": "Leucine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_lysine_g",
+      "data_type": "float",
+      "description": "Lysine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_methionine_g",
+      "data_type": "float",
+      "description": "Methionine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_phenylalanine_g",
+      "data_type": "float",
+      "description": "Phenylalanine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_threonine_g",
+      "data_type": "float",
+      "description": "Threonine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_tryptophan_g",
+      "data_type": "float",
+      "description": "Tryptophan",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_valine_g",
+      "data_type": "float",
+      "description": "Valine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_alanine_g",
+      "data_type": "float",
+      "description": "Alanine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_argnine_g",
+      "data_type": "float",
+      "description": "Arginine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_asparagine_g",
+      "data_type": "float",
+      "description": "Asparagine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_aspartate_g",
+      "data_type": "float",
+      "description": "Aspartate",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_cysteine_g",
+      "data_type": "float",
+      "description": "Cysteine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_glutamate_g",
+      "data_type": "float",
+      "description": "Glutamate",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_glutamine_g",
+      "data_type": "float",
+      "description": "Glutamine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_glycine_g",
+      "data_type": "float",
+      "description": "Glycine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_proline_g",
+      "data_type": "float",
+      "description": "Proline",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_serine_g",
+      "data_type": "float",
+      "description": "Serine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "aa_tyrosine_g",
+      "data_type": "float",
+      "description": "Tyrosine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Amino Acid | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "taurine_g",
+      "data_type": "float",
+      "description": "Taurine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "carnitine_g",
+      "data_type": "float",
+      "description": "Carnitine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "creatine_g",
+      "data_type": "float",
+      "description": "Creatine",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "glutathione_g",
+      "data_type": "float",
+      "description": "Glutathione",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: g"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "beta_carotene_ug",
+      "data_type": "float",
+      "description": "Beta-carotene",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "lutein_ug",
+      "data_type": "float",
+      "description": "Lutein",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "zeaxanthin_ug",
+      "data_type": "float",
+      "description": "Zeaxanthin",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "lycopene_ug",
+      "data_type": "float",
+      "description": "Lycopene",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: µg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "polyphenols_mg",
+      "data_type": "float",
+      "description": "Total polyphenols",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "flavonoids_mg",
+      "data_type": "float",
+      "description": "Total flavonoids",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: mg"
+    },
+    {
+      "category": "Nutrient Intake (80)",
+      "signal_name": "anthocyanins_mg",
+      "data_type": "float",
+      "description": "Anthocyanins",
+      "model_reference": "E5, A2, A7, C1",
+      "example_range": "See P1 Nutrients 80 sheet",
+      "notes": "Category: Bioactive | Unit: mg"
+    }
+  ],
+  "live_api_outputs": {
+    "scores": {
+      "composite_health_score": "0-100 scalar",
+      "cluster_disruption": "C1-C12, per-cluster disruption value",
+      "traffic_lights": "C1-C12, enum RED/YELLOW/GREEN",
+      "alerts": "list of {type, severity, message}",
+      "disease_risks": "T2D, CVD, CKD, NAFLD — direct probability floats"
+    },
+    "state_summary": {
+      "nutrient_C_fast": "80 keys, fast/plasma compartment",
+      "nutrient_C_slow": "80 keys, slow/tissue compartment",
+      "damage_Z": "Z1-Z15, log-damage per TVMCD pathway",
+      "lifestyle": "MVPA, sleep_deficit, stress, hydration",
+      "glp1_modifiers": "active, phi",
+      "bariatric_phase": "integer",
+      "dumping_risk": "float",
+      "ukf_uncertainty": "cluster_1..cluster_12"
+    },
+    "recommendations": "list of {action_id, action_type, description, confidence, safety_status, rationale, expected_impact}"
+  }
+}
