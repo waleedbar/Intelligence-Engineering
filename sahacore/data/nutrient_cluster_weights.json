@@ -1,0 +1,1787 @@
+[
+  {
+    "nutrient_id": "cholesterol_mg",
+    "cluster_id": "C1",
+    "weight": 0.068966
+  },
+  {
+    "nutrient_id": "choline_mg",
+    "cluster_id": "C1",
+    "weight": 0.068966
+  },
+  {
+    "nutrient_id": "fat_mufa_g",
+    "cluster_id": "C1",
+    "weight": 0.103446
+  },
+  {
+    "nutrient_id": "fat_pufa_g",
+    "cluster_id": "C1",
+    "weight": 0.103448
+  },
+  {
+    "nutrient_id": "fat_sat_g",
+    "cluster_id": "C1",
+    "weight": 0.051724
+  },
+  {
+    "nutrient_id": "fat_total_g",
+    "cluster_id": "C1",
+    "weight": 0.086207
+  },
+  {
+    "nutrient_id": "fat_trans_g",
+    "cluster_id": "C1",
+    "weight": 0.034483
+  },
+  {
+    "nutrient_id": "omega3_ala_g",
+    "cluster_id": "C1",
+    "weight": 0.086207
+  },
+  {
+    "nutrient_id": "omega3_dha_g",
+    "cluster_id": "C1",
+    "weight": 0.103448
+  },
+  {
+    "nutrient_id": "omega3_epa_g",
+    "cluster_id": "C1",
+    "weight": 0.086207
+  },
+  {
+    "nutrient_id": "omega6_la_g",
+    "cluster_id": "C1",
+    "weight": 0.068966
+  },
+  {
+    "nutrient_id": "vit_a_rae_ug",
+    "cluster_id": "C1",
+    "weight": 0.068966
+  },
+  {
+    "nutrient_id": "vit_e_mg",
+    "cluster_id": "C1",
+    "weight": 0.068966
+  },
+  {
+    "nutrient_id": "aa_alanine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_arginine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_asparagine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_aspartate_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_cysteine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_glutamate_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_glutamine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_glycine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_histidine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_isoleucine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_leucine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_lysine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_methionine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_phenylalanine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_proline_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_serine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_threonine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_tryptophan_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_tyrosine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_valine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "caffeine_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "carb_total_g",
+    "cluster_id": "C2",
+    "weight": 0.096
+  },
+  {
+    "nutrient_id": "carnitine_g",
+    "cluster_id": "C2",
+    "weight": 0.032
+  },
+  {
+    "nutrient_id": "chromium_ug",
+    "cluster_id": "C2",
+    "weight": 0.096
+  },
+  {
+    "nutrient_id": "creatine_g",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "energy_kcal",
+    "cluster_id": "C2",
+    "weight": 0.056
+  },
+  {
+    "nutrient_id": "fiber_g",
+    "cluster_id": "C2",
+    "weight": 0.032
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "magnesium_mg",
+    "cluster_id": "C2",
+    "weight": 0.024
+  },
+  {
+    "nutrient_id": "manganese_mg",
+    "cluster_id": "C2",
+    "weight": 0.04
+  },
+  {
+    "nutrient_id": "phosphorus_mg",
+    "cluster_id": "C2",
+    "weight": 0.024
+  },
+  {
+    "nutrient_id": "starch_g",
+    "cluster_id": "C2",
+    "weight": 0.112
+  },
+  {
+    "nutrient_id": "sugar_added_g",
+    "cluster_id": "C2",
+    "weight": 0.104
+  },
+  {
+    "nutrient_id": "water_l",
+    "cluster_id": "C2",
+    "weight": 0.016
+  },
+  {
+    "nutrient_id": "aa_alanine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_arginine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_asparagine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_aspartate_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_cysteine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_glutamate_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_glutamine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_glycine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_histidine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042425
+  },
+  {
+    "nutrient_id": "aa_isoleucine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_leucine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_lysine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_methionine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_phenylalanine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_proline_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_serine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_threonine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_tryptophan_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_tyrosine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "aa_valine_mg",
+    "cluster_id": "C3",
+    "weight": 0.042424
+  },
+  {
+    "nutrient_id": "b12_ug",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "b1_mg",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "b2_mg",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "b3_mg",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "b5_mg",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "b6_mg",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "b7_ug",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "b9_ug",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "carnitine_g",
+    "cluster_id": "C3",
+    "weight": 0.012121
+  },
+  {
+    "nutrient_id": "creatine_g",
+    "cluster_id": "C3",
+    "weight": 0.030303
+  },
+  {
+    "nutrient_id": "energy_kcal",
+    "cluster_id": "C3",
+    "weight": 0.006061
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C3",
+    "weight": 0.009091
+  },
+  {
+    "nutrient_id": "phosphorus_mg",
+    "cluster_id": "C3",
+    "weight": 0.009091
+  },
+  {
+    "nutrient_id": "protein_g",
+    "cluster_id": "C3",
+    "weight": 0.036364
+  },
+  {
+    "nutrient_id": "calcium_mg",
+    "cluster_id": "C4",
+    "weight": 0.04918
+  },
+  {
+    "nutrient_id": "chloride_mg",
+    "cluster_id": "C4",
+    "weight": 0.229508
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C4",
+    "weight": 0.032787
+  },
+  {
+    "nutrient_id": "magnesium_mg",
+    "cluster_id": "C4",
+    "weight": 0.081967
+  },
+  {
+    "nutrient_id": "phosphorus_mg",
+    "cluster_id": "C4",
+    "weight": 0.04918
+  },
+  {
+    "nutrient_id": "potassium_mg",
+    "cluster_id": "C4",
+    "weight": 0.163934
+  },
+  {
+    "nutrient_id": "sodium_mg",
+    "cluster_id": "C4",
+    "weight": 0.163934
+  },
+  {
+    "nutrient_id": "water_l",
+    "cluster_id": "C4",
+    "weight": 0.22951
+  },
+  {
+    "nutrient_id": "alcohol_g",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "anthocyanins_mg",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "beta_carotene_ug",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "carb_total_g",
+    "cluster_id": "C5",
+    "weight": 0.019355
+  },
+  {
+    "nutrient_id": "carnitine_g",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "cholesterol_mg",
+    "cluster_id": "C5",
+    "weight": 0.012903
+  },
+  {
+    "nutrient_id": "choline_mg",
+    "cluster_id": "C5",
+    "weight": 0.012903
+  },
+  {
+    "nutrient_id": "chromium_ug",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "copper_mg",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "energy_kcal",
+    "cluster_id": "C5",
+    "weight": 0.019355
+  },
+  {
+    "nutrient_id": "fat_mufa_g",
+    "cluster_id": "C5",
+    "weight": 0.012903
+  },
+  {
+    "nutrient_id": "fat_pufa_g",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "fat_sat_g",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "fat_total_g",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "fat_trans_g",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "fiber_g",
+    "cluster_id": "C5",
+    "weight": 0.012903
+  },
+  {
+    "nutrient_id": "flavonoids_mg",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "glutathione_g",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C5",
+    "weight": 0.012903
+  },
+  {
+    "nutrient_id": "lutein_ug",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "lycopene_ug",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "omega3_ala_g",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "omega3_dha_g",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "omega3_epa_g",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "omega6_la_g",
+    "cluster_id": "C5",
+    "weight": 0.051619
+  },
+  {
+    "nutrient_id": "polyphenols_mg",
+    "cluster_id": "C5",
+    "weight": 0.03871
+  },
+  {
+    "nutrient_id": "protein_g",
+    "cluster_id": "C5",
+    "weight": 0.019355
+  },
+  {
+    "nutrient_id": "selenium_ug",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "sodium_mg",
+    "cluster_id": "C5",
+    "weight": 0.019355
+  },
+  {
+    "nutrient_id": "sugar_added_g",
+    "cluster_id": "C5",
+    "weight": 0.019355
+  },
+  {
+    "nutrient_id": "taurine_g",
+    "cluster_id": "C5",
+    "weight": 0.019355
+  },
+  {
+    "nutrient_id": "vit_a_rae_ug",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "vit_c_mg",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "vit_d_iu",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "vit_e_mg",
+    "cluster_id": "C5",
+    "weight": 0.019355
+  },
+  {
+    "nutrient_id": "vit_k_ug",
+    "cluster_id": "C5",
+    "weight": 0.025806
+  },
+  {
+    "nutrient_id": "zeaxanthin_ug",
+    "cluster_id": "C5",
+    "weight": 0.032258
+  },
+  {
+    "nutrient_id": "zinc_mg",
+    "cluster_id": "C5",
+    "weight": 0.045161
+  },
+  {
+    "nutrient_id": "anthocyanins_mg",
+    "cluster_id": "C6",
+    "weight": 0.059322
+  },
+  {
+    "nutrient_id": "beta_carotene_ug",
+    "cluster_id": "C6",
+    "weight": 0.067797
+  },
+  {
+    "nutrient_id": "boron_mg",
+    "cluster_id": "C6",
+    "weight": 0.033898
+  },
+  {
+    "nutrient_id": "copper_mg",
+    "cluster_id": "C6",
+    "weight": 0.042373
+  },
+  {
+    "nutrient_id": "flavonoids_mg",
+    "cluster_id": "C6",
+    "weight": 0.059322
+  },
+  {
+    "nutrient_id": "fluoride_mg",
+    "cluster_id": "C6",
+    "weight": 0.033898
+  },
+  {
+    "nutrient_id": "glutathione_g",
+    "cluster_id": "C6",
+    "weight": 0.101696
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C6",
+    "weight": 0.016949
+  },
+  {
+    "nutrient_id": "lutein_ug",
+    "cluster_id": "C6",
+    "weight": 0.059322
+  },
+  {
+    "nutrient_id": "lycopene_ug",
+    "cluster_id": "C6",
+    "weight": 0.050847
+  },
+  {
+    "nutrient_id": "manganese_mg",
+    "cluster_id": "C6",
+    "weight": 0.042373
+  },
+  {
+    "nutrient_id": "molybdenum_ug",
+    "cluster_id": "C6",
+    "weight": 0.033898
+  },
+  {
+    "nutrient_id": "polyphenols_mg",
+    "cluster_id": "C6",
+    "weight": 0.067797
+  },
+  {
+    "nutrient_id": "selenium_ug",
+    "cluster_id": "C6",
+    "weight": 0.059322
+  },
+  {
+    "nutrient_id": "taurine_g",
+    "cluster_id": "C6",
+    "weight": 0.025424
+  },
+  {
+    "nutrient_id": "vit_a_rae_ug",
+    "cluster_id": "C6",
+    "weight": 0.033898
+  },
+  {
+    "nutrient_id": "vit_c_mg",
+    "cluster_id": "C6",
+    "weight": 0.059322
+  },
+  {
+    "nutrient_id": "vit_e_mg",
+    "cluster_id": "C6",
+    "weight": 0.09322
+  },
+  {
+    "nutrient_id": "zeaxanthin_ug",
+    "cluster_id": "C6",
+    "weight": 0.059322
+  },
+  {
+    "nutrient_id": "alcohol_g",
+    "cluster_id": "C7",
+    "weight": 0.036697
+  },
+  {
+    "nutrient_id": "b12_ug",
+    "cluster_id": "C7",
+    "weight": 0.091743
+  },
+  {
+    "nutrient_id": "b1_mg",
+    "cluster_id": "C7",
+    "weight": 0.091745
+  },
+  {
+    "nutrient_id": "b2_mg",
+    "cluster_id": "C7",
+    "weight": 0.091743
+  },
+  {
+    "nutrient_id": "b3_mg",
+    "cluster_id": "C7",
+    "weight": 0.091743
+  },
+  {
+    "nutrient_id": "b5_mg",
+    "cluster_id": "C7",
+    "weight": 0.091743
+  },
+  {
+    "nutrient_id": "b6_mg",
+    "cluster_id": "C7",
+    "weight": 0.091743
+  },
+  {
+    "nutrient_id": "b7_ug",
+    "cluster_id": "C7",
+    "weight": 0.091743
+  },
+  {
+    "nutrient_id": "b9_ug",
+    "cluster_id": "C7",
+    "weight": 0.091743
+  },
+  {
+    "nutrient_id": "choline_mg",
+    "cluster_id": "C7",
+    "weight": 0.073394
+  },
+  {
+    "nutrient_id": "copper_mg",
+    "cluster_id": "C7",
+    "weight": 0.027523
+  },
+  {
+    "nutrient_id": "glutathione_g",
+    "cluster_id": "C7",
+    "weight": 0.036697
+  },
+  {
+    "nutrient_id": "molybdenum_ug",
+    "cluster_id": "C7",
+    "weight": 0.073394
+  },
+  {
+    "nutrient_id": "zinc_mg",
+    "cluster_id": "C7",
+    "weight": 0.018349
+  },
+  {
+    "nutrient_id": "anthocyanins_mg",
+    "cluster_id": "C8",
+    "weight": 0.083333
+  },
+  {
+    "nutrient_id": "chloride_mg",
+    "cluster_id": "C8",
+    "weight": 0.041667
+  },
+  {
+    "nutrient_id": "energy_kcal",
+    "cluster_id": "C8",
+    "weight": 0.083333
+  },
+  {
+    "nutrient_id": "fiber_g",
+    "cluster_id": "C8",
+    "weight": 0.291666
+  },
+  {
+    "nutrient_id": "flavonoids_mg",
+    "cluster_id": "C8",
+    "weight": 0.104167
+  },
+  {
+    "nutrient_id": "fluoride_mg",
+    "cluster_id": "C8",
+    "weight": 0.041667
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C8",
+    "weight": 0.041667
+  },
+  {
+    "nutrient_id": "molybdenum_ug",
+    "cluster_id": "C8",
+    "weight": 0.083333
+  },
+  {
+    "nutrient_id": "polyphenols_mg",
+    "cluster_id": "C8",
+    "weight": 0.083333
+  },
+  {
+    "nutrient_id": "vit_c_mg",
+    "cluster_id": "C8",
+    "weight": 0.041667
+  },
+  {
+    "nutrient_id": "water_l",
+    "cluster_id": "C8",
+    "weight": 0.041667
+  },
+  {
+    "nutrient_id": "zinc_mg",
+    "cluster_id": "C8",
+    "weight": 0.0625
+  },
+  {
+    "nutrient_id": "aa_alanine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_arginine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_asparagine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_aspartate_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_cysteine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_glutamate_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_glutamine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_glycine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_histidine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_isoleucine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_leucine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_lysine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_methionine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_phenylalanine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_proline_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_serine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_threonine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_tryptophan_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_tyrosine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_valine_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "alcohol_g",
+    "cluster_id": "C9",
+    "weight": 0.034286
+  },
+  {
+    "nutrient_id": "b12_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "b1_mg",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "b2_mg",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "b3_mg",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "b5_mg",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "b6_mg",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "b7_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "b9_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "beta_carotene_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "caffeine_mg",
+    "cluster_id": "C9",
+    "weight": 0.057135
+  },
+  {
+    "nutrient_id": "carnitine_g",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "choline_mg",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "copper_mg",
+    "cluster_id": "C9",
+    "weight": 0.017143
+  },
+  {
+    "nutrient_id": "creatine_g",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "fat_mufa_g",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "fat_pufa_g",
+    "cluster_id": "C9",
+    "weight": 0.017143
+  },
+  {
+    "nutrient_id": "fat_total_g",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "iodine_ug",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "lutein_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "lycopene_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "magnesium_mg",
+    "cluster_id": "C9",
+    "weight": 0.028571
+  },
+  {
+    "nutrient_id": "manganese_mg",
+    "cluster_id": "C9",
+    "weight": 0.028571
+  },
+  {
+    "nutrient_id": "omega3_ala_g",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "omega3_dha_g",
+    "cluster_id": "C9",
+    "weight": 0.028571
+  },
+  {
+    "nutrient_id": "omega3_epa_g",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "omega6_la_g",
+    "cluster_id": "C9",
+    "weight": 0.017143
+  },
+  {
+    "nutrient_id": "potassium_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "taurine_g",
+    "cluster_id": "C9",
+    "weight": 0.04
+  },
+  {
+    "nutrient_id": "vit_a_rae_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "vit_d_iu",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "zeaxanthin_ug",
+    "cluster_id": "C9",
+    "weight": 0.022857
+  },
+  {
+    "nutrient_id": "zinc_mg",
+    "cluster_id": "C9",
+    "weight": 0.011429
+  },
+  {
+    "nutrient_id": "aa_alanine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_arginine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_asparagine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_aspartate_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_cysteine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_glutamate_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_glutamine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_glycine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_histidine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_isoleucine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_leucine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_lysine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_methionine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_phenylalanine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_proline_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_serine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_threonine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_tryptophan_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_tyrosine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "aa_valine_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "boron_mg",
+    "cluster_id": "C10",
+    "weight": 0.086207
+  },
+  {
+    "nutrient_id": "calcium_mg",
+    "cluster_id": "C10",
+    "weight": 0.103457
+  },
+  {
+    "nutrient_id": "copper_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "fluoride_mg",
+    "cluster_id": "C10",
+    "weight": 0.103448
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C10",
+    "weight": 0.008621
+  },
+  {
+    "nutrient_id": "magnesium_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "manganese_mg",
+    "cluster_id": "C10",
+    "weight": 0.043103
+  },
+  {
+    "nutrient_id": "phosphorus_mg",
+    "cluster_id": "C10",
+    "weight": 0.068966
+  },
+  {
+    "nutrient_id": "vit_a_rae_ug",
+    "cluster_id": "C10",
+    "weight": 0.025862
+  },
+  {
+    "nutrient_id": "vit_c_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "vit_d_iu",
+    "cluster_id": "C10",
+    "weight": 0.060345
+  },
+  {
+    "nutrient_id": "vit_k_ug",
+    "cluster_id": "C10",
+    "weight": 0.086207
+  },
+  {
+    "nutrient_id": "zinc_mg",
+    "cluster_id": "C10",
+    "weight": 0.017241
+  },
+  {
+    "nutrient_id": "b12_ug",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "b1_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "b2_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "b3_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "b5_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "b6_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "b7_ug",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "b9_ug",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "boron_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "caffeine_mg",
+    "cluster_id": "C11",
+    "weight": 0.078431
+  },
+  {
+    "nutrient_id": "calcium_mg",
+    "cluster_id": "C11",
+    "weight": 0.019608
+  },
+  {
+    "nutrient_id": "iodine_ug",
+    "cluster_id": "C11",
+    "weight": 0.274506
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "potassium_mg",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "protein_g",
+    "cluster_id": "C11",
+    "weight": 0.039216
+  },
+  {
+    "nutrient_id": "selenium_ug",
+    "cluster_id": "C11",
+    "weight": 0.098039
+  },
+  {
+    "nutrient_id": "vit_d_iu",
+    "cluster_id": "C11",
+    "weight": 0.058824
+  },
+  {
+    "nutrient_id": "aa_alanine_mg",
+    "cluster_id": "C12",
+    "weight": 0.002137
+  },
+  {
+    "nutrient_id": "aa_arginine_mg",
+    "cluster_id": "C12",
+    "weight": 0.021375
+  },
+  {
+    "nutrient_id": "aa_asparagine_mg",
+    "cluster_id": "C12",
+    "weight": 0.00171
+  },
+  {
+    "nutrient_id": "aa_aspartate_mg",
+    "cluster_id": "C12",
+    "weight": 0.00171
+  },
+  {
+    "nutrient_id": "aa_cysteine_mg",
+    "cluster_id": "C12",
+    "weight": 0.00855
+  },
+  {
+    "nutrient_id": "aa_glutamate_mg",
+    "cluster_id": "C12",
+    "weight": 0.002137
+  },
+  {
+    "nutrient_id": "aa_glutamine_mg",
+    "cluster_id": "C12",
+    "weight": 0.002565
+  },
+  {
+    "nutrient_id": "aa_glycine_mg",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "aa_histidine_mg",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "aa_isoleucine_mg",
+    "cluster_id": "C12",
+    "weight": 0.00342
+  },
+  {
+    "nutrient_id": "aa_leucine_mg",
+    "cluster_id": "C12",
+    "weight": 0.00342
+  },
+  {
+    "nutrient_id": "aa_lysine_mg",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "aa_methionine_mg",
+    "cluster_id": "C12",
+    "weight": 0.010687
+  },
+  {
+    "nutrient_id": "aa_phenylalanine_mg",
+    "cluster_id": "C12",
+    "weight": 0.00342
+  },
+  {
+    "nutrient_id": "aa_proline_mg",
+    "cluster_id": "C12",
+    "weight": 0.00171
+  },
+  {
+    "nutrient_id": "aa_serine_mg",
+    "cluster_id": "C12",
+    "weight": 0.002565
+  },
+  {
+    "nutrient_id": "aa_threonine_mg",
+    "cluster_id": "C12",
+    "weight": 0.002137
+  },
+  {
+    "nutrient_id": "aa_tryptophan_mg",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "aa_tyrosine_mg",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "aa_valine_mg",
+    "cluster_id": "C12",
+    "weight": 0.00342
+  },
+  {
+    "nutrient_id": "alcohol_g",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "anthocyanins_mg",
+    "cluster_id": "C12",
+    "weight": 0.0171
+  },
+  {
+    "nutrient_id": "b12_ug",
+    "cluster_id": "C12",
+    "weight": 0.0171
+  },
+  {
+    "nutrient_id": "b1_mg",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "b2_mg",
+    "cluster_id": "C12",
+    "weight": 0.00855
+  },
+  {
+    "nutrient_id": "b3_mg",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "b5_mg",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "b6_mg",
+    "cluster_id": "C12",
+    "weight": 0.014962
+  },
+  {
+    "nutrient_id": "b7_ug",
+    "cluster_id": "C12",
+    "weight": 0.002137
+  },
+  {
+    "nutrient_id": "b9_ug",
+    "cluster_id": "C12",
+    "weight": 0.021375
+  },
+  {
+    "nutrient_id": "beta_carotene_ug",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "boron_mg",
+    "cluster_id": "C12",
+    "weight": 0.002137
+  },
+  {
+    "nutrient_id": "caffeine_mg",
+    "cluster_id": "C12",
+    "weight": 0.00855
+  },
+  {
+    "nutrient_id": "calcium_mg",
+    "cluster_id": "C12",
+    "weight": 0.014962
+  },
+  {
+    "nutrient_id": "carb_total_g",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "carnitine_g",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "chloride_mg",
+    "cluster_id": "C12",
+    "weight": 0.00855
+  },
+  {
+    "nutrient_id": "cholesterol_mg",
+    "cluster_id": "C12",
+    "weight": 0.010687
+  },
+  {
+    "nutrient_id": "choline_mg",
+    "cluster_id": "C12",
+    "weight": 0.010687
+  },
+  {
+    "nutrient_id": "chromium_ug",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "copper_mg",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "creatine_g",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "energy_kcal",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "fat_mufa_g",
+    "cluster_id": "C12",
+    "weight": 0.0171
+  },
+  {
+    "nutrient_id": "fat_pufa_g",
+    "cluster_id": "C12",
+    "weight": 0.0171
+  },
+  {
+    "nutrient_id": "fat_sat_g",
+    "cluster_id": "C12",
+    "weight": 0.021375
+  },
+  {
+    "nutrient_id": "fat_total_g",
+    "cluster_id": "C12",
+    "weight": 0.00855
+  },
+  {
+    "nutrient_id": "fat_trans_g",
+    "cluster_id": "C12",
+    "weight": 0.023512
+  },
+  {
+    "nutrient_id": "fiber_g",
+    "cluster_id": "C12",
+    "weight": 0.025649
+  },
+  {
+    "nutrient_id": "flavonoids_mg",
+    "cluster_id": "C12",
+    "weight": 0.021375
+  },
+  {
+    "nutrient_id": "fluoride_mg",
+    "cluster_id": "C12",
+    "weight": 0.001282
+  },
+  {
+    "nutrient_id": "glutathione_g",
+    "cluster_id": "C12",
+    "weight": 0.010687
+  },
+  {
+    "nutrient_id": "iodine_ug",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "iron_mg",
+    "cluster_id": "C12",
+    "weight": 0.00855
+  },
+  {
+    "nutrient_id": "lutein_ug",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "lycopene_ug",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "magnesium_mg",
+    "cluster_id": "C12",
+    "weight": 0.027787
+  },
+  {
+    "nutrient_id": "manganese_mg",
+    "cluster_id": "C12",
+    "weight": 0.002137
+  },
+  {
+    "nutrient_id": "molybdenum_ug",
+    "cluster_id": "C12",
+    "weight": 0.001282
+  },
+  {
+    "nutrient_id": "nitrate_mg",
+    "cluster_id": "C12",
+    "weight": 0.156991
+  },
+  {
+    "nutrient_id": "omega3_ala_g",
+    "cluster_id": "C12",
+    "weight": 0.014962
+  },
+  {
+    "nutrient_id": "omega3_dha_g",
+    "cluster_id": "C12",
+    "weight": 0.034199
+  },
+  {
+    "nutrient_id": "omega3_epa_g",
+    "cluster_id": "C12",
+    "weight": 0.034199
+  },
+  {
+    "nutrient_id": "omega6_la_g",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "phosphorus_mg",
+    "cluster_id": "C12",
+    "weight": 0.00855
+  },
+  {
+    "nutrient_id": "polyphenols_mg",
+    "cluster_id": "C12",
+    "weight": 0.021375
+  },
+  {
+    "nutrient_id": "potassium_mg",
+    "cluster_id": "C12",
+    "weight": 0.032061
+  },
+  {
+    "nutrient_id": "protein_g",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "selenium_ug",
+    "cluster_id": "C12",
+    "weight": 0.010687
+  },
+  {
+    "nutrient_id": "sodium_mg",
+    "cluster_id": "C12",
+    "weight": 0.034199
+  },
+  {
+    "nutrient_id": "starch_g",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "sugar_added_g",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "taurine_g",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "vit_a_rae_ug",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "vit_c_mg",
+    "cluster_id": "C12",
+    "weight": 0.012825
+  },
+  {
+    "nutrient_id": "vit_d_iu",
+    "cluster_id": "C12",
+    "weight": 0.014962
+  },
+  {
+    "nutrient_id": "vit_e_mg",
+    "cluster_id": "C12",
+    "weight": 0.010687
+  },
+  {
+    "nutrient_id": "vit_k_ug",
+    "cluster_id": "C12",
+    "weight": 0.0171
+  },
+  {
+    "nutrient_id": "water_l",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  },
+  {
+    "nutrient_id": "zeaxanthin_ug",
+    "cluster_id": "C12",
+    "weight": 0.004275
+  },
+  {
+    "nutrient_id": "zinc_mg",
+    "cluster_id": "C12",
+    "weight": 0.006412
+  }
+]

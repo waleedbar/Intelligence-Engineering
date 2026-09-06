@@ -1,0 +1,14 @@
+[
+  {"cluster_id": "C1",  "a_k": 1.2, "b_k": -2.5, "tau_dam_days": 30,  "rho_k": 0.97},
+  {"cluster_id": "C2",  "a_k": 1.5, "b_k": -3.0, "tau_dam_days": 7,   "rho_k": 0.90},
+  {"cluster_id": "C3",  "a_k": 1.0, "b_k": -2.0, "tau_dam_days": 14,  "rho_k": 0.93},
+  {"cluster_id": "C4",  "a_k": 1.8, "b_k": -3.5, "tau_dam_days": 1,   "rho_k": 0.70},
+  {"cluster_id": "C5",  "a_k": 1.3, "b_k": -2.8, "tau_dam_days": 14,  "rho_k": 0.92},
+  {"cluster_id": "C6",  "a_k": 1.4, "b_k": -2.6, "tau_dam_days": 7,   "rho_k": 0.88},
+  {"cluster_id": "C7",  "a_k": 1.2, "b_k": -2.4, "tau_dam_days": 21,  "rho_k": 0.95},
+  {"cluster_id": "C8",  "a_k": 1.1, "b_k": -2.2, "tau_dam_days": 14,  "rho_k": 0.93},
+  {"cluster_id": "C9",  "a_k": 1.3, "b_k": -2.7, "tau_dam_days": 30,  "rho_k": 0.97},
+  {"cluster_id": "C10", "a_k": 1.0, "b_k": -2.0, "tau_dam_days": 180, "rho_k": 0.99},
+  {"cluster_id": "C11", "a_k": 1.2, "b_k": -2.5, "tau_dam_days": 30,  "rho_k": 0.97},
+  {"cluster_id": "C12", "a_k": 1.4, "b_k": -2.8, "tau_dam_days": 30,  "rho_k": 0.96}
+]
