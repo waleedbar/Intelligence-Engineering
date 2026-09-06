@@ -1,0 +1,14 @@
+[
+  {"id": "C1",  "name": "Membrane Integrity",        "consumer_score_name": "Cellular Integrity Score"},
+  {"id": "C2",  "name": "Glucose Regulation",         "consumer_score_name": "Glucose Stability Score"},
+  {"id": "C3",  "name": "Protein Turnover",           "consumer_score_name": "Protein Quality Score"},
+  {"id": "C4",  "name": "Electrolyte Balance",        "consumer_score_name": "Fluid & Electrolyte Score"},
+  {"id": "C5",  "name": "Inflammatory Response",      "consumer_score_name": "Inflammatory Balance Score"},
+  {"id": "C6",  "name": "Oxidative Stress",           "consumer_score_name": "Antioxidant Defence Score"},
+  {"id": "C7",  "name": "Methylation / One-carbon",   "consumer_score_name": "Methylation Wellness Score"},
+  {"id": "C8",  "name": "Gut Health",                 "consumer_score_name": "Gut Vitality Score"},
+  {"id": "C9",  "name": "Neuro-Hormonal",             "consumer_score_name": "Neuro-Hormonal Score"},
+  {"id": "C10", "name": "Bone Health",                "consumer_score_name": "Bone Strength Score"},
+  {"id": "C11", "name": "Thyroid / Adrenal",          "consumer_score_name": "Thyroid & Adrenal Score"},
+  {"id": "C12", "name": "Cardiovascular / Vascular",  "consumer_score_name": "Cardio Vitality Score"}
+]
