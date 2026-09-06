@@ -1,0 +1,66 @@
+name: CI
+
+"on":
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sahacore_ci
+          POSTGRES_PASSWORD: sahacore_ci
+          POSTGRES_DB: sahacore_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://sahacore_ci:sahacore_ci@localhost:5432/sahacore_ci
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests (no database required)
+        run: python -m pytest tests/ -v
+
+      - name: Apply database migrations
+        run: python -m sahacore.migrate
+
+      - name: Re-apply migrations (must be a no-op)
+        run: python -m sahacore.migrate
+
+      - name: Load Layer 0 registries
+        run: |
+          python -m sahacore.data.load_nutrients
+          python -m sahacore.data.load_state_vector
+
+      - name: Verify loaded row counts match source
+        run: |
+          python -c "
+          import os, psycopg
+          conn = psycopg.connect(os.environ['DATABASE_URL'])
+          with conn.cursor() as cur:
+              cur.execute('SELECT count(*) FROM nutrients')
+              n = cur.fetchone()[0]
+              assert n == 81, f'expected 81 nutrients, got {n}'
+              cur.execute('SELECT count(*) FROM state_vector')
+              s = cur.fetchone()[0]
+              assert s == 219, f'expected 219 state vector rows, got {s}'
+          print('OK: 81 nutrients, 219 state vector rows')
+          "
