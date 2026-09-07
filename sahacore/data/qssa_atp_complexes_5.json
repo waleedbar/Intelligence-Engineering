@@ -1,0 +1,7 @@
+[
+  {"complex_id": "I",   "name": "Complex I (NADH dehydrogenase)", "substrate": "NADH",         "km_um": 150.0,  "vmax_relative": 1.0, "source": "Hirst 2013 Annu Rev Biochem"},
+  {"complex_id": "II",  "name": "Complex II (Succinate DH)",      "substrate": "Succinate",     "km_um": 1000.0, "vmax_relative": 0.5, "source": "Quinlan et al. 2012 JBC"},
+  {"complex_id": "III", "name": "Complex III (Cyt bc1)",          "substrate": "Ubiquinol",     "km_um": 13.4,   "vmax_relative": 2.0, "source": "Degli Esposti & Lenaz 1982 BBA"},
+  {"complex_id": "IV",  "name": "Complex IV (Cyt c oxidase)",     "substrate": "Cytochrome c",  "km_um": 2.0,    "vmax_relative": 4.0, "source": "Orii & Miki 1982"},
+  {"complex_id": "V",   "name": "ATP Synthase (Complex V)",       "substrate": "ADP",           "km_um": 57.0,   "vmax_relative": 3.0, "source": "Reynafarje & Pedersen 1996"}
+]

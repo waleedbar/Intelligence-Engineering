@@ -51,6 +51,7 @@ jobs:
           python -m sahacore.data.load_state_vector
           python -m sahacore.data.load_layer_c_d
           python -m sahacore.data.load_layer_m
+          python -m sahacore.data.load_qssa_atp
 
       - name: Verify loaded row counts match source
         run: |
@@ -76,5 +77,8 @@ jobs:
               cur.execute('SELECT count(*) FROM layer_m_scarring_params')
               m = cur.fetchone()[0]
               assert m == 12, f'expected 12 layer M scarring params, got {m}'
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params')
+              cur.execute('SELECT count(*) FROM qssa_atp_complexes')
+              q = cur.fetchone()[0]
+              assert q == 5, f'expected 5 QSSA ATP complexes, got {q}'
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes')
           "
