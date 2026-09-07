@@ -1,4 +1,4 @@
-"""Tests for sahacore/engine/absorption.py (Layer A, equations A1/A2/A7).
+"""Tests for sahacore/engine/absorption.py (Layer A, equations A1-A7).
 
 Includes a golden-value regression test transcribed directly from Dr.
 Ali's own workbook ('Live Verification Lab', LAB 1), so our implementation
@@ -16,8 +16,16 @@ from scipy.stats import gamma as scipy_gamma
 from sahacore.engine.absorption import (
     absorbed_mass_rate,
     absorption_kernel,
+    activity_saturation,
+    activity_sleep_modifier,
+    bounded_absorbed_fraction,
     food_matrix_adjustment,
     gamma_pdf,
+    gastric_emptying_fraction,
+    interaction_sum,
+    logit,
+    positive_timing_modulator,
+    sigmoid,
     unmodulated_normalized_kernel,
 )
 
@@ -208,3 +216,190 @@ def test_food_matrix_adjustment_is_bounded_by_sum_of_abs_psi():
     ref = {"a": 1.0, "b": 1.0}
     result = food_matrix_adjustment(co_food, psi, ref)
     assert abs(result) < abs(psi["a"]) + abs(psi["b"])
+
+
+# --- A5: gastric emptying (Weibull) -----------------------------------------
+
+def test_gastric_emptying_is_zero_at_time_zero():
+    assert gastric_emptying_fraction(0.0, t_50=90.0, kappa=1.6) == 0.0
+
+
+def test_gastric_emptying_is_exactly_half_at_t_50():
+    """GE(T_50) = 1 - exp(-ln2*1) = 1 - 0.5 = 0.5 by construction, for
+    any kappa (since (T_50/T_50)^kappa = 1 always)."""
+    for kappa in (0.5, 1.0, 1.6, 2.0):
+        assert gastric_emptying_fraction(90.0, t_50=90.0, kappa=kappa) == pytest.approx(0.5)
+
+
+def test_gastric_emptying_approaches_one_for_large_t():
+    result = gastric_emptying_fraction(10000.0, t_50=90.0, kappa=1.6)
+    assert result == pytest.approx(1.0, abs=1e-6)
+
+
+def test_gastric_emptying_is_monotonically_increasing():
+    values = [gastric_emptying_fraction(t, t_50=90.0, kappa=1.6) for t in (0, 30, 60, 90, 150, 300)]
+    assert values == sorted(values)
+
+
+@pytest.mark.parametrize("kappa,label", [(1.6, "solid (Elashoff 1982)"), (1.0, "liquid (Elashoff 1982)")])
+def test_gastric_emptying_with_literature_kappa_stays_bounded_0_1(kappa, label):
+    """Source-cited literature point estimates ('P1 Parameters 134+' row
+    18): kappa~1.6 for solids, ~1.0 for liquids."""
+    for t in (0, 30, 90, 200):
+        result = gastric_emptying_fraction(t, t_50=90.0, kappa=kappa)
+        assert 0.0 <= result <= 1.0, label
+
+
+# --- A6: activity/sleep timing effect ---------------------------------------
+
+def test_activity_saturation_is_zero_at_zero_met():
+    assert activity_saturation(met=0.0, k_act=45.0) == 0.0
+
+
+def test_activity_saturation_approaches_one_at_high_met():
+    assert activity_saturation(met=1e9, k_act=45.0) == pytest.approx(1.0, abs=1e-6)
+
+
+def test_activity_saturation_is_half_when_met_equals_k_act():
+    assert activity_saturation(met=45.0, k_act=45.0) == pytest.approx(0.5)
+
+
+def test_activity_sleep_modifier_is_one_at_baseline():
+    """Both effects off (g_act=0, I_sleep=0) -> exp(0) = 1: no modulation."""
+    assert activity_sleep_modifier(g_act=0.0, beta_act=0.005, i_sleep=0.0, beta_sleep=-0.2) == pytest.approx(1.0)
+
+
+def test_activity_sleep_modifier_matches_closed_form():
+    g_act, beta_act, i_sleep, beta_sleep = 0.6, 0.005, 1.0, -0.2
+    expected = math.exp(beta_act * g_act + beta_sleep * i_sleep)
+    assert activity_sleep_modifier(g_act, beta_act, i_sleep, beta_sleep) == pytest.approx(expected)
+
+
+# --- A3: positive timing modulator ------------------------------------------
+
+def test_positive_timing_modulator_is_always_strictly_positive():
+    """Source's own stated guarantee: m_i(t) > 0 by construction."""
+    cases = [
+        dict(t=0, eta_c1=0.1, phi_1=400, eta_c2=0.05, phi_2=800, eta_act=0.005,
+             g_act=0.5, eta_ge=0.01, g_ge=0.8, eta_sleep=-0.2, i_sleep=1.0, eta_matrix=0.0),
+        dict(t=1440, eta_c1=-0.5, phi_1=0, eta_c2=-0.3, phi_2=0, eta_act=-1.0,
+             g_act=1.0, eta_ge=-1.0, g_ge=1.0, eta_sleep=-5.0, i_sleep=1.0, eta_matrix=-2.0),
+    ]
+    for kwargs in cases:
+        assert positive_timing_modulator(**kwargs) > 0.0
+
+
+def test_positive_timing_modulator_is_one_when_every_term_is_neutral():
+    """All eta coefficients zero -> exponent=0 -> m_i(t)=1 (no reshaping)."""
+    result = positive_timing_modulator(
+        t=600.0, eta_c1=0.0, phi_1=0.0, eta_c2=0.0, phi_2=0.0,
+        eta_act=0.0, g_act=0.5, eta_ge=0.0, g_ge=0.5,
+        eta_sleep=0.0, i_sleep=1.0, eta_matrix=0.0,
+    )
+    assert result == pytest.approx(1.0)
+
+
+def test_positive_timing_modulator_matches_closed_form():
+    kwargs = dict(
+        t=300.0, eta_c1=0.1, phi_1=420.0, eta_c2=0.04, phi_2=900.0,
+        eta_act=0.006, g_act=0.4, eta_ge=0.02, g_ge=0.3,
+        eta_sleep=-0.15, i_sleep=0.0, eta_matrix=0.05,
+    )
+    expected_exponent = (
+        kwargs["eta_c1"] * math.cos(2 * math.pi * (kwargs["t"] - kwargs["phi_1"]) / 1440)
+        + kwargs["eta_c2"] * math.cos(4 * math.pi * (kwargs["t"] - kwargs["phi_2"]) / 1440)
+        + kwargs["eta_act"] * kwargs["g_act"]
+        + kwargs["eta_ge"] * kwargs["g_ge"]
+        + kwargs["eta_sleep"] * kwargs["i_sleep"]
+        + kwargs["eta_matrix"]
+    )
+    assert positive_timing_modulator(**kwargs) == pytest.approx(math.exp(expected_exponent))
+
+
+def test_positive_timing_modulator_composes_with_a5_a6_a7_outputs():
+    """End-to-end composition using A5's gastric_emptying_fraction, A6's
+    activity_saturation, and A7's food_matrix_adjustment (Phase 1 default)
+    as the actual g_ge/g_act/eta_matrix inputs -- confirms the pieces
+    plug together, not just that each is individually correct."""
+    g_ge = gastric_emptying_fraction(60.0, t_50=90.0, kappa=1.6)
+    g_act = activity_saturation(met=6.0, k_act=45.0)
+    eta_matrix = food_matrix_adjustment({}, {}, {})
+    result = positive_timing_modulator(
+        t=600.0, eta_c1=0.1, phi_1=420.0, eta_c2=0.03, phi_2=900.0,
+        eta_act=0.006, g_act=g_act, eta_ge=0.02, g_ge=g_ge,
+        eta_sleep=-0.1, i_sleep=0.5, eta_matrix=eta_matrix,
+    )
+    assert result > 0.0
+    assert math.isfinite(result)
+
+
+# --- A4: bounded absorbed fraction ------------------------------------------
+
+def test_logit_and_sigmoid_are_inverses():
+    for p in (0.01, 0.2, 0.5, 0.8, 0.99):
+        assert sigmoid(logit(p)) == pytest.approx(p, rel=1e-9)
+
+
+def test_sigmoid_matches_naive_form_within_safe_range():
+    for x in (-20, -1, 0, 1, 20):
+        naive = 1.0 / (1.0 + math.exp(-x))
+        assert sigmoid(x) == pytest.approx(naive, rel=1e-9)
+
+
+def test_sigmoid_does_not_overflow_for_extreme_arguments():
+    assert sigmoid(-1e6) == pytest.approx(0.0, abs=1e-12)
+    assert sigmoid(1e6) == pytest.approx(1.0, abs=1e-12)
+
+
+def test_interaction_sum_matches_closed_form():
+    coeffs = {"a": 0.3, "b": -0.2}
+    values = {"a": 0.5, "b": 2.0}
+    expected = 0.3 * math.tanh(0.5) + (-0.2) * math.tanh(2.0)
+    assert interaction_sum(coeffs, values) == pytest.approx(expected)
+
+
+def test_interaction_sum_treats_missing_coefficients_as_zero():
+    assert interaction_sum({}, {"a": 5.0, "b": -3.0}) == 0.0
+
+
+def test_bounded_absorbed_fraction_is_f_base_at_zero_dose_and_neutral_terms():
+    """dose=0 -> log1p(0)=0; interaction/cook/condition=0 -> logit_arg
+    alone survives -> sigmoid(logit(F_base/F_max)) = F_base/F_max exactly
+    -> F_abs = F_max*(F_base/F_max) = F_base."""
+    f_base, f_max = 0.4, 0.9
+    result = bounded_absorbed_fraction(
+        f_base=f_base, f_max=f_max, dose=0.0, k_m=200.0,
+        interaction_term=0.0, gamma_cook=0.0, gamma_condition=0.0,
+    )
+    assert result == pytest.approx(f_base, rel=1e-9)
+
+
+@pytest.mark.parametrize("dose", [0.0, 1.0, 50.0, 500.0, 5000.0, 1e7])
+def test_bounded_absorbed_fraction_stays_in_0_f_max_for_any_dose(dose):
+    result = bounded_absorbed_fraction(
+        f_base=0.3, f_max=0.85, dose=dose, k_m=200.0,
+        interaction_term=0.2, gamma_cook=-0.1, gamma_condition=0.05,
+    )
+    assert 0.0 <= result <= 0.85
+
+
+def test_bounded_absorbed_fraction_decreases_with_increasing_dose():
+    """log1p(dose/Km) grows with dose and is subtracted -> F_abs is
+    monotonically decreasing in dose (transporter saturation)."""
+    common = dict(f_base=0.3, f_max=0.85, k_m=200.0, interaction_term=0.0, gamma_cook=0.0, gamma_condition=0.0)
+    values = [bounded_absorbed_fraction(dose=d, **common) for d in (0, 50, 200, 1000, 5000)]
+    assert values == sorted(values, reverse=True)
+
+
+def test_bounded_absorbed_fraction_stays_bounded_for_all_81_real_nutrients_f_max(nutrients):
+    """Uses every real nutrient's f_max from nutrients_81.json (the one
+    A4 input that IS fully populated) with a synthetic-but-plausible
+    f_base/dose/km, since F_base/Km themselves are the still-tracked gap."""
+    for nut in nutrients:
+        f_max = nut["f_max"]
+        f_base = f_max * 0.5
+        result = bounded_absorbed_fraction(
+            f_base=f_base, f_max=f_max, dose=100.0, k_m=200.0,
+            interaction_term=0.0, gamma_cook=0.0, gamma_condition=0.0,
+        )
+        assert 0.0 <= result <= f_max, nut["id"]

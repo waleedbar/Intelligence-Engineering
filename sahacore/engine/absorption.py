@@ -142,3 +142,178 @@ def food_matrix_adjustment(co_food_quantities: dict[str, float], interaction_coe
         interaction_coefficients.get(component, 0.0) * math.tanh(q_j / reference_quantities[component])
         for component, q_j in co_food_quantities.items()
     )
+
+
+# --- A5: gastric emptying (Weibull) -----------------------------------------
+#
+# Source formula ('P1 Core Equations', row A5, transcribed verbatim):
+#
+#     GE(t) = 1 - exp( -ln2 * (t / T_50)^kappa )
+#
+#     T_50:  60 - 120 min  (solid meals)
+#     kappa: 0.5 - 2.0  [v39l F-I]
+#
+# T_50/kappa are meal-type constants (solid/liquid/mixed), not per-nutrient
+# -- a much smaller gap than a full 81-nutrient table. 'P1 Parameters 134+'
+# row 18 cites literature POINT estimates for kappa specifically (Elashoff
+# 1982 Gastroenterology: "solids ~1.6, liquids ~1.0"), though T_50 itself
+# stays a within-type range there too ("solids 60-120min, liquids
+# 15-30min") rather than a single number. Neither is invented here --
+# both stay explicit inputs, same convention as everywhere else.
+
+
+def gastric_emptying_fraction(t: float, t_50: float, kappa: float) -> float:
+    """A5: GE(t) = 1 - exp(-ln(2) * (t / T_50)^kappa), the Weibull fraction
+    of a meal emptied from the stomach by time t. GE(0)=0; GE(T_50)=0.5 by
+    construction; GE(t) -> 1 as t -> infinity."""
+    return -math.expm1(-math.log(2) * (t / t_50) ** kappa)
+
+
+# --- A6: activity/sleep timing effect ---------------------------------------
+#
+# Source formula ('P1 Core Equations', row A6, transcribed verbatim):
+#
+#     g_act(t) = MET(t) / (MET(t) + K_act)
+#     m_act(t) = exp(beta_act * g_act(t) + beta_sleep * I_sleep(t))
+#
+#     The term is normalized through h_i*. If evidence supports a change
+#     in absorption extent, include it as a bounded logit term inside
+#     F_abs, never as an unbounded multiplier.
+#
+# Unlike A3's eta_c1,i/eta_c2,i (per-nutrient), K_act/beta_act/beta_sleep
+# here carry NO nutrient subscript in the source formula -- they're global
+# scalars, not an 81-row registry gap. 'P1 Parameters 134+' rows 15/16/59
+# still only give generic ranges (K_act 30-60 min/day, beta_act
+# 0.001-0.01, beta_sleep -0.3 to -0.1), not single ratified defaults, so
+# they stay explicit inputs -- but the gap here is "one calibrated number
+# each", not "one calibrated number per nutrient".
+
+
+def activity_saturation(met: float, k_act: float) -> float:
+    """A6: g_act(t) = MET(t) / (MET(t) + K_act) -- Michaelis-Menten
+    saturation of the activity effect, in [0, 1) for MET, K_act > 0."""
+    return met / (met + k_act)
+
+
+def activity_sleep_modifier(g_act: float, beta_act: float, i_sleep: float, beta_sleep: float) -> float:
+    """A6: m_act(t) = exp(beta_act*g_act(t) + beta_sleep*I_sleep(t))."""
+    return math.exp(beta_act * g_act + beta_sleep * i_sleep)
+
+
+# --- A3: positive timing modulator ------------------------------------------
+#
+# Source formula ('P1 Core Equations', row A3, transcribed verbatim):
+#
+#     m_i(t) = exp[
+#         eta_c1,i*cos(2*pi*(t-phi_1,i)/1440)
+#       + eta_c2,i*cos(4*pi*(t-phi_2,i)/1440)
+#       + eta_act,i*g_act(t)
+#       + eta_GE,i*g_GE(t)
+#       + eta_sleep,i*I_sleep(t)
+#       + eta_matrix,i(t)
+#     ]
+#
+#     m_i(t) > 0 by construction. It is normalized inside h_i*, so it
+#     changes the absorption-time profile, not total absorbed mass.
+#
+# This composes A5's g_GE, A6's g_act, and A7's eta_matrix,i -- all three
+# already built above. eta_c1,i/eta_c2,i/phi_1,i/phi_2,i/eta_act,i/
+# eta_GE,i/eta_sleep,i are per-nutrient sensitivities to each timing
+# effect, confirmed NOT populated anywhere in the accessible workbook
+# (same gap category as eta_hi,k) -- so they're explicit inputs, but the
+# combining formula itself has no gap: m_i(t) > 0 always, since it's an
+# exp() of a real-valued sum, by construction (matches the source's own
+# stated guarantee), for ANY finite inputs.
+
+
+def positive_timing_modulator(
+    t: float,
+    eta_c1: float, phi_1: float,
+    eta_c2: float, phi_2: float,
+    eta_act: float, g_act: float,
+    eta_ge: float, g_ge: float,
+    eta_sleep: float, i_sleep: float,
+    eta_matrix: float,
+) -> float:
+    """A3: m_i(t), positive by construction (exp() of a finite real sum)
+    for any finite inputs. g_act/g_ge are A6/A5's own outputs
+    (activity_saturation, gastric_emptying_fraction); eta_matrix is A7's
+    food_matrix_adjustment (0 under the confirmed Phase 1 default)."""
+    exponent = (
+        eta_c1 * math.cos(2 * math.pi * (t - phi_1) / 1440)
+        + eta_c2 * math.cos(4 * math.pi * (t - phi_2) / 1440)
+        + eta_act * g_act
+        + eta_ge * g_ge
+        + eta_sleep * i_sleep
+        + eta_matrix
+    )
+    return math.exp(exponent)
+
+
+# --- A4: bounded absorbed fraction ------------------------------------------
+#
+# Source formula ('P1 Core Equations', row A4, transcribed verbatim):
+#
+#     F_abs,i,m = F_max,i * sigmoid[
+#         logit(F_base,i / F_max,i)
+#       - log1p(q_i,m / K_m,i)
+#       + SUM_j gamma_ij * tanh(z_j)
+#       + gamma_cook,i
+#       + gamma_condition,i
+#     ]
+#
+#     0 <= F_abs,i,m <= F_max,i <= 1.
+#     All interaction/cooking terms act on the logit scale; the range is
+#     enforced mathematically rather than only documented.
+#
+# The interaction sum SUM_j gamma_ij*tanh(z_j) has the same shape as A7's
+# food_matrix_adjustment (a coefficient times tanh of a normalized
+# quantity), so it's built once, generically, and reused here.
+#
+# *** THE REAL GAP ***
+# F_base,i/K_m,i are the still-tracked, genuinely missing per-nutrient data
+# (only 18/81 F_base found, no Km at all, per the exhaustive earlier
+# search -- unlike A3/A5/A6's global-or-per-nutrient-sensitivity gaps,
+# this one blocks the equation from producing a real number for most
+# nutrients even with the function correctly implemented). F_max,i IS
+# populated for all 81 (nutrients_81.json's f_max field). gamma_cook,i and
+# gamma_condition,i stay explicit inputs (context-dependent, not fixed
+# registry values by the source's own framing).
+
+
+def logit(p: float) -> float:
+    """logit(p) = ln(p / (1-p)), the inverse of the logistic sigmoid."""
+    return math.log(p / (1.0 - p))
+
+
+def sigmoid(x: float) -> float:
+    """1 / (1 + exp(-x)), computed via the same overflow-safe softplus
+    identity used in damage.py's softplus_deviation (sigmoid(x) =
+    exp(-softplus(-x)))."""
+    neg_softplus = -(max(-x, 0.0) + math.log1p(math.exp(-abs(x))))
+    return math.exp(neg_softplus)
+
+
+def interaction_sum(coefficients: dict[str, float], normalized_values: dict[str, float]) -> float:
+    """SUM_j gamma_ij * tanh(z_j) -- the same shape as A7's
+    food_matrix_adjustment, reused generically here for A4's interaction
+    term. coefficients absent for a given j are treated as gamma_ij=0."""
+    return sum(
+        coefficients.get(j, 0.0) * math.tanh(z_j)
+        for j, z_j in normalized_values.items()
+    )
+
+
+def bounded_absorbed_fraction(
+    f_base: float, f_max: float, dose: float, k_m: float,
+    interaction_term: float, gamma_cook: float, gamma_condition: float,
+) -> float:
+    """A4: F_abs,i,m, bounded to [0, F_max] by construction (F_max times a
+    sigmoid, which is always in (0,1)) for any finite dose/interaction/
+    cooking/condition terms -- matches the source's own stated guarantee
+    that the range is enforced mathematically, not just documented.
+    interaction_term is SUM_j gamma_ij*tanh(z_j), e.g. from
+    interaction_sum()."""
+    logit_arg = logit(f_base / f_max)
+    dose_term = math.log1p(dose / k_m)
+    return f_max * sigmoid(logit_arg - dose_term + interaction_term + gamma_cook + gamma_condition)
