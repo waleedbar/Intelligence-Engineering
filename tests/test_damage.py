@@ -31,6 +31,27 @@ def test_softplus_deviation_at_zero_is_tau_ln2():
         assert softplus_deviation(0.0, tau) == pytest.approx(tau * math.log(2), rel=1e-12)
 
 
+def test_softplus_deviation_does_not_overflow_for_extreme_z():
+    """The naive log1p(exp(x)) form raises OverflowError once x > ~709
+    (math.exp's limit); the stable identity used here must stay finite and
+    match the softplus asymptote (sp_tau(z) ~= z for z >> tau) even for
+    values far past that threshold."""
+    huge = 1e6
+    value = softplus_deviation(huge, tau=1.0)
+    assert math.isfinite(value)
+    assert value == pytest.approx(huge, rel=1e-9)
+
+
+def test_softplus_deviation_matches_naive_form_within_safe_range():
+    """Confirms the stable rewrite is exactly equivalent to the textbook
+    sp_tau(z) = tau*log1p(exp(z/tau)) wherever the naive form doesn't
+    overflow, i.e. this is a stability fix, not a behavior change."""
+    for z in (-50, -5, -0.1, 0, 0.1, 5, 50, 150):
+        for tau in (0.25, 1.0):
+            naive = tau * math.log1p(math.exp(z / tau))
+            assert softplus_deviation(z, tau) == pytest.approx(naive, rel=1e-9)
+
+
 def test_softplus_deviation_is_monotonically_increasing():
     tau = 1.0
     zs = [-5, -1, -0.1, 0, 0.1, 1, 5]

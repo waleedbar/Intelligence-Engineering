@@ -37,8 +37,14 @@ import math
 
 
 def softplus_deviation(z: float, tau: float) -> float:
-    """sp_tau(z) = tau * log1p(exp(z / tau))."""
-    return tau * math.log1p(math.exp(z / tau))
+    """sp_tau(z) = tau * log1p(exp(z / tau)), computed via the numerically
+    stable identity log1p(exp(x)) = max(x,0) + log1p(exp(-abs(x))) so this
+    never overflows for large |z/tau| (the naive log1p(exp(x)) form raises
+    OverflowError in Python once x exceeds ~709, e.g. from an extreme or
+    malformed concentration ratio) -- mathematically identical to the naive
+    form for every finite x, just stable at the tails."""
+    x = z / tau
+    return tau * (max(x, 0.0) + math.log1p(math.exp(-abs(x))))
 
 
 def combined_concentration(c_fast: float, c_slow: float, w_fast: float) -> float:

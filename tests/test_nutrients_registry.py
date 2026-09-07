@@ -75,7 +75,7 @@ def test_half_life_slow_d_defined_iff_slow_pool_exists(registry):
 def test_core_kinetic_params_are_positive_where_numeric(registry):
     positive_fields = [
         "gamma_k_shape", "gamma_theta_min", "lambda_per_min",
-        "half_life_fast_d", "v_f_dl", "f_max",
+        "half_life_fast_d", "v_f_dl", "f_max", "s_hi_log", "s_lo_log",
     ]
     for r in registry:
         for field in positive_fields:
