@@ -50,6 +50,7 @@ jobs:
           python -m sahacore.data.load_nutrients
           python -m sahacore.data.load_state_vector
           python -m sahacore.data.load_layer_c_d
+          python -m sahacore.data.load_layer_m
 
       - name: Verify loaded row counts match source
         run: |
@@ -72,5 +73,8 @@ jobs:
               cur.execute('SELECT count(*) FROM damage_registry_canonical')
               d = cur.fetchone()[0]
               assert d == 108, f'expected 108 damage registry rows, got {d}'
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows')
+              cur.execute('SELECT count(*) FROM layer_m_scarring_params')
+              m = cur.fetchone()[0]
+              assert m == 12, f'expected 12 layer M scarring params, got {m}'
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params')
           "
