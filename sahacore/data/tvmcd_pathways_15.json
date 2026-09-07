@@ -1,0 +1,17 @@
+[
+  {"pathway_id": "Z1",  "name": "Glycation/AGE",         "vm": 0.002, "km": 0.5},
+  {"pathway_id": "Z2",  "name": "Oxidative DNA",         "vm": 0.1,   "km": 0.3},
+  {"pathway_id": "Z3",  "name": "Inflammation",          "vm": 0.05,  "km": 0.4},
+  {"pathway_id": "Z4",  "name": "Telomere Loss",         "vm": 0.001, "km": 0.1},
+  {"pathway_id": "Z5",  "name": "Epigenetic Drift",      "vm": 0.01,  "km": 0.2},
+  {"pathway_id": "Z6",  "name": "Insulin Resistance",    "vm": 0.01,  "km": 0.6},
+  {"pathway_id": "Z7",  "name": "Atherosclerosis",       "vm": 0.001, "km": 0.3},
+  {"pathway_id": "Z8",  "name": "Hepatic Fibrosis",      "vm": 0.005, "km": 0.4},
+  {"pathway_id": "Z9",  "name": "Nephron Loss",          "vm": 0.002, "km": 0.5},
+  {"pathway_id": "Z10", "name": "Sarcopenia",            "vm": 0.02,  "km": 0.3},
+  {"pathway_id": "Z11", "name": "Bone Density Loss",     "vm": 0.003, "km": 0.4},
+  {"pathway_id": "Z12", "name": "Iron Dysregulation",    "vm": 0.01,  "km": 0.3},
+  {"pathway_id": "Z13", "name": "Hcy Vascular",          "vm": 0.05,  "km": 0.3},
+  {"pathway_id": "Z14", "name": "Microbiome Dysbiosis",  "vm": 0.1,   "km": 0.2},
+  {"pathway_id": "Z15", "name": "VitD Insufficiency",    "vm": 0.02,  "km": 0.3}
+]
