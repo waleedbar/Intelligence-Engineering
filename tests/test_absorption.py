@@ -49,12 +49,41 @@ def test_zero_or_negative_time_gives_zero_density():
     assert gamma_pdf(-5, k=2.5, lam=0.04) == 0.0
 
 
-def test_absorption_kernel_is_flagged_as_phase1_approximation():
-    """See sahacore/engine/absorption.py module docstring: this is a known,
-    documented approximation pending Dr. Ali's confirmation of the missing
-    k2/lambda2/w_i values for the full two-component A1 mixture."""
-    from sahacore.engine.absorption import PHASE_1_ABSORPTION_KERNEL_IS_SINGLE_GAMMA_APPROXIMATION
-    assert PHASE_1_ABSORPTION_KERNEL_IS_SINGLE_GAMMA_APPROXIMATION is True
+def test_lambda_equals_inverse_theta_for_every_real_nutrient(nutrients):
+    """Source: v39sEng2.xlsx, sheet 'P1 MC Engine', section D audit row
+    'lambda = 1/theta for all 81 nutrients | 81/81 | PASS' -- this is the
+    workbook's own record of the corrected single-gamma parameterization
+    (section F, correction #1: shape-scale -> shape-rate, lambda = 1/theta),
+    re-verified here against our own registry copy.
+
+    Five nutrients are documented exceptions, all confirmed by direct
+    re-read of the raw 'P1 Nutrients 81' sheet (not an extraction error
+    here) despite the audit log's 81/81 claim:
+      - nitrate_mg: lambda=0.0333 vs 1/theta=0.033333... -- a truncated-
+        digits rounding artifact (theta=30), not a parameterization error.
+      - fat_total_g, aa_tryptophan_mg, aa_aspartate_mg, aa_glutamate_mg:
+        lambda doesn't correspond to 1/theta by any consistent ratio --
+        genuine, isolated data inconsistencies in the source.
+    Flagged explicitly rather than silently excluded."""
+    exceptions = {"fat_total_g", "aa_tryptophan_mg", "aa_aspartate_mg", "aa_glutamate_mg", "nitrate_mg"}
+    for nut in nutrients:
+        if nut["id"] in exceptions:
+            continue
+        assert nut["lambda_per_min"] == pytest.approx(1.0 / nut["gamma_theta_min"], rel=1e-9), (
+            f"{nut['id']}: lambda={nut['lambda_per_min']}, 1/theta={1.0 / nut['gamma_theta_min']}"
+        )
+
+
+def test_lambda_theta_mismatches_are_exactly_the_five_documented_nutrients(nutrients):
+    """Locks in the exact shape of the known source-data inconsistencies
+    (see test above) so a future registry update either fixes one (this
+    test then fails, prompting removal of that exception) or the set stays
+    intentional and documented -- it can't silently drift unnoticed."""
+    mismatches = {
+        nut["id"] for nut in nutrients
+        if nut["lambda_per_min"] != pytest.approx(1.0 / nut["gamma_theta_min"], rel=1e-9)
+    }
+    assert mismatches == {"fat_total_g", "aa_tryptophan_mg", "aa_aspartate_mg", "aa_glutamate_mg", "nitrate_mg"}
 
 
 def test_matches_scipy_reference_for_every_real_nutrient(nutrients):
