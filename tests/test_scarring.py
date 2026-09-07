@@ -18,6 +18,29 @@ def scarring_params() -> list[dict]:
     return json.loads((DATA_DIR / "layer_m_scarring_params_12.json").read_text(encoding="utf-8"))
 
 
+# --- Golden-value regression: Live Verification Lab, LAB 4 ----------------
+
+def test_full_scarring_pipeline_matches_live_verification_lab_lab4():
+    """Source: v39sEng2.xlsx, sheet 'Live Verification Lab', LAB 4 --
+    'LM-P01/P03 · the Layer-M scar update, live: bounded, step-size exact,
+    half-life ln2/beta'. Every number here (inputs AND expected outputs)
+    is transcribed directly from Dr. Ali's own pre-computed worked
+    example (rows 124-140), not derived by us -- the strongest available
+    verification, same standard as A1's Live Verification Lab check."""
+    s_t, z_t, theta_elastic = 0.65, 62.0, 50.0
+    alpha_scar, beta_autophagy, gamma_scar, dt_day, vmax_base = 0.004, 0.001, 0.69, 1.0, 1.0
+
+    o = overshoot(z_t, theta_elastic)
+    assert o == pytest.approx(0.24)  # B132
+
+    s_next = exact_scarring_update(s_t, alpha_scar, beta_autophagy, o, dt_day)
+    assert s_next == pytest.approx(0.6496863075190548, rel=1e-12)  # B135
+    assert 0.0 <= s_next <= 1.0  # B136: "LM-P01 bounds verdict ... PASS"
+
+    vmax_eff = effective_repair_capacity(vmax_base, gamma_scar, s_next)
+    assert vmax_eff == pytest.approx(0.6387235468928708, rel=1e-12)  # B140
+
+
 # --- overshoot ---------------------------------------------------------
 
 @pytest.mark.parametrize("z_total,theta", [(30, 68), (68, 68), (0, 45)])

@@ -128,6 +128,31 @@ def test_cluster_exposure_with_real_cluster_weights_and_uniform_deviation():
 
 # --- C2/C3: exact zero-order-hold damage update ---------------------------
 
+def test_zoh_gain_matches_live_verification_lab_golden_values():
+    """Source: v39sEng2.xlsx, sheet 'Live Verification Lab', LAB 2 -- 'C5 ·
+    zero-order-hold gain vs Euler'. Dr. Ali's own workbook pre-computes
+    g=(1-exp(-k*dt))/k for k=0.05/day at three dt values; these are those
+    exact numbers (row 91-95), not values we derived ourselves -- the
+    strongest verification available, matching A1's own Live Verification
+    Lab check."""
+    k = 0.05
+    t_half = math.log(2) / k
+    golden = {
+        0.25: 0.24844399012237117,
+        1.0: 0.9754115099857197,
+        5.0: 4.423984338571902,
+    }
+    for dt_day, expected_g in golden.items():
+        # Isolate g via the decay-only branch: exact_excess_damage_update
+        # with e_k <= theta_hi_k gives rho*z_prev (no g); instead invert
+        # from a unit forcing (eta=1, deviation=1) so the update reduces
+        # to rho*0 + g*1 = g exactly.
+        result = exact_excess_damage_update(
+            e_k=1.0, z_hi_prev=0.0, theta_hi_k=0.0, eta_hi_k=1.0,
+            t_half_hi_k=t_half, p_hi=1.0, dt_day=dt_day,
+        )
+        assert result == pytest.approx(expected_g, rel=1e-9)
+
 def test_excess_update_is_pure_decay_when_exposure_at_or_below_threshold():
     """max(E_k - theta_hi_k, 0) = 0 -> u_hi=0 -> Z_hi(t+dt) = rho*Z_hi(t) exactly."""
     z_prev = 10.0
