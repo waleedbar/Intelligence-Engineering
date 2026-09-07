@@ -1,4 +1,4 @@
-"""Tests for sahacore/engine/absorption.py (Layer A, equation A1).
+"""Tests for sahacore/engine/absorption.py (Layer A, equations A1/A2/A7).
 
 Includes a golden-value regression test transcribed directly from Dr.
 Ali's own workbook ('Live Verification Lab', LAB 1), so our implementation
@@ -10,9 +10,16 @@ import math
 from pathlib import Path
 
 import pytest
+from scipy.integrate import quad
 from scipy.stats import gamma as scipy_gamma
 
-from sahacore.engine.absorption import absorption_kernel, gamma_pdf
+from sahacore.engine.absorption import (
+    absorbed_mass_rate,
+    absorption_kernel,
+    food_matrix_adjustment,
+    gamma_pdf,
+    unmodulated_normalized_kernel,
+)
 
 NUTRIENTS_FILE = Path(__file__).parent.parent / "sahacore" / "data" / "nutrients_81.json"
 
@@ -111,3 +118,93 @@ def test_kernel_mass_over_full_domain_is_one_for_every_real_nutrient(nutrients):
         k, lam = nut["gamma_k_shape"], nut["lambda_per_min"]
         mass = scipy_gamma.cdf(math.inf, a=k, scale=1.0 / lam)
         assert mass == pytest.approx(1.0, abs=1e-9), f"{nut['id']}: mass={mass}"
+
+
+# --- A2: mass-conserving multi-meal absorption -----------------------------
+
+def test_unmodulated_normalized_kernel_matches_absorption_kernel_exactly():
+    """The m_i(t)=1 special case: h_i* reduces to h_i identically."""
+    k, lam = 2.5, 0.04
+    for tau in (1, 10, 50, 100):
+        assert unmodulated_normalized_kernel(tau, k, lam) == absorption_kernel(tau, k, lam)
+
+
+def test_unmodulated_kernel_still_integrates_to_exactly_one(nutrients):
+    """Confirms h_i* itself (not just h_i) satisfies the mass-conservation
+    precondition INTEGRAL h_i* dtau = 1 in this reduced case, for a sample
+    of real nutrients -- not just algebraically identical to h_i, but
+    actually still a valid probability kernel."""
+    for nut in nutrients[:10]:
+        k, lam = nut["gamma_k_shape"], nut["lambda_per_min"]
+        mass, _ = quad(lambda tau: unmodulated_normalized_kernel(tau, k, lam), 0, math.inf)
+        assert mass == pytest.approx(1.0, abs=1e-6), nut["id"]
+
+
+def test_absorbed_mass_rate_before_any_meal_is_zero():
+    kernel = lambda tau: unmodulated_normalized_kernel(tau, 2.5, 0.04)
+    meals = [{"q": 500.0, "t_m": 100.0, "f_abs": 0.8}]
+    assert absorbed_mass_rate(t=50.0, meals=meals, h_i_star=kernel) == 0.0
+
+
+def test_absorbed_mass_rate_matches_closed_form_for_a_single_meal():
+    k, lam, q, f_abs, t_m = 2.5, 0.04, 500.0, 0.8, 0.0
+    kernel = lambda tau: unmodulated_normalized_kernel(tau, k, lam)
+    t = 30.0
+    expected = q * f_abs * absorption_kernel(t - t_m, k, lam)
+    assert absorbed_mass_rate(t, [{"q": q, "t_m": t_m, "f_abs": f_abs}], kernel) == pytest.approx(expected)
+
+
+def test_absorbed_mass_rate_sums_contributions_across_multiple_meals():
+    k, lam = 2.5, 0.04
+    kernel = lambda tau: unmodulated_normalized_kernel(tau, k, lam)
+    meals = [
+        {"q": 300.0, "t_m": 0.0, "f_abs": 0.7},
+        {"q": 400.0, "t_m": 200.0, "f_abs": 0.6},
+    ]
+    t = 250.0
+    expected = sum(m["q"] * m["f_abs"] * absorption_kernel(t - m["t_m"], k, lam) for m in meals)
+    assert absorbed_mass_rate(t, meals, kernel) == pytest.approx(expected)
+
+
+def test_total_absorbed_mass_equals_dose_times_f_abs_mass_conservation():
+    """The formula's own stated guarantee: INTEGRAL a_i(t) dt = SUM_m
+    q_{i,m} * F_abs,i,m exactly, when h_i* truly integrates to 1 (verified
+    above) -- checked here by numerically integrating a_i(t) itself over
+    all t for a single meal and comparing to q*F_abs directly."""
+    k, lam, q, f_abs, t_m = 2.5, 0.04, 500.0, 0.8, 10.0
+    kernel = lambda tau: unmodulated_normalized_kernel(tau, k, lam)
+    meals = [{"q": q, "t_m": t_m, "f_abs": f_abs}]
+    total, _ = quad(lambda t: absorbed_mass_rate(t, meals, kernel), t_m, math.inf)
+    assert total == pytest.approx(q * f_abs, rel=1e-6)
+
+
+# --- A7: food-matrix guard --------------------------------------------------
+
+def test_food_matrix_adjustment_is_zero_under_the_confirmed_phase_1_default():
+    """psi_ij=0 for every component is the actual, confirmed production
+    value (see the module's note) -- an empty coefficients dict must
+    reproduce that exactly, not require every component to be listed."""
+    co_food = {"fiber_g": 20.0, "fat_total_g": 15.0, "polyphenols_mg": 200.0}
+    reference = {"fiber_g": 25.0, "fat_total_g": 70.0, "polyphenols_mg": 500.0}
+    assert food_matrix_adjustment(co_food, {}, reference) == 0.0
+
+
+def test_food_matrix_adjustment_matches_closed_form_when_activated():
+    """Not currently used in production (Phase 1 keeps psi_ij=0), but the
+    general SUM_j psi_ij*tanh(q_j/q_ref,j) form must be correct for
+    'Future activation' per the source's own note."""
+    co_food = {"a": 10.0, "b": 5.0}
+    psi = {"a": 0.3, "b": -0.2}
+    ref = {"a": 20.0, "b": 10.0}
+    expected = 0.3 * math.tanh(10.0 / 20.0) + (-0.2) * math.tanh(5.0 / 10.0)
+    assert food_matrix_adjustment(co_food, psi, ref) == pytest.approx(expected)
+
+
+def test_food_matrix_adjustment_is_bounded_by_sum_of_abs_psi():
+    """|tanh(x)| < 1 always, so |eta_matrix,i| < SUM_j |psi_ij| for any
+    coefficients -- a basic sanity bound on the general form."""
+    co_food = {"a": 1000.0, "b": 1000.0}
+    psi = {"a": 0.5, "b": -0.3}
+    ref = {"a": 1.0, "b": 1.0}
+    result = food_matrix_adjustment(co_food, psi, ref)
+    assert abs(result) < abs(psi["a"]) + abs(psi["b"])
