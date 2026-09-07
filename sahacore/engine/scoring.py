@@ -56,3 +56,37 @@ def band_for_score(score: float) -> tuple[str, str]:
         if score >= cutoff:
             return label, color
     raise AssertionError("unreachable: BANDS' last cutoff is -inf")
+
+
+def composite_health_score(cluster_scores: dict[str, float], fixed_weights: dict[str, float]) -> float:
+    """D4 (D-002): the single composite "SahaScore".
+
+    Source ('P1 Core Equations', row D4): CHS = 100 - SUM_k(w_k^fix *
+    D_final_k) / SUM_k(w_k^fix). 'EQ · Canonical Build Rows' row D-002
+    (BUILD_LOCKED) restates it directly on Score_k rather than D_k:
+    "Composite score = SUM_k fixed_weight_k * Score_k" (assuming weights
+    already sum to 1). This function takes Score_k (this module's own D2
+    output, wellness_score()) and normalizes explicitly rather than
+    assuming pre-normalized weights -- algebraically identical to the
+    Core Equations form (SUM(w*(100-D))/SUM(w) = 100 - SUM(w*D)/SUM(w))
+    but robust either way.
+
+    w_k^fix must be CONSTANT display weights, "clinically-reviewed" and
+    "score-version stable" per the source -- never the adaptive weights
+    Layer H uses for action priority (w_k = base*max(D_k/50,1)), which
+    the source explicitly forbids using here because it would make the
+    displayed score drift day to day and break comparability.
+
+    *** DATA GAP ***
+    Real fixed_weight_k values for the 12 clusters are not populated as
+    concrete numbers anywhere found in the accessible workbook (same
+    category as the C2/C3 eta/theta/T_half gap tracked in damage.py) --
+    so fixed_weights stays a plain input, e.g. sourced from
+    cluster_scoring_params_12.json once that registry is extended with a
+    real w_k^fix column, not invented here.
+    """
+    total_weight = sum(fixed_weights[cluster_id] for cluster_id in cluster_scores)
+    weighted_sum = sum(
+        fixed_weights[cluster_id] * score for cluster_id, score in cluster_scores.items()
+    )
+    return weighted_sum / total_weight

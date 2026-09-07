@@ -1,6 +1,7 @@
-"""Tests for sahacore/engine/scoring.py (Layer D, equations D1/D2).
+"""Tests for sahacore/engine/scoring.py (Layer D, equations D1/D2/D4).
 
-Source: v39sEng2.xlsx, sheet 'P1 Core Equations', rows D1/D2.
+Source: v39sEng2.xlsx, sheet 'P1 Core Equations', rows D1/D2/D4; D4
+cross-checked against 'EQ · Canonical Build Rows' row D-002 (BUILD_LOCKED).
 """
 import json
 import math
@@ -8,7 +9,12 @@ from pathlib import Path
 
 import pytest
 
-from sahacore.engine.scoring import band_for_score, disruption_score, wellness_score
+from sahacore.engine.scoring import (
+    band_for_score,
+    composite_health_score,
+    disruption_score,
+    wellness_score,
+)
 
 DATA_DIR = Path(__file__).parent.parent / "sahacore" / "data"
 
@@ -90,3 +96,49 @@ def test_all_12_real_clusters_produce_valid_bounded_scores(cluster_params):
             score = wellness_score(d)
             label, color = band_for_score(score)
             assert label in {"Optimal", "Build", "Focus", "Reach Out"}
+
+
+# --- D4: composite health score --------------------------------------------
+
+def test_composite_health_score_is_weighted_average_of_cluster_scores():
+    scores = {"C1": 80.0, "C2": 60.0}
+    weights = {"C1": 1.0, "C2": 3.0}
+    expected = (1.0 * 80.0 + 3.0 * 60.0) / (1.0 + 3.0)
+    assert composite_health_score(scores, weights) == pytest.approx(expected)
+
+
+def test_composite_health_score_with_equal_weights_is_the_plain_mean():
+    scores = {"C1": 90.0, "C2": 70.0, "C3": 50.0}
+    weights = {"C1": 1.0, "C2": 1.0, "C3": 1.0}
+    assert composite_health_score(scores, weights) == pytest.approx((90.0 + 70.0 + 50.0) / 3.0)
+
+
+def test_composite_health_score_matches_the_100_minus_disruption_form():
+    """Algebraic equivalence with the 'P1 Core Equations' D4 form: CHS =
+    100 - SUM(w*D_k)/SUM(w), where D_k = 100 - Score_k."""
+    scores = {"C1": 72.0, "C2": 55.0, "C3": 90.0}
+    weights = {"C1": 2.0, "C2": 1.0, "C3": 4.0}
+    disruptions = {cid: 100.0 - s for cid, s in scores.items()}
+    via_scores = composite_health_score(scores, weights)
+    total_weight = sum(weights.values())
+    via_disruption = 100.0 - sum(weights[c] * disruptions[c] for c in disruptions) / total_weight
+    assert via_scores == pytest.approx(via_disruption)
+
+
+def test_composite_health_score_is_bounded_by_the_min_and_max_cluster_score():
+    scores = {"C1": 30.0, "C2": 90.0, "C3": 60.0}
+    weights = {"C1": 0.5, "C2": 0.2, "C3": 0.3}
+    result = composite_health_score(scores, weights)
+    assert min(scores.values()) <= result <= max(scores.values())
+
+
+def test_composite_health_score_uses_all_12_real_cluster_ids_with_synthetic_weights(cluster_params):
+    """Real fixed_weight_k values aren't populated in the source yet (see
+    the module docstring's data-gap note), so this exercises the function
+    against the real 12 cluster IDs with a synthetic-but-valid weighting to
+    confirm it composes correctly end to end, not against invented physiology."""
+    cluster_ids = [c["cluster_id"] for c in cluster_params]
+    assert len(cluster_ids) == 12
+    scores = {cid: 75.0 for cid in cluster_ids}
+    weights = {cid: 1.0 for cid in cluster_ids}
+    assert composite_health_score(scores, weights) == pytest.approx(75.0)
