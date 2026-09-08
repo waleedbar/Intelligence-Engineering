@@ -42,19 +42,54 @@ def overshoot(z_total_k: float, theta_elastic_k: float) -> float:
     return max(0.0, (z_total_k - theta_elastic_k) / theta_elastic_k)
 
 
+# Degenerate-q tolerance, taken from the reference implementation's own
+# default (sheet '06_DATA_SERVER_EQUATIONS', M1-04/M1-05: `if q <= tol`,
+# `tol: float = 1e-12`). Guards not just q == 0 exactly but any q so small
+# that a/q and exp(-q*dt) would lose all precision.
+_Q_TOLERANCE = 1e-12
+
+
 def exact_scarring_update(s_prev: float, alpha_scar_k: float, beta_k: float, over_k: float, dt_day: float) -> float:
     """M1x: S_next for one exact time step of piecewise-constant over_k.
 
-    q = a + beta_k is zero only when both alpha_scar_k*over_k and beta_k
-    are zero (no forcing, no clearance) -- dS/dt = 0 identically in that
-    case, so S is unchanged; that degenerate branch is handled explicitly
-    rather than dividing by zero."""
+    Mirrors the canonical reference implementation published in sheet
+    '06_DATA_SERVER_EQUATIONS' (rows M1-02..M1-05, status BUILD_LOCKED),
+    including both of its numerical choices:
+      - the degenerate branch triggers on q <= tol, not q == 0 exactly;
+        with no forcing and no clearance dS/dt = 0 identically, so S is
+        unchanged.
+      - the step is written with expm1 as
+        S + (S_inf - S)*(-expm1(-q*dt)) rather than the algebraically
+        identical S_inf + (S - S_inf)*exp(-q*dt); the reference notes
+        expm1 "improves precision when q*dt is very small"."""
     a = alpha_scar_k * over_k
     q = a + beta_k
-    if q == 0.0:
+    if q <= _Q_TOLERANCE:
         return s_prev
     s_inf = a / q
-    return s_inf + (s_prev - s_inf) * math.exp(-q * dt_day)
+    gain = -math.expm1(-q * dt_day)
+    return s_prev + (s_inf - s_prev) * gain
+
+
+def time_constant_days(beta_k: float) -> float:
+    """M1-06 (QA/MONITOR): tau = 1/beta, the e-fold time constant -- time
+    to 36.8% remaining. The source is explicit that tau is NOT a
+    half-life ('M-PARAM Registry' v37.2 kinetic definitions)."""
+    return 1.0 / beta_k
+
+
+def half_life_days(beta_k: float) -> float:
+    """M1-07 (QA/MONITOR): t_half = ln(2)/beta, time to 50% remaining."""
+    return math.log(2.0) / beta_k
+
+
+def healthy_recovery(s0: float, beta_k: float, t_days: float) -> tuple[float, float]:
+    """M1-09/M1-10 (QA/MONITOR): the zero-overshoot limit of M1. With
+    over_k = 0 the accumulation term vanishes and scarring decays purely
+    exponentially, S(t) = S0*exp(-beta*t). Returns (S(t), memory
+    remaining as a percentage of S0)."""
+    s_t = s0 * math.exp(-beta_k * t_days)
+    return s_t, 100.0 * s_t / s0
 
 
 def effective_repair_capacity(v_max_base: float, gamma_scar_k: float, s_k: float) -> float:

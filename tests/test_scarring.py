@@ -8,7 +8,14 @@ from pathlib import Path
 
 import pytest
 
-from sahacore.engine.scarring import effective_repair_capacity, exact_scarring_update, overshoot
+from sahacore.engine.scarring import (
+    effective_repair_capacity,
+    exact_scarring_update,
+    half_life_days,
+    healthy_recovery,
+    overshoot,
+    time_constant_days,
+)
 
 DATA_DIR = Path(__file__).parent.parent / "sahacore" / "data"
 
@@ -69,6 +76,53 @@ def test_scarring_update_is_pure_decay_when_overshoot_is_zero():
     s_prev, beta_k, dt = 0.4, 0.001, 1.0
     result = exact_scarring_update(s_prev, alpha_scar_k=0.005, beta_k=beta_k, over_k=0.0, dt_day=dt)
     assert result == pytest.approx(s_prev * math.exp(-beta_k * dt))
+
+
+def test_official_layer_m_acceptance_battery_lm_r01_to_lm_r12():
+    """Source: '06_DATA_SERVER_EQUATIONS' rows 57-69 -- the workbook's own
+    12-point acceptance battery for Layer M (LM-R01..LM-R12), each with a
+    published expected value and a stated tolerance (1e-15 for most).
+    These are the values the reference implementation is required to
+    produce; running our own functions against every one of them is the
+    strongest conformance check available for this layer."""
+    s, z, theta = 0.65, 62.0, 50.0
+    alpha, beta, gamma, dt, vmax_base = 0.004, 0.001, 0.69, 1.0, 1.0
+
+    o = overshoot(z, theta)
+    assert o == pytest.approx(0.24, abs=1e-15)                     # LM-R01
+
+    a = alpha * o
+    assert a == pytest.approx(0.00096, abs=1e-15)                  # LM-R02
+
+    q = a + beta
+    assert q == pytest.approx(0.00196, abs=1e-15)                  # LM-R03
+    assert a / q == pytest.approx(0.489795918367347, abs=1e-15)    # LM-R04
+
+    s_next = exact_scarring_update(s, alpha, beta, o, dt)
+    assert s_next == pytest.approx(0.649686307519055, abs=1e-15)   # LM-R05
+
+    assert time_constant_days(beta) == pytest.approx(1000, abs=1e-12)          # LM-R06
+    assert half_life_days(beta) == pytest.approx(693.147180559945, abs=1e-12)  # LM-R07
+
+    repair_ratio = effective_repair_capacity(1.0, gamma, s_next)
+    assert repair_ratio == pytest.approx(0.638723546892871, abs=1e-15)          # LM-R08
+    vmax_eff = effective_repair_capacity(vmax_base, gamma, s_next)
+    assert vmax_eff == pytest.approx(0.638723546892871, abs=1e-15)              # LM-R09
+
+    assert 0.0 <= s_next <= 1.0                                                 # LM-R10
+
+    s_365, memory_pct = healthy_recovery(s, beta, 365.0)
+    assert s_365 == pytest.approx(0.451227823070686, abs=1e-15)                 # LM-R11
+    assert memory_pct == pytest.approx(69.4196650877979, abs=1e-12)             # LM-R12
+
+
+def test_scarring_update_uses_the_reference_tolerance_not_exact_zero():
+    """The canonical reference implementation ('06_DATA_SERVER_EQUATIONS',
+    M1-04/M1-05, BUILD_LOCKED) branches on `q <= tol` with tol=1e-12, not
+    on q == 0 -- a q below that is numerically indistinguishable from no
+    dynamics at all, and a/q would be meaningless."""
+    result = exact_scarring_update(s_prev=0.42, alpha_scar_k=0.0, beta_k=1e-15, over_k=0.0, dt_day=1.0)
+    assert result == 0.42
 
 
 def test_scarring_update_is_unchanged_with_zero_forcing_and_zero_clearance():
