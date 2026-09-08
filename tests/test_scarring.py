@@ -13,7 +13,12 @@ from sahacore.engine.scarring import (
     exact_scarring_update,
     half_life_days,
     healthy_recovery,
+    is_bistability_safe,
     overshoot,
+    pinned_repair_km,
+    pinned_repair_vmax,
+    scarring_equilibrium,
+    scarring_ratio,
     time_constant_days,
 )
 
@@ -76,6 +81,76 @@ def test_scarring_update_is_pure_decay_when_overshoot_is_zero():
     s_prev, beta_k, dt = 0.4, 0.001, 1.0
     result = exact_scarring_update(s_prev, alpha_scar_k=0.005, beta_k=beta_k, over_k=0.0, dt_day=dt)
     assert result == pytest.approx(s_prev * math.exp(-beta_k * dt))
+
+
+# --- Bistability guard: the sheet says "assert these at build time" -------
+
+def test_guard_passes_just_inside_every_cluster_bound(scarring_params):
+    """Source: '★ Scarring Bistability Guard' section 3, "PER-CLUSTER
+    BOUNDS (assert these at build time)".
+
+    Driving at exactly the published MAX alpha/beta lands ON the boundary
+    to within the sheet's own rounding -- e.g. C1 is gamma*r = 0.6*2.42 =
+    1.452 against a published bound of 1.45, both 2-decimal figures of the
+    same quantity. So the guard is exercised just inside (99% of the cap),
+    which is unambiguous, and its rejection side is covered by the test
+    below."""
+    for row in scarring_params:
+        beta = 0.001
+        alpha = row["max_alpha_beta_ratio"] * 0.99 * beta
+        assert is_bistability_safe(row["gamma_scar"], alpha, beta, row["bound_gamma_r"]), row["cluster_id"]
+
+
+def test_published_bound_and_max_ratio_agree_to_the_sheets_rounding(scarring_params):
+    """bound_gamma_r is gamma_scar * MAX(alpha/beta); both are published to
+    two decimals, so they agree to within that rounding and no further."""
+    for row in scarring_params:
+        product = row["gamma_scar"] * row["max_alpha_beta_ratio"]
+        assert row["bound_gamma_r"] == pytest.approx(product, abs=0.01), row["cluster_id"]
+
+
+def test_exceeding_a_cluster_max_ratio_trips_the_guard(scarring_params):
+    """The guard must actually reject: 10% past the shipped cap fails."""
+    for row in scarring_params:
+        beta = 0.001
+        alpha = row["max_alpha_beta_ratio"] * 1.10 * beta
+        assert not is_bistability_safe(row["gamma_scar"], alpha, beta, row["bound_gamma_r"]), row["cluster_id"]
+
+
+def test_v_ratio_matches_the_sheets_own_closed_form(scarring_params):
+    """The sheet derives V_k = 1.443 * tau_dam,k / tau_heal,k and ships the
+    result per cluster; recomputing it catches a transcription slip in
+    either tau column."""
+    for row in scarring_params:
+        expected = 1.443 * row["tau_dam_days"] / row["tau_heal_days"]
+        assert row["v_ratio"] == pytest.approx(expected, abs=0.01), row["cluster_id"]
+
+
+def test_pinned_repair_constants_follow_the_declared_identities(scarring_params):
+    """K_m = theta_elastic (declared choice) and V_max = theta_elastic /
+    tau_heal (from V_max/K_m = 1/tau_heal). Their ratio must therefore be
+    exactly 1/tau_heal for every cluster."""
+    for row in scarring_params:
+        theta, tau_heal = row["theta_elastic_au"], row["tau_heal_days"]
+        km = pinned_repair_km(theta)
+        vmax = pinned_repair_vmax(theta, tau_heal)
+        assert km == theta
+        assert vmax / km == pytest.approx(1.0 / tau_heal)
+
+
+def test_scarring_equilibrium_is_bounded_and_monotonic():
+    """S*(Z) = r*over/(1+r*over) is in [0,1) for any nonnegative forcing
+    and rises with overshoot -- the property the bistability analysis
+    rests on."""
+    alpha, beta = 0.004, 0.001
+    values = [scarring_equilibrium(alpha, beta, over) for over in (0.0, 0.1, 0.5, 1.0, 10.0)]
+    assert values[0] == 0.0
+    assert all(0.0 <= v < 1.0 for v in values)
+    assert values == sorted(values)
+
+
+def test_scarring_ratio_is_alpha_over_beta():
+    assert scarring_ratio(0.004, 0.001) == pytest.approx(4.0)
 
 
 def test_official_layer_m_acceptance_battery_lm_r01_to_lm_r12():
@@ -187,6 +262,41 @@ def test_repair_capacity_halves_at_s_equals_one_for_gamma_scar_ln2():
     = ln(2) makes exp(-gamma*1) = 0.5 exactly."""
     result = effective_repair_capacity(v_max_base=1.0, gamma_scar_k=math.log(2), s_k=1.0)
     assert result == pytest.approx(0.5)
+
+
+def test_m_c6_overlay_matches_the_surgical_integration_contract(scarring_params):
+    """Source: sheet 'M-C6 Integration' -- "Layer M's ONLY change to a
+    locked equation: multiply the C6 repair ceiling by the scarring
+    overlay. Nothing else in Layer C changes."
+
+        before: repair_k = V_max      * Z_k / (Km*(1+SUM) + Z_k)
+        after:  repair_k = [V_max*e^(-gamma*S_k)] * Z_k / (Km*(1+SUM) + Z_k)
+
+    So scarring.py's effective_repair_capacity is exactly what should be
+    handed to repair.py's competitive_repair_rate as its Vm -- verified
+    here end to end, including the sheet's own stated safety properties."""
+    from sahacore.engine.repair import competitive_repair_rate
+
+    z = {"Z1": 4.0, "Z2": 2.0, "Z3": 6.0}
+    km = {"Z1": 0.5, "Z2": 0.3, "Z3": 0.4}
+    vm_base = {"Z1": 0.1, "Z2": 0.05, "Z3": 0.02}
+    gamma, s_k = 0.6, 0.5
+
+    scarred_vm = {p: effective_repair_capacity(vm_base[p], gamma, s_k) for p in vm_base}
+    before = competitive_repair_rate("Z1", z, vm_base, km)
+    after = competitive_repair_rate("Z1", z, scarred_vm, km)
+
+    # "can only REDUCE repair, never invert sign or break positivity"
+    assert 0.0 < after < before
+
+    # the overlay scales the ceiling only: the ratio is exactly exp(-gamma*S)
+    assert after / before == pytest.approx(math.exp(-gamma * s_k))
+
+    # "Flag-off equivalence: gamma=0 OR S_k=0 -> overlay = 1 -> the
+    #  original C6 engine is recovered exactly."
+    for off_gamma, off_s in ((0.0, 0.5), (0.6, 0.0)):
+        off_vm = {p: effective_repair_capacity(vm_base[p], off_gamma, off_s) for p in vm_base}
+        assert competitive_repair_rate("Z1", z, off_vm, km) == pytest.approx(before)
 
 
 def test_repair_capacity_never_negative_or_exceeds_base(scarring_params):

@@ -13,6 +13,7 @@ DATA_FILE = Path(__file__).parent / "layer_m_scarring_params_12.json"
 _COLUMNS = [
     "cluster_id", "theta_elastic_au", "theta_elastic_evidence_tier",
     "gamma_scar", "max_alpha_beta_ratio", "bound_gamma_r",
+    "tau_dam_days", "tau_heal_days", "v_ratio",
 ]
 
 

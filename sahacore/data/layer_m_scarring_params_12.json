@@ -1,14 +1,14 @@
 [
-  {"cluster_id": "C1",  "theta_elastic_au": 68, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 2.42, "bound_gamma_r": 1.45},
-  {"cluster_id": "C2",  "theta_elastic_au": 45, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 2.25, "bound_gamma_r": 1.35},
-  {"cluster_id": "C3",  "theta_elastic_au": 68, "theta_elastic_evidence_tier": "MOD-STRONG",  "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.19, "bound_gamma_r": 1.92},
-  {"cluster_id": "C4",  "theta_elastic_au": 70, "theta_elastic_evidence_tier": "MODERATE",    "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.56, "bound_gamma_r": 2.13},
-  {"cluster_id": "C5",  "theta_elastic_au": 50, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 0.9,  "bound_gamma_r": 1.08},
-  {"cluster_id": "C6",  "theta_elastic_au": 70, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 4.05, "bound_gamma_r": 4.86},
-  {"cluster_id": "C7",  "theta_elastic_au": 44, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 0.72, "bound_gamma_r": 0.87},
-  {"cluster_id": "C8",  "theta_elastic_au": 65, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.36, "bound_gamma_r": 2.02},
-  {"cluster_id": "C9",  "theta_elastic_au": 52, "theta_elastic_evidence_tier": "MODERATE",    "gamma_scar": 0.6, "max_alpha_beta_ratio": 1.62, "bound_gamma_r": 0.97},
-  {"cluster_id": "C10", "theta_elastic_au": 48, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 2.09, "bound_gamma_r": 1.25},
-  {"cluster_id": "C11", "theta_elastic_au": 60, "theta_elastic_evidence_tier": "MODERATE",    "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.39, "bound_gamma_r": 2.04},
-  {"cluster_id": "C12", "theta_elastic_au": 42, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 1.36, "bound_gamma_r": 1.63}
+  {"cluster_id": "C1",  "theta_elastic_au": 68, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 2.42, "bound_gamma_r": 1.45, "tau_dam_days": 183, "tau_heal_days": 196, "v_ratio": 1.35},
+  {"cluster_id": "C2",  "theta_elastic_au": 45, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 2.25, "bound_gamma_r": 1.35, "tau_dam_days": 177, "tau_heal_days": 173, "v_ratio": 1.48},
+  {"cluster_id": "C3",  "theta_elastic_au": 68, "theta_elastic_evidence_tier": "MOD-STRONG",  "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.19, "bound_gamma_r": 1.92, "tau_dam_days": 12,  "tau_heal_days": 18,  "v_ratio": 0.96},
+  {"cluster_id": "C4",  "theta_elastic_au": 70, "theta_elastic_evidence_tier": "MODERATE",    "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.56, "bound_gamma_r": 2.13, "tau_dam_days": 25,  "tau_heal_days": 44,  "v_ratio": 0.82},
+  {"cluster_id": "C5",  "theta_elastic_au": 50, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 0.9,  "bound_gamma_r": 1.08, "tau_dam_days": 140, "tau_heal_days": 100, "v_ratio": 2.02},
+  {"cluster_id": "C6",  "theta_elastic_au": 70, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 4.05, "bound_gamma_r": 4.86, "tau_dam_days": 24,  "tau_heal_days": 104, "v_ratio": 0.33},
+  {"cluster_id": "C7",  "theta_elastic_au": 44, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 0.72, "bound_gamma_r": 0.87, "tau_dam_days": 90,  "tau_heal_days": 46,  "v_ratio": 2.82},
+  {"cluster_id": "C8",  "theta_elastic_au": 65, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.36, "bound_gamma_r": 2.02, "tau_dam_days": 23,  "tau_heal_days": 37,  "v_ratio": 0.9},
+  {"cluster_id": "C9",  "theta_elastic_au": 52, "theta_elastic_evidence_tier": "MODERATE",    "gamma_scar": 0.6, "max_alpha_beta_ratio": 1.62, "bound_gamma_r": 0.97, "tau_dam_days": 81,  "tau_heal_days": 50,  "v_ratio": 2.34},
+  {"cluster_id": "C10", "theta_elastic_au": 48, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 0.6, "max_alpha_beta_ratio": 2.09, "bound_gamma_r": 1.25, "tau_dam_days": 146, "tau_heal_days": 129, "v_ratio": 1.64},
+  {"cluster_id": "C11", "theta_elastic_au": 60, "theta_elastic_evidence_tier": "MODERATE",    "gamma_scar": 0.6, "max_alpha_beta_ratio": 3.39, "bound_gamma_r": 2.04, "tau_dam_days": 98,  "tau_heal_days": 160, "v_ratio": 0.89},
+  {"cluster_id": "C12", "theta_elastic_au": 42, "theta_elastic_evidence_tier": "STRONG",      "gamma_scar": 1.2, "max_alpha_beta_ratio": 1.36, "bound_gamma_r": 1.63, "tau_dam_days": 92,  "tau_heal_days": 114, "v_ratio": 1.16}
 ]

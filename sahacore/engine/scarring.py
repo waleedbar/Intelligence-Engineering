@@ -92,6 +92,71 @@ def healthy_recovery(s0: float, beta_k: float, t_days: float) -> tuple[float, fl
     return s_t, 100.0 * s_t / s0
 
 
+# --- Scarring bistability guard -------------------------------------------
+#
+# Source: sheet '★ Scarring Bistability Guard' ("per-cluster monotonicity
+# bound"). The scarring loop is positive feedback -- damage raises S, S cuts
+# repair via V_max_eff = V_max*exp(-gamma*S), less repair means more damage.
+# Above a threshold the total-removal curve F(Z) folds and a cluster gains
+# TWO stable equilibria (healthy and scarred) for the SAME intake. The sheet
+# is explicit about why that is dangerous: "the engine will converge to the
+# scarred state and report a stable low score without complaint" -- unlike
+# the catastrophic-load guard, nothing fires.
+#
+#     S*(Z) = r*over / (1 + r*over),   r = alpha_scar / beta_autophagy
+#     F(Z)  = k*Z + V_max*exp(-gamma*S*(Z)) * Z/(K_m + Z)
+#
+# The destabilising term scales with the group gamma*r, so the shipped
+# per-cluster caps are bounds on gamma*r (bound_gamma_r in
+# layer_m_scarring_params_12.json). The sheet says to "assert these at
+# build time" -- tests/test_scarring.py does exactly that for all 12.
+
+
+def scarring_ratio(alpha_scar_k: float, beta_autophagy_k: float) -> float:
+    """r = alpha_scar / beta_autophagy -- the accumulation-to-clearance
+    ratio that, multiplied by gamma_scar, drives the bistability fold."""
+    return alpha_scar_k / beta_autophagy_k
+
+
+def scarring_equilibrium(alpha_scar_k: float, beta_autophagy_k: float, over_k: float) -> float:
+    """S*(Z) = r*over/(1 + r*over), the scarring level a sustained
+    overshoot settles at. Always in [0,1) for r, over >= 0 -- the same
+    bound M1x's step inherits."""
+    r_over = scarring_ratio(alpha_scar_k, beta_autophagy_k) * over_k
+    return r_over / (1.0 + r_over)
+
+
+def is_bistability_safe(gamma_scar_k: float, alpha_scar_k: float, beta_autophagy_k: float, bound_gamma_r_k: float) -> bool:
+    """The guard itself: gamma_scar * r must stay at or under this
+    cluster's shipped bound. The bounds are computed conservatively at
+    kappa = K_m/theta = 0.5 rather than 1.0, so a cluster whose repair
+    saturates earlier than theta only tightens them further."""
+    return gamma_scar_k * scarring_ratio(alpha_scar_k, beta_autophagy_k) <= bound_gamma_r_k
+
+
+# --- Pinned per-cluster repair constants ----------------------------------
+#
+# Same sheet, section 2 ("V_max AND K_m ARE NOW PINNED -- they were
+# 'tissue-specific, unspecified'"). Both follow from quantities already in
+# the registries, with no new measurement:
+#   - At low damage MM repair linearises to (V_max/K_m)*Z, a first-order
+#     rate. That rate IS the recovery timescale, so V_max/K_m = 1/tau_heal.
+#   - K_m = theta_elastic is a declared modelling choice: repair
+#     half-saturates exactly where scarring begins, which is what makes
+#     theta_elastic the scarring threshold at all.
+
+
+def pinned_repair_km(theta_elastic_k: float) -> float:
+    """K_m,k = theta_elastic,k."""
+    return theta_elastic_k
+
+
+def pinned_repair_vmax(theta_elastic_k: float, tau_heal_days_k: float) -> float:
+    """V_max,k = theta_elastic,k / tau_heal,k, from V_max/K_m = 1/tau_heal
+    together with K_m = theta_elastic."""
+    return theta_elastic_k / tau_heal_days_k
+
+
 def effective_repair_capacity(v_max_base: float, gamma_scar_k: float, s_k: float) -> float:
     """M2: V_max,k^eff = V_max,k^base * exp(-gamma_scar,k * S_k) -- the
     multiplicative repair-capacity penalty from accumulated scarring
