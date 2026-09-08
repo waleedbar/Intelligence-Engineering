@@ -1,0 +1,11 @@
+[
+  {
+    "policy_id": "L_SMOOTH_DEFAULT",
+    "l_smooth_days": 14.0,
+    "l_smooth_min_days": 7.0,
+    "l_smooth_max_days": 14.0,
+    "param_row": "129 / L_smooth",
+    "source_sheet": "P1 Parameters 134+ row 129 (L_smooth, layer E, eq E4, 'Fixed-lag smoothing window', unit days, range 7-14); value 14 is the upper end of that range, which is the figure the Replay Contract's own release test RT-01 exercises ('Late inflammatory lab inside 14-day lag').",
+    "status": "ACTIVE"
+  }
+]

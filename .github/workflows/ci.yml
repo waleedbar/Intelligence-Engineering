@@ -36,7 +36,13 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run unit tests (no database required)
+      # The equation layers are pure functions and must stay that way: run
+      # them with no database configured at all, so a hidden dependency on
+      # one cannot creep in unnoticed. The ledger's tests skip here and run
+      # for real further down.
+      - name: Run equation-layer tests with no database configured
+        env:
+          DATABASE_URL: ""
         run: python -m pytest tests/ -v
 
       - name: Apply database migrations
@@ -52,6 +58,7 @@ jobs:
           python -m sahacore.data.load_layer_c_d
           python -m sahacore.data.load_layer_m
           python -m sahacore.data.load_qssa_atp
+          python -m sahacore.data.load_ledger_policy
 
       - name: Verify loaded row counts match source
         run: |
@@ -80,5 +87,14 @@ jobs:
               cur.execute('SELECT count(*) FROM qssa_atp_complexes')
               q = cur.fetchone()[0]
               assert q == 5, f'expected 5 QSSA ATP complexes, got {q}'
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes')
+              cur.execute(\"SELECT count(*) FROM engine_internal.replay_lag_policy WHERE status = 'ACTIVE'\")
+              p = cur.fetchone()[0]
+              assert p == 1, f'expected exactly 1 active replay lag policy, got {p}'
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy')
           "
+
+      # Step 1's acceptance tests -- "duplicate event no-op; late event
+      # replay" -- are database behaviour, so they run against the real
+      # Postgres service rather than a mock.
+      - name: Run the full suite against PostgreSQL (ledger acceptance tests)
+        run: python -m pytest tests/ -v
