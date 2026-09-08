@@ -76,10 +76,19 @@ def test_gate_c2_bounded_absorption_monte_carlo(nutrients):
     """C2 (BLOCKING) -- "Monte-Carlo doses from 0 to 5x K_m. Pass: F_abs <=
     F_max in 100% of draws."
 
-    Drawn over every real nutrient's own F_max, with F_base and K_m swept
+    Drawn over every nutrient's registry F_max, with F_base and K_m swept
     across their registry-documented ranges (F_base 0.01-1.0, K_m
-    10-5000 mg per 'P1 Parameters 134+'), since those two are the still-
-    missing per-nutrient values."""
+    10-5000 mg per 'P1 Parameters 134+'), since those two are still-missing
+    per-nutrient values.
+
+    *** THIS GATE IS CURRENTLY WEAKER THAN IT LOOKS ***
+    F_max is 1.0 for all 81 rows of the nutrient registry, because the sheet
+    we hold ships that column at the placeholder 'P1 Parameters 134+' row 120
+    documents: "Nutrient-specific literature; default 1.0 until calibrated".
+    F_abs is bounded by 1 by construction, so the ceiling check passes
+    trivially today. The test is written to bind properly the moment
+    calibrated F_max values arrive -- the companion test below fails if that
+    ever silently stops being true. See docs/parameter-gaps.md."""
     rng = random.Random(20260908)
     for nut in nutrients:
         f_max = nut["f_max"]
@@ -94,6 +103,28 @@ def test_gate_c2_bounded_absorption_monte_carlo(nutrients):
                 gamma_condition=rng.uniform(-0.5, 0.5),
             )
             assert 0.0 <= f_abs <= f_max, f"{nut['id']}: F_abs={f_abs} > F_max={f_max}"
+
+
+def test_gate_c2_is_still_running_against_placeholder_ceilings(nutrients):
+    """A standing check on the gate above, not on the engine.
+
+    While every F_max is the uncalibrated 1.0 default, C2's ceiling is
+    vacuous. This test states that fact so it cannot be forgotten, and turns
+    into the notification that it has changed: once calibrated per-nutrient
+    ceilings are loaded, this fails, and the reviewer removes it and this
+    note from C2's docstring -- at which point C2 becomes a real bound.
+
+    Source of the placeholder: 'P1 Parameters 134+' row 120, F_max,i,
+    calibration method "Nutrient-specific literature; default 1.0 until
+    calibrated". Read directly from the workbook, all 81 rows are 1.
+    """
+    ceilings = {n["f_max"] for n in nutrients}
+    assert ceilings == {1.0}, (
+        "F_max is no longer uniformly the uncalibrated 1.0 placeholder -- "
+        "calibrated ceilings appear to have arrived. Delete this test and the "
+        "*** warning *** paragraph in test_gate_c2_bounded_absorption_monte_carlo, "
+        "and update docs/parameter-gaps.md."
+    )
 
 
 @pytest.mark.parametrize("t_half_days", [1.0, 7.0, 30.0, 180.0, 365.0])

@@ -1,163 +1,175 @@
 # Per-nutrient parameter gaps
 
-What the engine still cannot compute from the workbooks we hold, established by
-a file-by-file audit of every uploaded workbook. Written down so the gap list
-stays a checked fact rather than a memory.
+What the engine cannot compute from the workbooks we hold, established by an
+exhaustive audit: all 11 distinct workbooks (33 uploads deduplicated by
+content hash), all five PDFs, the four CSV result files, the four WhatsApp
+images, and the raw OOXML of the masters — hidden sheets, defined names,
+inline strings, drawings and embedded parts.
 
-Audit date: 2026-09-08. Files audited: all 11 distinct workbooks (33 uploads,
-deduplicated by content hash), plus four CSV result files.
+Audit date: 2026-09-08.
 
-## Correction to an earlier conclusion
+## The finding
 
-An earlier pass in this project concluded that the per-nutrient absorption and
-clearance parameters had existed in an older `P1 Nutrients 80 (v39s)` sheet and
-had been deliberately removed. **That reading was wrong**, and the correction
-matters because it changes what we should be asking for.
+**The `P1 Nutrients 81` sheet we hold is the uncalibrated version of the
+table.** Two of its columns are shipped at their documented placeholder
+values, and five columns the engine needs are absent entirely.
 
-The citation it rested on is `04 Engine Binding` in the TwinAPI workbook, row
-20:
+The workbook says so itself. `P1 Parameters 134+`, row 120:
 
-    A20=T04 | B20=Per-nutrient params
-    C20=Half-life, F_max/F_base/Km, V1/V2, Q/CL per nutrient row
-    D20=P1 Nutrients 80 | E20=P1 Nutrients 81
+| | |
+|---|---|
+| Symbol | `F_max,i` |
+| Full name | Maximum absorbed fraction |
+| Description | "Hard upper bound on the fraction of ingested amount that can enter the modeled absorbed pool" |
+| Range | `0 < F_max <= 1` |
+| Weight | **Critical** |
+| Calibration method | **"Nutrient-specific literature; default 1.0 until calibrated"** |
 
-The earlier pass read columns D and E as "old value / new value". They are not.
-The sheet's own header says:
+Read directly from the workbook, `F_max` is **`1` for all 81 nutrients** —
+the entire column is the uncalibrated default. That is not a plausible
+physiological table: iron's maximum absorbed fraction is roughly 0.15,
+calcium's roughly 0.3. `V_f` is likewise `50 dL` for 80 of the 81 rows (the
+exception is water, at 500).
 
-    D4=WHERE in v39s | E4=WHERE in v39sEng
-    A2=Every citation on this sheet was checked against the uploaded v39s
-       (245 sheets) and v39sEng (201 sheets). Where the two masters name a
-       sheet differently (COR-2), both names are given.
+## The proof that calibrated values exist
 
-So `P1 Nutrients 80` and `P1 Nutrients 81` are **the same sheet under two
-names** in two masters — a rename after nitrate was added as #81, not a
-richer predecessor. Nothing on that row evidences a deletion.
+The TwinAPI workbook, sheet `11 Worked Trace`, section B, headed "TRACE
+PARAMETERS — swap any real nutrient's row to trace it the same way". Its own
+preamble: *"Every number is computed, not illustrative."* Its source cell for
+the absorption row cites this very sheet: "A4 bounded fraction · **P1
+Nutrients 80 (v39s) / 81 (v39sEng)**".
 
-Two further checks confirm it:
+| Parameter | Vitamin C | Magnesium | Ours |
+|---|---|---|---|
+| Dose (mg) | 180 | 120 | — |
+| Gamma w / k1 / λ1 | 0.7 / 2.0 / 1/25 | 0.4 / 2.0 / 1/40 | k matches; λ differs |
+| **F_max** | **0.90** | **0.45** | **1.0 / 1.0** |
+| **F_base** | **0.75** | **0.30** | absent |
+| **Km** | **200** | **250** | absent |
+| Gastric T50 / kappa | 75 / 1.3 | 95 / 1.1 | absent |
+| Half-life (days) | 0.25 | 1.0 | 0.5 / 1.0 |
+| **V1 / V2 (dL)** | **32 / 60** | **40 / 140** | 50 / — |
+| **Q / CL (dL/min)** | **0.35 / 0.30** | **0.20 / 0.12** | absent |
+| F_abs (computed) | 0.652 | 0.259 | — |
 
-* `v39sEng` and `v39sEng2` are identical across all 204 shared sheets --
-  same dimensions, cell for cell -- differing only by the `★ v39w Signal
-  Patch` sheet that `v39sEng2` adds. No older, wider version of the nutrient
-  table is hiding in the files we hold.
-* The five workbooks never opened before this audit (the `v39sEng` master,
-  and the Twin / Atlas / Pulse / Plan variants distinct from their `...API`
-  counterparts) contain no per-nutrient value for any of the missing
-  parameters -- only the formulas that consume them.
+Not one value matches ours except the gamma shape `k`. Our `F_max` is 1.0
+where the trace says 0.90 and 0.45; our `V_f` is 50 dL where the trace says
+32 and 40; our vitamin C half-life is 0.5 d where the trace says 0.25.
 
-**What the same header does establish** is that a master with **245 sheets**
-exists. We hold 204 (`v39sEng`) and 205 (`v39sEng2`). Roughly forty sheets we
-have never seen are cited by the workbooks we do have. That, not a deletion,
-is the defensible thing to ask about.
+Two independent corroborations:
 
-## What `P1 Nutrients 81` actually carries
+* `P1 Bariatric Module` (column "F_bio Base") and `P1 GLP-1 Module` (column
+  "F_base") give baseline bioavailabilities for 18 nutrients — iron 0.15,
+  calcium 0.30, zinc 0.30, vitamin E 0.30, copper 0.35, magnesium 0.40,
+  B12 0.50, vitamin D3 0.50, vitamin K 0.50, folate 0.50, vitamin A 0.70,
+  selenium 0.80, potassium 0.90, protein 0.90, thiamine 0.90, leucine 0.90,
+  carbohydrate 0.95, fat 0.95. The 14 that appear in both sheets agree
+  exactly. Every one is below 1.0.
+* `layer_b_results.csv` carries `CL_total` and `k_el` for seven nutrients,
+  constant across all 128 timesteps, so they are parameters rather than
+  state. The half-lives they imply — iron 60 d, vitamin D 15 d, B12 180 d,
+  calcium 0.8 d, protein 0.25 d, vitamin C 0.4 d, zinc 5 d — are clean
+  literature figures, and only iron matches any column we hold.
 
-20 populated columns, B through U, verified directly against the workbook (no
-hidden columns, rows, comments, named ranges or hidden sheets):
-
-| | | |
-|---|---|---|
-| B–F | `#`, `ID`, `Name`, `Category`, `Unit` | identity |
-| G–I | `γ_k (shape)`, `γ_θ (min)`, `λ (1/min)` | Layer A kernel |
-| J–L | `κ_fast`, `κ_slow`, `w_fast` | fast/slow partition |
-| M–N | `T½_fast (d)`, `T½_slow (d)` | Layer B half-lives |
-| O | `V_f (dL)` | fast compartment volume |
-| P–Q | `State Semantics`, `Canonical State Unit` | |
-| R–T | `F_max`, `s_hi (log)`, `s_lo (log)` | Layer A ceiling, Layer C sensitivities |
-| U | `Evidence / Observability Prior` | |
-
-Against what `04 Engine Binding` row 20 says the per-nutrient row should hold
--- "Half-life, F_max/F_base/Km, V1/V2, Q/CL" -- half-life, `F_max` and `V1`
-(= `V_f`) are present. `F_base`, `Km`, `V2` and `CL` are not.
+A calibrated parameter set exists, has been used to compute a published
+verification trace, and has been run end to end through Layers A–D.
 
 ## The gaps, with their parameter-registry rows
 
-Every row below is from `P1 Parameters 134+`, which declares each parameter's
-units, range, weight and calibration method but tabulates no per-nutrient
-value.
+All from `P1 Parameters 134+`.
 
-| # | Symbol | Layer | Eq | Units | Range | Weight | We have |
+| # | Symbol | Layer | Eq | Units | Range | Weight | State in our copy |
 |---|---|---|---|---|---|---|---|
-| 14 | `F_base,i` | A | A5 | — | 0.01–1.0 | Critical | **18 / 81** |
-| 15 | `K_m,i` | A | A5 | mg | 10–5000 | Critical | **0 / 81** |
-| 29 | `V_s,i` | B | B3 | L | 5–200 | High | **0 / 81** |
-| 37 | `f_unbound,i` | B | B5,B6,B7 | — | 0.01–1.0 | Critical | **0 / 81** |
-| 41 | `CL_int,i` | B | B6 | mL/min | 0–5000 | High | **0 / 81** |
+| 120 | `F_max,i` | A | A4 | — | 0 < F ≤ 1 | Critical | **present but stubbed to 1.0 on all 81** |
+| 14 | `F_base,i` | A | A5 | — | 0.01–1.0 | Critical | absent (18 recoverable) |
+| 15 | `K_m,i` | A | A5 | mg | 10–5000 | Critical | absent |
+| 25 | `V_f,i` | B | B2,B3 | L | 1–50 | Critical | **present but stubbed to 50 dL on 80/81** |
+| 29 | `V_s,i` | B | B3 | L | 5–200 | High | absent |
+| 37 | `f_unbound,i` | B | B5–B7 | — | 0.01–1.0 | Critical | absent |
+| 41 | `CL_int,i` | B | B6 | mL/min | 0–5000 | High | absent |
 
-`Q_liver` (#40) is **not** a gap: it is a single physiological quantity with a
-published formula -- "allometric CO = 6.5*(BW/70)^0.75 L/min (ICRP Pub 89
-2003); Q_H = 0.260*CO" -- already implemented in
-`sahacore/engine/pharmacokinetics.py`.
+`Q_liver` (#40) is **not** a gap: one physiological quantity with a published
+formula — "allometric CO = 6.5*(BW/70)^0.75 L/min (ICRP Pub 89 2003);
+Q_H = 0.260*CO" — already implemented in `sahacore/engine/pharmacokinetics.py`.
 
-`K_m,i` is the thinnest of all: the registry gives only a 10–5000 mg range and
-a single worked example, "Vitamin C K_m ~200mg" (Levine 1996 PNAS).
+The two stubbed columns are the more dangerous half of this list, because
+they are present. Code reading them gets a number and no warning.
 
-### The 18 known `F_base` values
+### Consequence for our own tests
 
-Recoverable from two module sheets, and worth recording because they were not
-obvious:
+Validation gate C2 ("Monte-Carlo doses from 0 to 5x K_m. Pass: F_abs <= F_max
+in 100% of draws") currently draws `F_max` from the registry, where it is
+1.0 for every nutrient. `F_abs` is bounded by 1 by construction, so the gate
+passes trivially. It is not wrong, but it is not yet testing what it is meant
+to test, and it will only become a real bound once calibrated `F_max` values
+arrive. Flagged rather than quietly relied on.
 
-* `P1 Bariatric Module`, table headed "Absolute bounded F_abs targets by
-  nutrient, procedure and phase (not multipliers)", column `F_bio Base` --
-  17 nutrients.
-* `P1 GLP-1 Module`, table headed "Nutrient absorption ODDS / timing
-  modifiers -- bounded Layer A contract", column `F_base` -- 15 nutrients.
+## What is NOT missing
 
-The union is 18 unique nutrients, and the 14 that appear in both agree
-exactly -- iron 0.15, B12 0.5, vitamin D3 0.5, calcium 0.3, vitamin A 0.7,
-vitamin E 0.3, vitamin K 0.5, folate 0.5, zinc 0.3, magnesium 0.4, protein
-0.9, carbohydrate 0.95, fat 0.95, leucine 0.9. Bariatric alone adds thiamine
-0.9, copper 0.35, selenium 0.8; GLP-1 alone adds potassium 0.9.
+Three items previously carried on the gap list do not belong there.
 
-That leaves **63 of 81 without an `F_base`**.
-
-## A second correction: the damage thresholds are NOT missing
-
-An earlier pass also listed "cluster-level `eta_hi,k` / `theta_E,hi,k`" as
-missing. They are not. `sahacore/data/damage_registry_canonical.json`, loaded
-from `★ Damage Registry — Canonical`, carries:
-
-* `eta_hi`, `eta_lo` -- populated on **108 / 108** rows
-* `theta_hi`, `theta_lo` -- populated on **92 / 108** rows
-* `tau_damage_days`, `tau_heal_days`, `weight_pct` -- **108 / 108**
-
-Only **16 rows** lack thresholds, and they are a specific, nameable set:
+**Cluster damage thresholds.** `damage_registry_canonical` carries `eta_hi`
+and `eta_lo` on **108 / 108** rows and `theta_hi` / `theta_lo` on **92 / 108**,
+plus `tau_damage_days`, `tau_heal_days` and `weight_pct` on all 108. Only 16
+rows lack thresholds:
 
 * **C7**: `b2_mg`, `b6_mg`, `b9_ug`, `b12_ug`, `choline_mg`,
   `aa_methionine_mg`, `aa_glycine_mg`
 * **C9**: `b6_mg`, `b9_ug`, `b12_ug`, `vit_d_iu`, `iron_mg`, `magnesium_mg`,
   `omega3_dha_g`, `aa_tryptophan_mg`, `aa_tyrosine_mg`
 
-## The four CSV files
+**`V_s` as a structural prior.** `P1 Scoring Alerts` row 132 states
+"V_f=50dL, V_s=500dL are POPULATION-AVERAGE STRUCTURAL PRIORS, not
+personalized values", adapted by the filter through allometric scaling.
+A universal 500 dL default therefore exists. It is still worth asking for
+per-nutrient values, since the trace gives 60 and 140 dL for vitamin C and
+magnesium — an order of magnitude below the structural prior — but the
+engine is not blocked without them.
 
-`layer_a_results_1.csv`, `layer_b_results.csv`, `layer_c_damage.csv` and
-`layer_d_scoring.csv` are the output of a working Layer A–D implementation:
-128 timesteps at 10-minute intervals, all 81 nutrient columns in the Layer A
-file, all 12 clusters in the Layer C and D files.
+**`Q_liver`.** As above: formula, not a table.
 
-`layer_b_results.csv` carries `CL_total_<nutrient>` and `k_el_<nutrient>` for
-seven nutrients -- iron, vitamin D, B12, calcium, protein, vitamin C, zinc --
-constant across all 128 rows, so they are parameters rather than state.
+## What the search ruled out
 
-The half-lives implied by those `k_el` values are clean literature figures:
+So that this is not re-litigated:
 
-| nutrient | t½ from `k_el` | our `T½_fast` | our `T½_slow` |
-|---|---|---|---|
-| iron | 60 d | 2 | 60 |
-| vitamin D | 15 d | 3 | 60 |
-| B12 | 180 d | 2 | 480 |
-| calcium | 0.8 d | 1 | 30 |
-| protein | 0.25 d | 1 | 10 |
-| vitamin C | 0.4 d | 0.5 | 10 |
-| zinc | 5 d | 2 | 60 |
+* **No sheet is missing from the master.** `01_IMPORT_MANIFEST` lists exactly
+  205 sheets; the workbook contains exactly 205; the two sets match with zero
+  difference in either direction.
+* **`v39sEng` adds nothing.** It is identical to `v39sEng2` across all 204
+  shared sheets, cell dimensions included, differing only by the added
+  `★ v39w Signal Patch`.
+* **No hidden content.** Neither master has a hidden or very-hidden sheet, a
+  defined name, or an embedded object. `sharedStrings.xml` is empty because
+  the workbooks use inline strings; a full-text scan of the raw worksheet XML
+  found no per-nutrient value for any missing parameter.
+* **The five previously unopened workbooks** (the `v39sEng` master and the
+  Twin / Atlas / Pulse / Plan variants distinct from their `...API`
+  counterparts, plus the v31 input-signals file) contain only the formulas
+  that consume these parameters, never a per-nutrient value.
+* **The PDFs and the WhatsApp images** are product and UI material — the four
+  images are SahaTwin, Pulse, Atlas and Plan screen mockups.
+* **A scan for any table keyed by nutrient** across all ~470 sheets found 26
+  sheets mentioning 20 or more distinct nutrients. Each was opened. The only
+  per-nutrient parameter tables are `P1 Nutrients 81`,
+  `★ Nutrient Class Registry` (class A–E and observation anchor — real data
+  we have not yet loaded), `P1 Clusters 81x12` (the weight matrix we hold as
+  `nutrient_cluster_weights`) and `★ Damage Registry — Canonical`.
 
-Only iron matches a column we hold. **A parameter set richer than the one in
-`P1 Nutrients 81` exists and has been run** -- which is the strongest single
-piece of evidence for the request.
+## Note on an earlier wrong conclusion
+
+An intermediate pass in this audit concluded that nothing had been removed,
+reading `04 Engine Binding` row 20's `D20=P1 Nutrients 80 | E20=P1 Nutrients
+81` as a rename between two masters rather than a removal. The rename reading
+of that particular row is correct — the sheet's header does say
+`D4=WHERE in v39s`, `E4=WHERE in v39sEng` — but the conclusion drawn from it
+was not. `F_max = 1` on all 81 rows, against a registry that calls that value
+"default 1.0 until calibrated", settles the question independently of how any
+citation is read.
 
 ## Consequence for the build
 
 `05 Build Flow & Deploy` phase 1 is "Registries + parameters + nutrients (the
-data spine)", and the parameters half of it cannot be completed from what we
-hold. Layers A–D are implemented and pass their own equation tests, but until
-these five columns arrive they run on registry-documented *ranges* rather than
-per-nutrient values. Structure is unblocked; calibration is not.
+data spine)". The parameters half cannot be completed from what we hold.
+Layers A–D are implemented and pass their equation tests, but they are
+running on placeholder ceilings and volumes. Structure is unblocked;
+calibration is not.

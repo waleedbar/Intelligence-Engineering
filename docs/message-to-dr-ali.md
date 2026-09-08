@@ -1,87 +1,102 @@
-Subject: SahaCore — status, and five per-nutrient columns I need to finish the data spine
+Subject: SahaCore — the P1 Nutrients table we have is the uncalibrated one
 
 Dr. Ali,
 
-Quick status first. Layers A, B, C and D are implemented and tested against
-the workbook's own numbers — the Validation Test Battery gates C1, C2, C5, S3
-and S4 all pass, and Layer M reproduces every one of the QA-023…QA-029 golden
-values from the Live Verification Lab to 1e-15. The event ledger with
-bitemporal replay is built (Replay Contract steps 1–11, RT-02 and AUD-01
-passing), and the T-1 database firewall from `08 · Delivery & Firewall` is
-enforced at the role level, so QA-014 is green. 363 tests, all passing in CI
-against PostgreSQL.
+Status first. Layers A, B, C and D are implemented and tested against the
+workbook's own numbers — Validation Battery gates C1, C2, C5, S3 and S4 pass,
+and Layer M reproduces every QA-023…QA-029 golden value from the Live
+Verification Lab to 1e-15. The event ledger with bitemporal replay is built
+(Replay Contract steps 1–11, RT-02 and AUD-01 passing), and the T-1 database
+firewall from `08 · Delivery & Firewall` is enforced at the role level, so
+QA-014 is green. 363 tests, all passing in CI against PostgreSQL.
 
-I've now audited every workbook you sent — all 11 distinct files, sheet by
-sheet — to find the per-nutrient parameters Layers A and B need. Five columns
-are not in any of them, and I don't want to invent values for parameters the
-registry marks Critical.
+I've now audited every file you sent — all 11 distinct workbooks, the PDFs,
+the CSVs, and the raw XML of the masters. I found something I need to flag.
 
-**What I'm asking for: five columns on the P1 Nutrients table, for all 81.**
+**The `P1 Nutrients 81` sheet in the master appears to be the uncalibrated
+version of the table.**
 
-Using the row numbers in `P1 Parameters 134+`:
+`F_max` is **1.0 for all 81 nutrients**. Read straight from the workbook, not
+through my loader. `P1 Parameters 134+` row 120 defines `F_max,i` as
+Critical, with calibration method *"Nutrient-specific literature; default 1.0
+until calibrated"* — so the whole column is sitting at its documented
+placeholder. `V_f` is likewise 50 dL on 80 of the 81 rows.
 
-| # | Symbol | Layer | Units | Range given | Weight | What I have |
-|---|---|---|---|---|---|---|
-| 14 | `F_base,i` | A | — | 0.01–1.0 | Critical | 18 of 81 |
-| 15 | `K_m,i` | A | mg | 10–5000 | Critical | 0 of 81 |
-| 29 | `V_s,i` | B | L | 5–200 | High | 0 of 81 |
-| 37 | `f_unbound,i` | B | — | 0.01–1.0 | Critical | 0 of 81 |
-| 41 | `CL_int,i` | B | mL/min | 0–5000 | High | 0 of 81 |
+The Twin workbook's `11 Worked Trace` gives the calibrated values for two
+nutrients, and cites this same sheet as their source:
 
-`Q_liver` (#40) is fine — it's a single physiological value with the ICRP
-Pub 89 formula, already implemented. `V_f`, `F_max`, `T½_fast`, `T½_slow`,
-`γ_k`, `γ_θ`, `λ`, `κ_fast/slow`, `w_fast`, `s_hi`, `s_lo` are all present in
-`P1 Nutrients 81` and loaded.
+| | Vitamin C | Magnesium | what we have |
+|---|---|---|---|
+| F_max | 0.90 | 0.45 | 1.0 / 1.0 |
+| F_base | 0.75 | 0.30 | — |
+| Km | 200 | 250 | — |
+| Gastric T50 / κ | 75 / 1.3 | 95 / 1.1 | — |
+| Half-life (d) | 0.25 | 1.0 | 0.5 / 1.0 |
+| V1 / V2 (dL) | 32 / 60 | 40 / 140 | 50 / — |
+| Q / CL (dL/min) | 0.35 / 0.30 | 0.20 / 0.12 | — |
 
-**Why I believe these exist somewhere.** Three things point the same way:
+Nothing matches except the gamma shape. Two things corroborate it: the
+Bariatric and GLP-1 modules give baseline bioavailabilities for 18 nutrients
+(iron 0.15, calcium 0.30, selenium 0.80 …), every one below 1.0 and agreeing
+exactly where the two sheets overlap; and `layer_b_results.csv` carries
+`CL_total` and `k_el` for seven nutrients, constant across all 128
+timesteps — parameters, not state — implying half-lives (iron 60 d,
+vitamin D 15 d, B12 180 d, vitamin C 0.4 d) that don't match our columns.
 
-1. `04 Engine Binding` in the Twin workbook, row 20, says the per-nutrient
-   row should carry "Half-life, F_max/F_base/Km, V1/V2, Q/CL". The sheet we
-   hold carries half-life, F_max and V1 — not F_base, Km, V2 or CL.
+So the calibrated table exists, has produced a published verification trace,
+and has been run end to end.
 
-2. The same sheet's header says its citations were checked against a master
-   with **245 sheets**. The two masters I hold have 204 and 205. About forty
-   sheets cited by the files I have, I've never seen. If the nutrient
-   parameters live in one of those, that would explain everything.
+**What I need: the calibrated `P1 Nutrients` table, with these columns for
+all 81.** Registry row numbers from `P1 Parameters 134+`:
 
-3. The `layer_b_results.csv` you sent contains `CL_total` and `k_el` for
-   seven nutrients, constant across all 128 timesteps — so they're
-   parameters, not state. The half-lives they imply (iron 60 d, vitamin D
-   15 d, B12 180 d, calcium 0.8 d, protein 0.25 d, vitamin C 0.4 d, zinc
-   5 d) are literature values that don't match the `T½` columns in
-   `P1 Nutrients 81`. So a fuller parameter set exists and has been run.
+| # | Symbol | Weight | State in our copy |
+|---|---|---|---|
+| 120 | `F_max,i` | Critical | present, stubbed to 1.0 |
+| 25 | `V_f,i` | Critical | present, stubbed to 50 dL |
+| 14 | `F_base,i` | Critical | absent (18 recoverable) |
+| 15 | `K_m,i` | Critical | absent |
+| 29 | `V_s,i` | High | absent |
+| 37 | `f_unbound,i` | Critical | absent |
+| 41 | `CL_int,i` | High | absent |
 
-**Three smaller items while I'm asking:**
+The two stubbed ones matter most, because they look present — code reads them
+and gets a number with no warning. It also means our C2 gate ("F_abs ≤ F_max
+in 100% of draws") is currently passing trivially, since F_abs ≤ 1 by
+construction.
 
-- `K_m,i` is the thinnest — the registry gives only the 10–5000 mg range and
-  one worked example, "Vitamin C K_m ~200mg" (Levine 1996). If a full table
-  doesn't exist, tell me and I'll build one from published transporter
-  saturation data with every value sourced and flagged as fitted, for you to
-  review. I'd rather do that openly than quietly pick numbers.
+`Q_liver` (#40) is fine — one physiological value with the ICRP Pub 89
+formula, already implemented. And `γ_k`, `γ_θ`, `λ`, `κ_fast/slow`, `w_fast`,
+`T½_fast`, `T½_slow`, `s_hi`, `s_lo` are all present and loaded, though the
+trace's `λ` and `T½` for vitamin C differ from ours too, so those may be from
+a different vintage.
 
-- `★ Damage Registry — Canonical` is almost complete: `eta_hi`/`eta_lo` on
-  108 of 108 rows, `theta_hi`/`theta_lo` on 92. Sixteen rows have no
-  threshold — seven in C7 (B2, B6, B9, B12, choline, methionine, glycine) and
-  nine in C9 (B6, B9, B12, vitamin D, iron, magnesium, DHA, tryptophan,
-  tyrosine).
+**Two smaller items:**
 
-- `V_f` in `P1 Nutrients 81` takes only two distinct values across all 81
-  nutrients (50 dL and 500 dL). That may be deliberate as a placeholder, but
-  I wanted to flag it rather than assume.
+- `★ Damage Registry — Canonical` is nearly complete: `η_hi`/`η_lo` on 108 of
+  108 rows, `θ_hi`/`θ_lo` on 92. Sixteen rows have no threshold — seven in C7
+  (B2, B6, B9, B12, choline, methionine, glycine) and nine in C9 (B6, B9,
+  B12, vitamin D, iron, magnesium, DHA, tryptophan, tyrosine).
+
+- If a full `K_m` table doesn't exist anywhere, say so and I'll build one from
+  published transporter-saturation data, every value sourced and flagged as
+  fitted, for you to review. The registry gives only the 10–5000 mg range and
+  one example (vitamin C ~200 mg, Levine 1996) — and the trace confirms that
+  200. I'd rather build it in the open than quietly pick numbers. `07
+  Parameters` says the same thing: *"If a number is needed and it is not on
+  this sheet, it does not exist yet — raise it as a gap rather than choosing
+  one."*
 
 **What I'm doing meanwhile.** Layer E (the RB-SR-UKF) is next and its
-structure doesn't depend on these — 219 states, 164 linear / 55 nonlinear,
-111 sigma branches are all fixed and already verified. So I'll build it in
-parallel. Nothing is stalled; the parameters affect what the engine computes
-on, not whether it computes.
+structure doesn't depend on any of this — 219 states, 164 linear / 55
+nonlinear, 111 sigma branches are fixed and already verified. So I'll build it
+in parallel. Nothing is stalled; these parameters change what the engine
+computes on, not whether it computes.
 
-One correction I should make, since I may have said otherwise earlier: I no
-longer think anything was removed from the nutrient table. The
-"P1 Nutrients 80" / "P1 Nutrients 81" difference is just the two masters
-naming the same sheet differently after nitrate became #81 — the Engine
-Binding sheet says so explicitly in its header. The gap is that we're working
-from a smaller master, not that a column was deleted.
+Ruled out, so you don't have to check: no sheet is missing from the master
+(`01_IMPORT_MANIFEST` lists 205, the file has exactly those 205), there are no
+hidden sheets or defined names, and `v39sEng` is identical to `v39sEng2`
+across all 204 shared sheets.
 
-Happy to take any of this on a call if that's faster.
+Happy to take this on a call if that's faster.
 
 Waleed
