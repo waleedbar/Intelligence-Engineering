@@ -1,25 +1,52 @@
 """Layer A: nutrient absorption kernel (equation A1 in Dr. Ali's v39sEng2
 workbook, sheet 'P1 Core Equations').
 
-*** VERIFIED AGAINST DR. ALI'S OWN CORRECTION LOG -- SINGLE-GAMMA IS CORRECT ***
-An earlier draft of this module treated the single-gamma form here as an
-unconfirmed Phase-1 approximation of a two-component mixture
-(h_i = w*Gamma(k1,lambda1) + (1-w)*Gamma(k2,lambda2)) implied by 'P1 Core
-Equations' and 'PARAM * Eq Param FK'. That reading was wrong. Sheet
-'P1 MC Engine', section F ("11 HISTORICAL CORRECTIONS LOG"), row 1, records
-this as a resolved, deliberate correction:
+Source formula ('P1 Core Equations', row A1, transcribed verbatim):
 
-    Issue: Gamma parameterization conflict
-    Original value: shape-scale (gamma_k, gamma_theta_min)
-    Corrected value: shape-rate, lambda = 1/theta
-    Discovered by: DeepSeek | Status: CORRECTED
+    h_i(tau) = w_i * Gamma(tau; k1, lambda1)
+             + (1 - w_i) * Gamma(tau; k2, lambda2)
 
-Section D of the same sheet lists this among the audited PASS checks:
-"lambda = 1/theta for all 81 nutrients | 81/81 | PASS" -- i.e. the current,
-canonical registry ('P1 Nutrients 81': gamma_k_shape, lambda_per_min) IS the
-corrected single-gamma parameterization, verified across all 81 nutrients,
-not a stand-in for a richer form that's missing. The k1/lambda1/k2/lambda2
-mixture referenced elsewhere is the pre-correction formulation and is stale.
+    log Gamma = k*ln(lambda) + (k-1)*ln(t) - lambda*t - lgamma(k)
+
+*** CORRECTED READING OF THE CORRECTION LOG (this replaces an earlier,
+wrong claim in this file that A1 was a single gamma) ***
+An earlier version of this module asserted that 'P1 MC Engine' section F
+("11 HISTORICAL CORRECTIONS LOG") row 1 had superseded the two-component
+mixture with a single gamma. Re-reading that row verbatim shows it says
+no such thing -- it is purely about the parameterization convention:
+
+    Issue Found:     Gamma parameterization conflict
+    Original Value:  Shape-scale (gamma_k, gamma_theta_min)
+    Corrected Value: Shape-rate: lambda = 1/theta
+    Discovered By:   DeepSeek | Impact: All absorption timing | CORRECTED
+
+scale -> rate. Nothing about one component versus two. The mixture stands,
+and three independent sources agree on it:
+  1. 'P1 Core Equations' A1 states the two-component form verbatim (above).
+  2. TwinAPI workbook, sheet '11 Worked Trace', labels the row
+     "A1 bi-Gamma kernel" and supplies a per-nutrient w (Vitamin C w=0.7,
+     Magnesium w=0.4) alongside k1 and lambda1.
+  3. Numerically: reproducing that worked trace's own published curve
+     through B2/B3 gives RMSE 2.99 / peak 79 min with a single gamma
+     (published peak: 73 min), versus RMSE 0.93 / peak 73 min with the
+     mixture. The mixture matches; the single gamma does not.
+
+The audited check "lambda = 1/theta for all 81 nutrients | 81/81 | PASS"
+remains true and is still verified in tests -- it is a statement about the
+registry's lambda column, not about the number of components.
+
+*** WHAT THE CURRENT REGISTRY CAN DRIVE ***
+'P1 Nutrients 81' carries exactly one (gamma_k_shape, gamma_theta_min,
+lambda_per_min) triple per nutrient plus w_fast -- i.e. the FIRST mixture
+component and the mixing weight, but no k2/lambda2 column. So production
+today can only evaluate the degenerate w=1 case, which
+absorption_kernel() below still provides. The second component is real,
+not hypothetical: the TwinAPI worked trace cites its source as "P1
+Nutrients 80 (v39s)", the earlier 80-nutrient registry generation, and
+fitting that trace recovers a plausible second component (Vitamin C
+k2~2.5 theta2~15 min; Magnesium k2~2.0 theta2~30 min). Those columns are
+absent from the v39sEng2 file we hold -- tracked as a data gap, not
+invented here.
 
 All numeric parameters are still read from the nutrients table/JSON, per
 the project convention -- nothing physiological is hardcoded here.
@@ -46,11 +73,26 @@ def gamma_pdf(t: float, k: float, lam: float) -> float:
     return math.exp(gamma_log_pdf(t, k, lam))
 
 
+def bi_gamma_absorption_kernel(
+    t: float, w: float, k1: float, lam1: float, k2: float, lam2: float,
+) -> float:
+    """A1 in full: h_i(tau) = w*Gamma(tau; k1, lam1) + (1-w)*Gamma(tau; k2, lam2).
+
+    Integrates to exactly 1 over (0, inf) for any w in [0, 1], since both
+    components are proper gamma densities -- so it preserves A2's mass
+    conservation guarantee without renormalization."""
+    return w * gamma_pdf(t, k1, lam1) + (1.0 - w) * gamma_pdf(t, k2, lam2)
+
+
 def absorption_kernel(t: float, k: float, lam: float) -> float:
-    """h_i(t): equation A1, the corrected single-gamma absorption kernel.
-    See the module docstring -- this is the audited, canonical form
-    (verified 81/81 in Dr. Ali's own correction log), not an approximation.
-    """
+    """A1's degenerate single-component case (w=1), which is all the
+    current 81-nutrient registry can drive: it carries one (k, lambda)
+    pair per nutrient and no k2/lambda2 column. Equivalent to
+    bi_gamma_absorption_kernel(t, w=1, k1=k, lam1=lam, ...).
+
+    NOT the canonical full form -- see the module docstring. Use
+    bi_gamma_absorption_kernel once per-nutrient second-component values
+    are available."""
     return gamma_pdf(t, k, lam)
 
 

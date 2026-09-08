@@ -17,6 +17,7 @@ from sahacore.engine.absorption import (
     absorbed_mass_rate,
     absorption_kernel,
     activity_saturation,
+    bi_gamma_absorption_kernel,
     activity_sleep_modifier,
     bounded_absorbed_fraction,
     food_matrix_adjustment,
@@ -64,12 +65,62 @@ def test_zero_or_negative_time_gives_zero_density():
     assert gamma_pdf(-5, k=2.5, lam=0.04) == 0.0
 
 
+# --- Golden values: TwinAPI workbook, sheet '11 Worked Trace' --------------
+#
+# That sheet states: "one real meal through Layer A/B ... If your pipeline
+# reproduces these numbers, your Still-Circulating build is correct. Every
+# number is computed, not illustrative." It publishes both the inputs and
+# the resulting F_abs for two nutrients, which makes it a true end-to-end
+# check on A4 rather than a property we derived ourselves.
+
+@pytest.mark.parametrize(
+    "label,f_base,f_max,dose,k_m,expected_f_abs",
+    [
+        ("Vitamin C", 0.75, 0.90, 180, 200, 0.652),
+        ("Magnesium", 0.30, 0.45, 120, 250, 0.259),
+    ],
+)
+def test_a4_matches_twinapi_worked_trace(label, f_base, f_max, dose, k_m, expected_f_abs):
+    result = bounded_absorbed_fraction(
+        f_base=f_base, f_max=f_max, dose=dose, k_m=k_m,
+        interaction_term=0.0, gamma_cook=0.0, gamma_condition=0.0,
+    )
+    assert result == pytest.approx(expected_f_abs, abs=0.001), label
+
+
+def test_bi_gamma_kernel_reduces_to_single_gamma_at_w_one():
+    """A1's full mixture with w=1 must be exactly the degenerate
+    single-component kernel absorption_kernel() provides."""
+    for t in (1, 10, 50, 200):
+        mixed = bi_gamma_absorption_kernel(t, w=1.0, k1=2.0, lam1=0.04, k2=3.0, lam2=0.01)
+        assert mixed == absorption_kernel(t, 2.0, 0.04)
+
+
+def test_bi_gamma_kernel_integrates_to_one():
+    """Both components are proper densities, so any mixing weight still
+    integrates to 1 -- this is what preserves A2's mass conservation."""
+    for w in (0.0, 0.4, 0.7, 1.0):
+        mass, _ = quad(
+            lambda t: bi_gamma_absorption_kernel(t, w, 2.0, 1 / 25, 2.5, 1 / 15),
+            0, math.inf,
+        )
+        assert mass == pytest.approx(1.0, abs=1e-6)
+
+
+def test_bi_gamma_kernel_is_a_strict_blend_of_its_components():
+    w, k1, lam1, k2, lam2 = 0.7, 2.0, 1 / 25, 2.5, 1 / 15
+    for t in (5, 25, 73, 200):
+        expected = w * absorption_kernel(t, k1, lam1) + (1 - w) * absorption_kernel(t, k2, lam2)
+        assert bi_gamma_absorption_kernel(t, w, k1, lam1, k2, lam2) == pytest.approx(expected)
+
+
 def test_lambda_equals_inverse_theta_for_every_real_nutrient(nutrients):
     """Source: v39sEng2.xlsx, sheet 'P1 MC Engine', section D audit row
-    'lambda = 1/theta for all 81 nutrients | 81/81 | PASS' -- this is the
-    workbook's own record of the corrected single-gamma parameterization
-    (section F, correction #1: shape-scale -> shape-rate, lambda = 1/theta),
-    re-verified here against our own registry copy.
+    'lambda = 1/theta for all 81 nutrients | 81/81 | PASS' -- correction #1
+    in section F is about the PARAMETERIZATION CONVENTION only (shape-scale
+    -> shape-rate, lambda = 1/theta); it says nothing about the number of
+    mixture components (see absorption.py's docstring). Re-verified here
+    against our own registry copy.
 
     Five nutrients are documented exceptions, all confirmed by direct
     re-read of the raw 'P1 Nutrients 81' sheet (not an extraction error
