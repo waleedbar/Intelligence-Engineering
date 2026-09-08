@@ -173,3 +173,40 @@ data spine)". The parameters half cannot be completed from what we hold.
 Layers A–D are implemented and pass their equation tests, but they are
 running on placeholder ceilings and volumes. Structure is unblocked;
 calibration is not.
+
+## Final mechanical verification
+
+Run against all 12 distinct workbooks, searching every cell of every sheet.
+Recorded here so the request to Dr. Ali rests on counts, not on recollection.
+
+**Is the `F_max` column really all 1.0?** Every sheet in the corpus whose name
+mentions "Nutrient" was checked for an `F_max` column. Exactly one has one:
+
+    P1 Nutrients 81 -> F_max at row 4 -> 81 numeric values, distinct = {1}
+
+No other sheet in any workbook carries an `F_max` column at all.
+
+**Are the five parameters really absent?** Every cell mentioning each one, in
+every workbook, classified:
+
+| Parameter | Label cells found | What they are |
+|---|---|---|
+| `F_base` | 18 | 4 definition/FK rows, 1 citation, 1 trace (2 nutrients), 2 module tables (18 nutrients). No 81-row column. |
+| `K_m` | 31 | QSSA enzyme Km in µM and MM-repair Km — different quantities — plus the definition row and the FK reference. No per-nutrient absorption Km. |
+| `V_s` | 10 unique | All definition or description rows (`P1 DataMap` B34, `P1 Parameters 134+` F34, `P1 MC Engine` B19, `O·O1 Anthropometrics` D11, `P1 Scoring Alerts` C103, `P1 Onboarding` D155). No column. |
+| `f_u_ref` | 12 unique | The personalisation formula `f_u = f_u_ref * (1 - 0.1*max(BMI-25,0)/25)` in `O·O1 Anthropometrics` E17 and `P1 Onboarding` E161, whose own input cell reads "f_u_ref **per nutrient**". No table of f_u_ref. |
+| `CL_int` | **2** | Both the same definition row, `P1 Parameters 134+` C46. Nothing else in the entire corpus. |
+| `w_k^fix` | **2** | Both the same cell, `P1 Core Equations` F37, a formula reference. No table of the 12 weights. |
+
+(Counts double where two workbooks are byte-identical masters; unique counts
+are given where that matters.)
+
+**Are the 16 blank thresholds our loader's fault?** No. Read directly from
+`★ Damage Registry — Canonical`: 108 data rows, of which 16 carry a literal
+em-dash `—` in both `θ_hi` and `θ_lo`. The loader reproduces the workbook
+faithfully.
+
+**Scope of the claim.** This verifies the files we were given. It cannot
+verify what exists elsewhere — and the Worked Trace and the Layer A–D CSVs
+are evidence that a calibrated set does exist somewhere. That is precisely
+what the request asks for.
