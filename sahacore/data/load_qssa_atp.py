@@ -23,7 +23,7 @@ def load_qssa_atp() -> int:
         for row in rows:
             cur.execute(
                 f"""
-                INSERT INTO qssa_atp_complexes ({", ".join(_COLUMNS)})
+                INSERT INTO engine_internal.qssa_atp_complexes ({", ".join(_COLUMNS)})
                 VALUES ({placeholders})
                 ON CONFLICT (complex_id) DO UPDATE SET {update_clause}
                 """,

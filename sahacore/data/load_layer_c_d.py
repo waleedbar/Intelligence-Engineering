@@ -35,15 +35,15 @@ def load_layer_c_d() -> dict:
     conn = get_connection()
     counts = {
         "cluster_scoring_params": _load(
-            conn, "cluster_scoring_params_12.json", "cluster_scoring_params",
+            conn, "cluster_scoring_params_12.json", "engine_internal.cluster_scoring_params",
             ["cluster_id", "a_k", "b_k", "tau_dam_days", "rho_k"], "cluster_id",
         ),
         "nutrient_cluster_weights": _load(
-            conn, "nutrient_cluster_weights.json", "nutrient_cluster_weights",
+            conn, "nutrient_cluster_weights.json", "engine_internal.nutrient_cluster_weights",
             ["nutrient_id", "cluster_id", "weight"], "nutrient_id, cluster_id",
         ),
         "damage_registry_canonical": _load(
-            conn, "damage_registry_canonical.json", "damage_registry_canonical",
+            conn, "damage_registry_canonical.json", "engine_internal.damage_registry_canonical",
             ["cluster_id", "nutrient_id", "weight_pct", "tau_damage_days", "tau_heal_days",
              "eta_hi", "eta_lo", "theta_hi", "theta_lo", "threshold_unit", "note"],
             "cluster_id, nutrient_id",

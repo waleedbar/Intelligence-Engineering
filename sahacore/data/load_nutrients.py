@@ -58,7 +58,7 @@ def load_nutrients() -> int:
         for row in rows:
             cur.execute(
                 f"""
-                INSERT INTO nutrients ({", ".join(columns)})
+                INSERT INTO engine_internal.nutrients ({", ".join(columns)})
                 VALUES ({placeholders})
                 ON CONFLICT (code) DO UPDATE SET {update_clause}
                 """,

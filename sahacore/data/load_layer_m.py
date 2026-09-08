@@ -27,7 +27,7 @@ def load_layer_m() -> int:
         for row in rows:
             cur.execute(
                 f"""
-                INSERT INTO layer_m_scarring_params ({", ".join(_COLUMNS)})
+                INSERT INTO engine_internal.layer_m_scarring_params ({", ".join(_COLUMNS)})
                 VALUES ({placeholders})
                 ON CONFLICT (cluster_id) DO UPDATE SET {update_clause}
                 """,

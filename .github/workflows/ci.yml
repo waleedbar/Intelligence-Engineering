@@ -66,25 +66,25 @@ jobs:
           import os, psycopg
           conn = psycopg.connect(os.environ['DATABASE_URL'])
           with conn.cursor() as cur:
-              cur.execute('SELECT count(*) FROM nutrients')
+              cur.execute('SELECT count(*) FROM engine_internal.nutrients')
               n = cur.fetchone()[0]
               assert n == 81, f'expected 81 nutrients, got {n}'
-              cur.execute('SELECT count(*) FROM state_vector')
+              cur.execute('SELECT count(*) FROM engine_internal.state_vector')
               s = cur.fetchone()[0]
               assert s == 219, f'expected 219 state vector rows, got {s}'
-              cur.execute('SELECT count(*) FROM cluster_scoring_params')
+              cur.execute('SELECT count(*) FROM engine_internal.cluster_scoring_params')
               c = cur.fetchone()[0]
               assert c == 12, f'expected 12 cluster scoring params, got {c}'
-              cur.execute('SELECT count(*) FROM nutrient_cluster_weights')
+              cur.execute('SELECT count(*) FROM engine_internal.nutrient_cluster_weights')
               w = cur.fetchone()[0]
               assert w == 357, f'expected 357 nutrient-cluster weights, got {w}'
-              cur.execute('SELECT count(*) FROM damage_registry_canonical')
+              cur.execute('SELECT count(*) FROM engine_internal.damage_registry_canonical')
               d = cur.fetchone()[0]
               assert d == 108, f'expected 108 damage registry rows, got {d}'
-              cur.execute('SELECT count(*) FROM layer_m_scarring_params')
+              cur.execute('SELECT count(*) FROM engine_internal.layer_m_scarring_params')
               m = cur.fetchone()[0]
               assert m == 12, f'expected 12 layer M scarring params, got {m}'
-              cur.execute('SELECT count(*) FROM qssa_atp_complexes')
+              cur.execute('SELECT count(*) FROM engine_internal.qssa_atp_complexes')
               q = cur.fetchone()[0]
               assert q == 5, f'expected 5 QSSA ATP complexes, got {q}'
               cur.execute(\"SELECT count(*) FROM engine_internal.replay_lag_policy WHERE status = 'ACTIVE'\")

@@ -25,7 +25,7 @@ def load_state_vector() -> int:
         for state in states:
             cur.execute(
                 f"""
-                INSERT INTO state_vector ({", ".join(_COLUMNS)})
+                INSERT INTO engine_internal.state_vector ({", ".join(_COLUMNS)})
                 VALUES ({placeholders})
                 ON CONFLICT (idx) DO UPDATE SET {update_clause}
                 """,
