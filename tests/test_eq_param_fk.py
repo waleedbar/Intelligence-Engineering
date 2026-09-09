@@ -144,12 +144,17 @@ def test_every_resolved_key_names_where_it_resolved(fk):
 def test_no_alias_points_at_a_symbol_the_registry_does_not_have(params):
     """An alias whose target is not in the registry would resolve nothing
     while reading as a resolution. The builder raises on this; asserted here
-    too so it fails in CI without re-running the extractor."""
+    too so it fails in CI without re-running the extractor.
+
+    Every alias must also carry a SCOPE -- the equation rows it applies to.
+    An unscoped table produced two false resolutions before this was added,
+    and the next test pins both."""
     from sahacore.data.build_eq_param_fk import ALIASES
 
     symbols = {p["symbol"] for p in params}
-    for key, (target, reason) in ALIASES.items():
+    for key, (target, scope, reason) in ALIASES.items():
         assert target in symbols, f"alias {key!r} -> {target!r} is not a registry symbol"
+        assert scope, f"alias {key!r} is unscoped -- it would apply in every row"
         assert len(reason) > 8, f"alias {key!r} has no reason recorded"
 
 
@@ -170,6 +175,28 @@ def test_the_absorption_kernels_two_halves_resolve_to_different_places(fk):
     assert a1["k_i2"]["status"] == "RESOLVED_ELSEWHERE"
     assert a1["k_i2"]["resolved_in"] == "parameter_registry:k2_i"
     assert a1["lambda_i2"]["resolved_in"] == "parameter_registry:lam2_i"
+
+
+def test_the_two_false_resolutions_a_global_alias_table_produced_stay_fixed(fk):
+    """Aliases are scoped because an unscoped table resolved two keys to
+    unrelated parameters:
+
+      delta_i in K3-FIX-04 (backend object hawkes_params, sitting beside
+      lambda_max / mu_base / nu_D) resolved to #16 delta_ij, the Layer A
+      co-nutrient absorption interaction coefficient.
+
+      Km in the QSSA row resolved to #15 K_m,i, the absorption Michaelis
+      constant in mg. QSSA's Km is an enzyme constant in micromolar.
+
+    Both must now report NOT_LOADED -- their real authorities (K3 Fixes,
+    QSSA · Internal Canonical) have not been imported.
+    """
+    hawkes = next(r for r in fk if r["eq_id"] == "K3-FIX-04")
+    assert hawkes["backend_object"] == "hawkes_params"
+    assert hawkes["key_resolution"]["delta_i"]["status"] == "NOT_LOADED"
+
+    qssa = next(r for r in fk if r["eq_id"].startswith("QSSA-001"))
+    assert qssa["key_resolution"]["Km"]["status"] == "NOT_LOADED"
 
 
 def test_ids_and_model_references_are_classified_not_reported_as_missing(fk):

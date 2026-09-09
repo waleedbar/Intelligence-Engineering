@@ -72,6 +72,41 @@ def test_every_layer_named_is_one_the_engine_has(params):
     assert seen <= known, f"unexpected layers: {seen - known}"
 
 
+def test_the_value_kind_classifier_handles_the_sheets_four_awkward_shapes(params):
+    """value_kind drives the gap list, so a misread inflates or hides it.
+    Four shapes in the source each broke an earlier version of the
+    classifier, and each is pinned here by the row that exposed it.
+    """
+    by_no = {p["param_no"]: p for p in params}
+
+    # "-0.3 to -0.1": a range written with "to" because negative bounds make
+    # the hyphen ambiguous. Read as TEXT at first, so it vanished from the
+    # gap list entirely.
+    assert by_no[11]["value_kind"] == "RANGE"
+    # "-1 to 1": the same form, and the reason the range test must run BEFORE
+    # the scalar-with-status-word test -- otherwise "to" reads as the status
+    # word and the value becomes the scalar -1.
+    assert by_no[16]["value_kind"] == "RANGE"
+    # "360-480 (6-8am)": a range with a gloss. Bracket-matching called it a
+    # formula.
+    assert by_no[8]["value_kind"] == "RANGE"
+    # "1.0 FIXED_PRODUCTION": a scalar carrying a status word.
+    assert by_no[51]["value_kind"] == "SCALAR"
+    # "0.5-2.0 (default 1.0)": a range that states its default, so it is
+    # USABLE and must not count as a gap.
+    assert by_no[102]["value_kind"] == "RANGE_WITH_DEFAULT"
+
+
+def test_a_range_with_a_stated_default_is_not_a_gap(params):
+    """The distinction that keeps the gap list honest in the other
+    direction: #102 alpha (UCB) has an interval AND a default of 1.0, so the
+    engine can run. Twelve parameters are in this position."""
+    with_default = [p for p in params if p["value_kind"] == "RANGE_WITH_DEFAULT"]
+    assert len(with_default) == 12
+    for p in with_default:
+        assert p not in _gaps(params)
+
+
 def test_weights_use_the_sheets_own_four_levels(params):
     assert {p["weight"] for p in params} <= {"Critical", "High", "Medium", "Low", None}
 
@@ -172,8 +207,8 @@ def test_gaps_at_lower_weights_are_recorded_but_not_asserted_individually(params
     """The Critical list is pinned by symbol; the rest is pinned by count, so
     a regression in the extraction or a newly resolved parameter is still
     visible without enumerating 63 rows."""
-    assert len(_gaps(params, "High")) == 22
-    assert len(_gaps(params)) == 55
+    assert len(_gaps(params, "High")) == 25
+    assert len(_gaps(params)) == 61
 
 
 def test_the_chs_display_weights_are_a_recorded_gap_not_an_oversight(params):

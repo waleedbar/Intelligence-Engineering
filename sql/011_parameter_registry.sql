@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS engine_internal.parameter_registry (
     CONSTRAINT parameter_registry_value_kind_is_known CHECK (value_kind IN (
         'SCALAR',                 -- one number, usable as-is
         'RANGE',                  -- an admissible interval and nothing else
+        'RANGE_WITH_DEFAULT',     -- an interval that also states a usable default
         'FORMULA',                -- computed from other quantities
         'PER_ENTITY_UNSPECIFIED', -- explicitly "varies per cluster" etc.
         'TEXT',                   -- prose (an enum, a policy, a citation)
@@ -75,6 +76,8 @@ CREATE OR REPLACE VIEW engine_internal.parameter_gaps AS
     SELECT param_no, symbol, layer, equations, full_name, units,
            default_or_range, weight
     FROM engine_internal.parameter_registry
+    -- RANGE_WITH_DEFAULT is deliberately absent: a stated default is a
+    -- usable value, so those rows are not gaps.
     WHERE value_kind IN ('RANGE', 'PER_ENTITY_UNSPECIFIED', 'ABSENT')
       AND resolved_by IS NULL
     ORDER BY

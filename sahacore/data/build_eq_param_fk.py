@@ -54,21 +54,34 @@ SHEET = "PARAM · Eq Param FK"
 OUT = Path(__file__).parent / "eq_param_fk.json"
 PLACEHOLDER = "see formula inputs"
 
-# FK key -> parameter-registry symbol. The bridge is spelled out for each.
+# FK key -> (parameter-registry symbol, the equation IDs the alias is valid
+# for, why the two spellings differ).
+#
+# SCOPED, NOT GLOBAL. A first version of this table was keyed on the spelling
+# alone, and produced two false resolutions that a reviewer caught:
+#
+#   `delta_i` in K3-FIX-04 (backend object hawkes_params, alongside
+#   lambda_max/mu_base/nu_D) was resolved to #16 delta_ij, the Layer A
+#   co-nutrient absorption interaction coefficient. Unrelated quantities.
+#
+#   `Km` in the QSSA row was resolved to #15 K_m,i, the absorption Michaelis
+#   constant in mg. QSSA's Km is an enzyme constant in micromolar.
+#
+# The same spelling means different things in different rows, exactly as `Q`
+# does, so every alias now names the rows it applies to and is inert
+# everywhere else.
 ALIASES = {
-    "k_i1": ("k1_i", "subscript order: entity-then-component vs component-then-entity"),
-    "k_i2": ("k2_i", "subscript order"),
-    "lambda_i1": ("lam1_i", "lambda spelled out; subscript order"),
-    "lambda_i2": ("lam2_i", "lambda spelled out; subscript order"),
-    "F_base_i": ("F_base,i", "underscore vs comma before the entity subscript"),
-    "F_max_i": ("F_max,i", "underscore vs comma"),
-    "Km_i": ("K_m,i", "underscore placement inside the symbol"),
-    "Km": ("K_m,i", "entity subscript dropped"),
-    "V1": ("V_f,i", "compartment numbered rather than named: 1 = fast"),
-    "V2": ("V_s,i", "compartment numbered rather than named: 2 = slow"),
-    "k_fs": ("k_fs,i", "entity subscript dropped"),
-    "gamma_ij": ("gamma_ij", "identical"),
-    "delta_i": ("delta_ij", "one subscript dropped"),
+    "k_i1": ("k1_i", {"A-001"}, "subscript order: entity-then-component vs component-then-entity"),
+    "k_i2": ("k2_i", {"A-001"}, "subscript order"),
+    "lambda_i1": ("lam1_i", {"A-001"}, "lambda spelled out; subscript order"),
+    "lambda_i2": ("lam2_i", {"A-001"}, "lambda spelled out; subscript order"),
+    "F_base_i": ("F_base,i", {"A-002"}, "underscore vs comma before the entity subscript"),
+    "F_max_i": ("F_max,i", {"A-002"}, "underscore vs comma"),
+    "Km_i": ("K_m,i", {"A-002"}, "underscore placement inside the symbol"),
+    "V1": ("V_f,i", {"B-002/B-003"}, "compartment numbered rather than named: 1 = fast"),
+    "V2": ("V_s,i", {"B-002/B-003"}, "compartment numbered rather than named: 2 = slow"),
+    "k_fs": ("k_fs,i", {"B-002/B-003"}, "entity subscript dropped"),
+    "gamma_ij": ("gamma_ij", {"A-002"}, "identical spelling; scoped so it cannot leak into another row"),
 }
 
 # Keys that are foreign keys to a NON-parameter registry -- an action, a rule,
@@ -181,7 +194,7 @@ REGISTRY_KEY_ALIASES = {
 
 def resolve_key(key: str, registry_symbols: set[str],
                 loaded: list[str], columns: dict[str, set[str]],
-                all_loaded: bool = True) -> tuple[str, str | None]:
+                all_loaded: bool = True, eq_id: str = "") -> tuple[str, str | None]:
     """Classify one FK key against its row's own authoritative registries.
 
     Returns (status, where). Statuses:
@@ -211,7 +224,7 @@ def resolve_key(key: str, registry_symbols: set[str],
             if target in columns.get(registry, set()):
                 return "RESOLVED", f"{registry}.{target}"
         if registry == "engine_internal.parameter_registry":
-            if key in ALIASES:
+            if key in ALIASES and eq_id in ALIASES[key][1]:
                 symbol = ALIASES[key][0]
                 if symbol in registry_symbols:
                     return "RESOLVED", f"parameter_registry:{symbol}"
@@ -228,7 +241,7 @@ def resolve_key(key: str, registry_symbols: set[str],
     # registry even when a row names a per-entity registry as its authority.
     if key in registry_symbols:
         return "RESOLVED_ELSEWHERE", f"parameter_registry:{key}"
-    if key in ALIASES and ALIASES[key][0] in registry_symbols:
+    if key in ALIASES and eq_id in ALIASES[key][1] and ALIASES[key][0] in registry_symbols:
         return "RESOLVED_ELSEWHERE", f"parameter_registry:{ALIASES[key][0]}"
 
     # A key can only be called MISSING when EVERY registry its row declares
@@ -271,7 +284,8 @@ def main() -> None:
             key: {"status": status, "resolved_in": where}
             for key in row["consumes_keys"]
             for status, where in [resolve_key(key, symbols, row["loaded_registries"],
-                                              columns, row["all_authorities_loaded"])]
+                                              columns, row["all_authorities_loaded"],
+                                              row["eq_id"])]
         }
 
     OUT.write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

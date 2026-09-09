@@ -468,8 +468,8 @@
     "resolved_in": null
    },
    "Km": {
-    "status": "RESOLVED_ELSEWHERE",
-    "resolved_in": "parameter_registry:K_m,i"
+    "status": "NOT_LOADED",
+    "resolved_in": null
    },
    "Vmax": {
     "status": "NOT_LOADED",
@@ -2203,8 +2203,8 @@
     "resolved_in": null
    },
    "delta_i": {
-    "status": "RESOLVED_ELSEWHERE",
-    "resolved_in": "parameter_registry:delta_ij"
+    "status": "NOT_LOADED",
+    "resolved_in": null
    },
    "nu_D": {
     "status": "NOT_LOADED",

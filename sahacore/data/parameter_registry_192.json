@@ -116,7 +116,7 @@
   "weight": "Medium",
   "calibration_method": "Fitted from circadian studies",
   "verification_source": "Bicker 2020 Br J Pharmacol",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE",
   "resolved_by": null
  },
  {
@@ -161,7 +161,7 @@
   "weight": "Medium",
   "calibration_method": "Calibrated from sleep-GI studies",
   "verification_source": "Bicker 2020",
-  "value_kind": "TEXT",
+  "value_kind": "RANGE",
   "resolved_by": null
  },
  {
@@ -236,7 +236,7 @@
   "weight": "Medium",
   "calibration_method": "Clinical nutrient interaction studies",
   "verification_source": "Sandstrom 2001 Br J Nutr",
-  "value_kind": "TEXT",
+  "value_kind": "RANGE",
   "resolved_by": null
  },
  {
@@ -296,7 +296,7 @@
   "weight": "Low",
   "calibration_method": "To be calibrated from future studies; initially 0",
   "verification_source": "Aguilera 2019 (concept)",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -311,7 +311,7 @@
   "weight": "Low",
   "calibration_method": "To be calibrated",
   "verification_source": "Aguilera 2019 (concept)",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -326,7 +326,7 @@
   "weight": "Low",
   "calibration_method": "To be determined",
   "verification_source": "N/A",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -476,7 +476,7 @@
   "weight": "High",
   "calibration_method": "Clinical drug-nutrient interaction studies",
   "verification_source": "Hill 1910; Goutelle 2008",
-  "value_kind": "TEXT",
+  "value_kind": "RANGE",
   "resolved_by": null
  },
  {
@@ -671,7 +671,7 @@
   "weight": "Critical",
   "calibration_method": "Systematic review of nutrient-disease associations per cluster",
   "verification_source": "Cluster-specific clinical refs",
-  "value_kind": "TEXT",
+  "value_kind": "RANGE",
   "resolved_by": "nutrient_cluster_weights.weight"
  },
  {
@@ -761,7 +761,7 @@
   "weight": "Medium",
   "calibration_method": "Governance baseline; p>1 is a separately versioned challenger requiring external outcome calibration",
   "verification_source": "Custom",
-  "value_kind": "TEXT",
+  "value_kind": "SCALAR",
   "resolved_by": null
  },
  {
@@ -836,7 +836,7 @@
   "weight": "High",
   "calibration_method": "WHO 2020: limit sedentary time; 8h associated with increased risk",
   "verification_source": "WHO 2020; Biswas 2015",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE",
   "resolved_by": null
  },
  {
@@ -971,7 +971,7 @@
   "weight": "Medium",
   "calibration_method": "Balances smoothing vs responsiveness",
   "verification_source": "Savitzky-Golay 1964",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -986,7 +986,7 @@
   "weight": "Medium",
   "calibration_method": "3rd order captures curvature without overfitting",
   "verification_source": "Savitzky-Golay 1964",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1091,7 +1091,7 @@
   "weight": "High",
   "calibration_method": "van der Merwe recommends 10^-4 to 1",
   "verification_source": "van der Merwe 2001",
-  "value_kind": "FORMULA",
+  "value_kind": "SCALAR",
   "resolved_by": null
  },
  {
@@ -1106,7 +1106,7 @@
   "weight": "Medium",
   "calibration_method": "Julier recommends 3-n for Gaussian",
   "verification_source": "Julier & Uhlmann 2004",
-  "value_kind": "FORMULA",
+  "value_kind": "SCALAR",
   "resolved_by": null
  },
  {
@@ -1121,7 +1121,7 @@
   "weight": "Medium",
   "calibration_method": "beta=2 is optimal for Gaussian distributions",
   "verification_source": "van der Merwe 2001",
-  "value_kind": "FORMULA",
+  "value_kind": "SCALAR",
   "resolved_by": null
  },
  {
@@ -1151,7 +1151,7 @@
   "weight": "High",
   "calibration_method": "Tuned per state element based on expected variability",
   "verification_source": "Mohamed & Schwarz 1999",
-  "value_kind": "TEXT",
+  "value_kind": "RANGE",
   "resolved_by": null
  },
  {
@@ -1211,7 +1211,7 @@
   "weight": "Medium",
   "calibration_method": "Versioned NIS/outlier-gate calibration; not full-state NEES",
   "verification_source": "Standard statistics",
-  "value_kind": "FORMULA",
+  "value_kind": "TEXT",
   "resolved_by": null
  },
  {
@@ -1226,7 +1226,7 @@
   "weight": "Low",
   "calibration_method": "3-5 recommended by Roth 2013",
   "verification_source": "Roth 2013 IEEE SPL",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1241,7 +1241,7 @@
   "weight": "Medium",
   "calibration_method": "Balances adaptation speed vs noise",
   "verification_source": "Mohamed & Schwarz 1999",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1406,7 +1406,7 @@
   "weight": "High",
   "calibration_method": "Cross-validation on training data",
   "verification_source": "Lee 2020 IEEE TBME",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1421,7 +1421,7 @@
   "weight": "Medium",
   "calibration_method": "Cross-validation",
   "verification_source": "Lee 2020",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1481,7 +1481,7 @@
   "weight": "Medium",
   "calibration_method": "Standard recommendation from Chernozhukov 2018",
   "verification_source": "Chernozhukov 2018",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1526,7 +1526,7 @@
   "weight": "Critical",
   "calibration_method": "Tuned via offline simulation; theory suggests sqrt(ln(T))",
   "verification_source": "Auer 2002 ML; Li 2010",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1586,7 +1586,7 @@
   "weight": "High",
   "calibration_method": "Standard ridge regression; prevents singular A",
   "verification_source": "Hoerl & Kennard 1970",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE_WITH_DEFAULT",
   "resolved_by": null
  },
  {
@@ -1601,7 +1601,7 @@
   "weight": "Medium",
   "calibration_method": "Updated via dual ascent (H6)",
   "verification_source": "Boyd 2004",
-  "value_kind": "FORMULA",
+  "value_kind": "TEXT",
   "resolved_by": null
  },
  {
@@ -1691,7 +1691,7 @@
   "weight": "Critical",
   "calibration_method": "Pharmacist-curated; updated with new evidence",
   "verification_source": "Clinical pharmacy databases",
-  "value_kind": "TEXT",
+  "value_kind": "SCALAR",
   "resolved_by": null
  },
  {
@@ -1766,7 +1766,7 @@
   "weight": "Low",
   "calibration_method": "Standard online learning",
   "verification_source": "Li 2010",
-  "value_kind": "FORMULA",
+  "value_kind": "SCALAR",
   "resolved_by": null
  },
  {
@@ -1796,7 +1796,7 @@
   "weight": "Critical",
   "calibration_method": "Nutrient-specific literature; default 1.0 until calibrated",
   "verification_source": "Mass-balance invariant",
-  "value_kind": "FORMULA",
+  "value_kind": "RANGE",
   "resolved_by": "nutrients.f_max"
  },
  {
@@ -1841,7 +1841,7 @@
   "weight": "Medium",
   "calibration_method": "Derived from canonical unit scale",
   "verification_source": "Log-domain guard",
-  "value_kind": "FORMULA",
+  "value_kind": "TEXT",
   "resolved_by": null
  },
  {
@@ -2036,7 +2036,7 @@
   "weight": "Medium",
   "calibration_method": "Monte Carlo or Gaussian entropy reduction",
   "verification_source": "Information-action test",
-  "value_kind": "FORMULA",
+  "value_kind": "TEXT",
   "resolved_by": null
  },
  {
@@ -2336,7 +2336,7 @@
   "weight": "High",
   "calibration_method": "Requires independent completeness anchor, missingness calibration, affected-state map and holdout test",
   "verification_source": null,
-  "value_kind": "FORMULA",
+  "value_kind": "TEXT",
   "resolved_by": null
  },
  {
@@ -2846,7 +2846,7 @@
   "weight": "Critical",
   "calibration_method": "Computed per cluster; assert at build time — see ★ Scarring Bistability Guard",
   "verification_source": null,
-  "value_kind": "FORMULA",
+  "value_kind": "TEXT",
   "resolved_by": null
  },
  {

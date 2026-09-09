@@ -122,17 +122,54 @@ def _as_param_no(value) -> int | None:
 
 
 def _value_kind(default_or_range: str | None) -> str:
+    """Classify how the sheet states a parameter's value.
+
+    Four shapes in the source broke earlier versions of this, and each one
+    mattered because value_kind is what drives the gap list -- a usable value
+    misread as a bare range inflates it, and a bare range misread as text
+    drops out of it entirely:
+
+      "-0.3 to -0.1"           a range written with the word "to" rather than
+                               a hyphen, because negative bounds make the
+                               hyphen form ambiguous. Must be matched BEFORE
+                               the scalar-with-status-word form, or the "to"
+                               reads as the status word and "-1 to 1" becomes
+                               the scalar -1.
+      "360-480 (6-8am)"        a range with a parenthetical gloss, which a
+                               bracket-matching rule calls a formula.
+      "1.0 FIXED_PRODUCTION"   a scalar with a status word after it.
+      "0.5-2.0 (default 1.0)"  a range that also states its default. This is
+                               USABLE and must not be counted as a gap, so it
+                               gets its own kind rather than collapsing into
+                               RANGE.
+    """
     if default_or_range is None:
         return "ABSENT"
+
     text = default_or_range.strip()
-    if re.fullmatch(r"-?\d+(\.\d+)?([eE][-+]?\d+)?", text):
+    number = r"-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?"
+
+    # A stated default makes the value usable whatever else the cell says.
+    if re.search(rf"\(\s*default\s+{number}\s*\)", text, re.IGNORECASE):
+        return "RANGE_WITH_DEFAULT"
+
+    # A trailing parenthetical is a gloss on the value, not part of it.
+    stripped = re.sub(r"\s*\([^)]*\)\s*$", "", text).strip()
+
+    if re.fullmatch(number, stripped):
         return "SCALAR"
-    if re.fullmatch(r"-?\d+(\.\d+)?\s*[-–]\s*-?\d+(\.\d+)?", text):
+    # Ranges first: "1.5-4.0", "-0.3 to -0.1", "0 < F_max <= 1".
+    if re.fullmatch(rf"{number}\s*(?:[-–]|to)\s*{number}", stripped):
         return "RANGE"
+    if re.fullmatch(rf"{number}\s*<=?\s*[\w,]+\s*<=?\s*{number}", stripped):
+        return "RANGE"
+    # Only then a scalar carrying a status word: "1.0 FIXED_PRODUCTION".
+    if re.fullmatch(rf"{number}\s+[A-Za-z_][\w ]*", stripped):
+        return "SCALAR"
     if re.search(r"per (nutrient|cluster|pathway|state)|nutrient-specific|cluster-specific",
-                 text, re.IGNORECASE):
+                 stripped, re.IGNORECASE):
         return "PER_ENTITY_UNSPECIFIED"
-    if re.search(r"[=*/^()]|sqrt|exp|log", text):
+    if re.search(r"[=*/^]|sqrt|exp|\blog\b", stripped):
         return "FORMULA"
     return "TEXT"
 
