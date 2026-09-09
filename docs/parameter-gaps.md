@@ -210,3 +210,63 @@ faithfully.
 verify what exists elsewhere — and the Worked Trace and the Layer A–D CSVs
 are evidence that a calibrated set does exist somewhere. That is precisely
 what the request asks for.
+
+## What we got wrong (2026-09-09 review)
+
+Challenged to re-examine rather than re-confirm, two claims in this document
+did not survive. Recorded because a gap list is only useful if it is trusted.
+
+### V_f and V_s are NOT missing, and V_f is NOT stubbed
+
+This document previously called `V_f = 50 dL` a placeholder and `V_s` absent.
+Both are wrong. `O·O1 Anthropometrics` rows O1.1 and O1.2 define them as
+**per-person** quantities computed at onboarding:
+
+    O1.1  V_f = V_ref   * (BW/70)^0.75    V_ref   = 15 L
+    O1.2  V_s = V_s_ref * (BW/70)^0.85    V_s_ref = 30 L
+
+with the note, verbatim: *"V_ref=15L — GENERIC PRIOR ONLY, not a universal
+physiological plasma volume. Apparent volume is compound-specific: use
+per-nutrient V_f,i **where characterised**."*
+
+"Where characterised" is the design saying, in its own words, that
+per-nutrient volumes are an optional refinement over a body-weight prior —
+not a table whose absence is a defect. `sahacore/engine/pharmacokinetics.py`
+already implements both formulas with the v39l F-AX defaults, so this was
+never a gap. Removed from the request.
+
+A genuine question does survive here, and it is a different one: `V_f` has
+**three** irreconcilable references — 50 dL (`P1 Nutrients 81` column O),
+35 dL at 70 kg (`P1 DataMap` row 33, `0.05 × weight_kg × 10`), and 150 dL at
+70 kg (`O1.1`, 15 L). A 4x spread across three sheets deserves a ruling. That
+is now what the message asks about, instead of asking for a table.
+
+### F_max = 1.0 was overstated
+
+The finding is real — `P1 Parameters 134+` row 120 gives the calibration
+method as "default 1.0 until calibrated", and all 81 rows sit at 1 — but the
+consequence claimed here was too strong.
+
+In A4, `F_abs = F_max·σ[logit(F_base/F_max) − log1p(q/Km) + …]`. With
+`F_max = 1` the ceiling simply never binds and the absorbed fraction is
+driven by `F_base` and the modifiers; at zero dose with no modifiers
+`F_abs → F_base`, which is the correct limit. So an uncalibrated `F_max`
+costs a **safety margin** — nothing stops the modifiers pushing iron toward
+implausible absorption — rather than producing a wrong central estimate.
+
+The genuinely blocking pair is `F_base` and `K_m`, which are absent. The
+message now leads with those and asks about `F_max` as a confirmation.
+
+### What survived the challenge
+
+The core claim, re-tested rather than restated. The Worked Trace's parameters
+were fed into our own A4 implementation with every modifier set to zero:
+
+| | trace F_base / Km | our A4 output | trace's stated F_abs |
+|---|---|---|---|
+| Vitamin C | 0.75 / 200 | **0.652174** | 0.652 |
+| Magnesium | 0.30 / 250 | **0.258621** | 0.259 |
+
+Six-decimal agreement from the trace's own numbers through the canonical
+equation. Those are calibrated values, not illustrations — and they are not
+in any table we hold.
