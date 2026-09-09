@@ -911,3 +911,79 @@ workbook's grid, and that grid does not meet the workbook's own criterion.
 Nothing here needs Dr. Ali's decision — it is an implementation note for the
 engineer who builds Layer A, which is why it is written down now rather than
 discovered then.
+
+## 2026-09-09: the outcome log is a Phase-1 obligation written on a Phase-7 sheet
+
+`★ Scoped Builds — LTMLE Bandit` (manifest order 6) specifies Layers G and H,
+which are build-flow phases 7 and 8. Nothing on it can be built for a long
+time. It was imported anyway, for one sentence:
+
+> **SHARED PREREQUISITES (block BOTH items)**
+> **1 · Historical outcome log** — *"Both learn from a per-user longitudinal
+> record the ONLINE engine **must already be writing**"*
+
+and its restatement as the last of the eight open founder decisions:
+
+> **8 · BOTH** — *"confirm the historical outcome log is being written"*
+> *"Prerequisite — nothing offline can start without it"*
+
+**"Already writing" is a claim about today, not about phase 7.** A log that
+begins when Layer G begins gives Layer G nothing to learn from, and the
+months that were not recorded cannot be recovered by any amount of later
+engineering.
+
+### What this build actually writes
+
+`★ Build Guide Python` step 1 lists the ledger's contents:
+
+> raw_events, event_quality, controls_u, measurements_y, bitemporal
+> effective_at/knowledge_at, checkpoints, lineage hashes and replay-job keys
+
+This build has **all of them and nothing else** — it matches its own step
+exactly. And it still does not satisfy the prerequisite: there is no per-user
+outcome panel, and no served-event log.
+
+### A second sheet names the missing tables
+
+Battery test **I12**, BLOCKING:
+
+> `served_action_event` / `served_warning_event` payload hash and `served_at`
+> remain unchanged; revised decision is a new linked version.
+
+and **LM-P09** *"Served-event immutability"* asserts over the same thing. So
+the served-event log is not this build's idea — it is what a BLOCKING
+acceptance test is written against. It is absent from build-guide step 1 and
+absent from this repo.
+
+### Not fixed here, and why
+
+Inventing `served_action_event` from a one-line assertion would be designing
+schema the workbook has not specified — column names, what a payload hash
+covers, what "linked version" means. The status is recorded as `MISSING` in
+`engine_internal.scoped_build_prerequisite`, CI asserts
+`unmet_scoped_prerequisites` returns exactly one row, and
+`tests/test_scoped_builds.py` pins both halves: that step 1's tables exist,
+and that the served-event tables do not.
+
+**For Dr. Ali — and this one has a clock on it, unlike the others:**
+
+> Should the ledger start writing the outcome panel and the served-event log
+> now, while it is young? Every month it does not is a month Layers G and H
+> can never learn from. If yes, which sheet specifies their columns — I did
+> not find one beyond I12's assertion.
+
+### The other two shared prerequisites
+
+| # | prerequisite | status |
+|---|---|---|
+| 1 | Historical outcome log | **MISSING** |
+| 2 | T-1 firewall — *"Both train server-side… never raw clinical"* | **IN_PLACE** (`tests/test_firewall.py`) |
+| 3 | Shadow mode first — *"Compute + log, do NOT serve"* | **NOT_APPLICABLE_YET** — nothing is served |
+
+### And eight decisions that block the code, recorded verbatim
+
+The sheet marks them *"required BEFORE code starts"*. They are loaded into
+`engine_internal.founder_decision` unanswered, because answering one would be
+inventing product policy. Decision 5 — the bandit's reward proxy — carries
+the sheet's own note calling it *"the single biggest decision"*, stated twice:
+once in the table and once as an inline warning on item 2.

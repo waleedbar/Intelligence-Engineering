@@ -77,6 +77,7 @@ jobs:
           python -m sahacore.data.load_bistability_guard
           python -m sahacore.data.load_verification_labs
           python -m sahacore.data.load_validation_battery
+          python -m sahacore.data.load_scoped_builds
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -156,7 +157,7 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 42, f'expected 42 versioned registries, got {versioned}'
+              assert versioned == 44, f'expected 44 versioned registries, got {versioned}'
               # The twelve per-cluster ceilings on the scarring feedback loop,
               # each confirmed by the sheet's own section-8 audit receipt.
               cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
@@ -192,6 +193,16 @@ jobs:
               cur.execute('SELECT count(*) FROM engine_internal.blocking_tests_not_enforced')
               backlog = cur.fetchone()[0]
               assert backlog == 41, f'expected 41 unenforced BLOCKING tests, got {backlog}'
+              # Layers G and H are years away, but their shared prerequisite 1
+              # -- 'a per-user longitudinal record the ONLINE engine must
+              # already be writing' -- is a claim about the ledger being built
+              # now, and it is not met. One unmet prerequisite, not zero.
+              cur.execute('SELECT count(*) FROM engine_internal.unmet_scoped_prerequisites')
+              unmet = cur.fetchone()[0]
+              assert unmet == 1, f'expected 1 unmet scoped prerequisite, got {unmet}'
+              cur.execute('SELECT count(*) FROM engine_internal.founder_decision')
+              fd = cur.fetchone()[0]
+              assert fd == 8, f'expected 8 open founder decisions, got {fd}'
               # 48 organ-pathway links over 13 pathways: none for D14/D15,
               # which is gate d14_d15_fail_closed agreeing with the data.
               cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
@@ -257,7 +268,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 42 versioned registries')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, 44 versioned registries')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

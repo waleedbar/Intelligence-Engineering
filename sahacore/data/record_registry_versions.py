@@ -121,6 +121,10 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("validation_battery.json", "tests", "★ Validation Test Battery"),
     "engine_internal.validation_section":
         ("validation_battery.json", "sections", "★ Validation Test Battery"),
+    "engine_internal.scoped_build_prerequisite":
+        ("scoped_builds.json", "prerequisites", "★ Scoped Builds — LTMLE Bandit"),
+    "engine_internal.founder_decision":
+        ("scoped_builds.json", "open_decisions", "★ Scoped Builds — LTMLE Bandit"),
 }
 
 

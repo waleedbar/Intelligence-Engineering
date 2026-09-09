@@ -1,0 +1,182 @@
+{
+  "sheet": "★ Scoped Builds — LTMLE Bandit",
+  "warning": "These two are NOT per-tick drop-ins like Layers A–F. LTMLE is an OFFLINE BATCH job fitted on a COHORT; the bandit LEARNER is a PERSISTENT SERVICE driven by DELAYED rewards. Each is a multi-week SYSTEMS build (data pipeline + storage + retrain/serve cadence + reward design), not a formula you evaluate once. Getting them wrong is SILENT: LTMLE on thin data yields unstable / invalid effect estimates (positivity violations, exploding weights); a mis-specified bandit reward optimizes the WRONG thing on real users. Build the online loop (A–F, M, W, S, H-selection) FIRST. Do NOT wire either of these to live user recommendations until (1) their acceptance criteria pass AND (2) the founder has signed off the outcome / reward definitions. Until then: SHADOW MODE (compute + log, do not serve).",
+  "prerequisites": [
+    {
+      "number": "1",
+      "name": "Historical outcome log",
+      "source_row": 8,
+      "detail": "Both learn from a per-user longitudinal record the ONLINE engine must already be writing: timestamped {firewall-safe state snapshot, recommendation issued, adherence observed, outcome / lab delta}. If this log is not being persisted, BUILDING IT IS A PREREQUISITE — nothing offline can start.",
+      "status": "MISSING",
+      "satisfied_by": null,
+      "status_note": "The ledger writes raw_events, event_quality, controls_u, measurements_y, checkpoints and replay keys -- exactly what '★ Build Guide Python' step 1 specifies, and nothing more. There is no per-user outcome panel and no served-event log. The battery's I12 (BLOCKING) names served_action_event and served_warning_event, so those tables are specified somewhere; step 1 does not list them and nothing in this repo writes them."
+    },
+    {
+      "number": "2",
+      "name": "T-1 firewall",
+      "source_row": 9,
+      "detail": "Both train server-side. LTMLE's SERVED outputs to H are effect estimates (never raw clinical values). The bandit's context features must be firewall-safe summaries only.",
+      "status": "IN_PLACE",
+      "satisfied_by": "tests/test_firewall.py",
+      "status_note": "The T-1 firewall exists: engine_internal and client_render, the app_consumer and engine_writer roles, RLS on every client-facing table, and a suite that attempts the reads this prerequisite forbids."
+    },
+    {
+      "number": "3",
+      "name": "Shadow mode first",
+      "source_row": 10,
+      "detail": "Compute + log, do NOT serve to users, until acceptance criteria pass AND the founder signs off the outcome/reward definitions.",
+      "status": "NOT_APPLICABLE_YET",
+      "satisfied_by": null,
+      "status_note": "Shadow mode governs serving, and nothing is served: there is no API, no service and no deployment. It becomes live the moment either layer computes something a user could see."
+    }
+  ],
+  "items": [
+    {
+      "item_id": "ITEM 1",
+      "source_row": 12,
+      "title": "ITEM 1 · LTMLE — Longitudinal Targeted Maximum Likelihood Estimation   (Layer G · row G5)",
+      "attributes": [
+        {
+          "source_row": 13,
+          "name": "Execution plane / cadence",
+          "value": "⚑ OFFLINE BATCH on a cohort, periodic (e.g. monthly). NOT per-user, NOT per-tick. Output = a table of effect estimates SERVED to Layer H."
+        },
+        {
+          "source_row": 14,
+          "name": "What & why",
+          "value": "Estimates the causal effect of a dynamic nutrition/lifestyle regime on a wellness-cluster outcome, correctly handling TIME-VARYING confounding (a covariate both changed by past intervention AND predicting future adherence). Doubly-robust (consistent if EITHER the outcome model OR the propensity is right) and efficient. Ordinary regression is biased here; this is the correct tool."
+        },
+        {
+          "source_row": 15,
+          "name": "Algorithm (buildable)",
+          "value": "FIT_LTMLE(cohort panel, dynamic regime d):        # OFFLINE, periodic\n  # 1) nuisance models — Super Learner, cross-fit K=5..10\n  Q_t = E[Y | Lbar_t, Abar_t]                      # outcome model\n  g_t = P(A_t = d_t | Lbar_t, Abar_{t-1})          # propensity\n  (+ censoring model if dropout)\n  # 2) backward iterated conditional expectation (ICE), t = K..1\n  Qbar = Y\n  for t in K..1:\n     Qbar = regress(Qbar on Lbar_t, Abar_{t-1};   subset = follows d up to t)\n     H_t  = 1(Abar_t = d) / PROD_{s<=t} g_s         # clever covariate\n     eps  = fit_fluctuation(residual, covariate = H_t)   # TARGETING step\n     Qbar = expit( logit(Qbar) + eps * H_t )\n  # 3) estimate + inference\n  psi_hat = mean( Qbar at t=1 )\n  CI      = psi_hat +/- 1.96 * influence_curve_se\n  return {psi_hat, CI, weight_diagnostics}\nGUARDS: truncate weights at 1st/99th pct or g>=0.01 (positivity); needs\n        hundreds+ users WITH the outcome per regime for a stable estimate.\nCROSS-CHECK (sensitivity): IPTW-MSM,  w = PROD_t 1/g_t."
+        },
+        {
+          "source_row": 16,
+          "name": "I/O contract — INPUTS",
+          "value": "(offline, from warehouse) per-user panels {L_t covariates, A_t adherence/exposure, Y outcome, C_t censoring} from the historical log."
+        },
+        {
+          "source_row": 17,
+          "name": "I/O contract — OUTPUTS",
+          "value": "(served to Layer H) table: {intervention_id, context_bucket, psi_hat, ci_low, ci_high, n, weight_diag, model_version, fit_date}. Consumed by H as the BENEFIT prior (H5 LCB(benefit))."
+        },
+        {
+          "source_row": 18,
+          "name": "Acceptance criteria",
+          "value": "(1) Recovers the known effect on a SIMULATED data-generating process WITH time-varying confounding, within CI. (2) Double-robustness holds under either misspecified-Q OR misspecified-g in simulation. (3) Positivity/weight diagnostics logged; effect table served in the agreed schema and readable by H."
+        },
+        {
+          "source_row": 19,
+          "name": "Effort / risk",
+          "value": "~3–6 engineer-weeks AFTER the log exists. Prototype in mature R ltmle / tmle3 for validation, then port serving. Population/subgroup effects only — individual CATE stays with the DR-learner (G4)."
+        },
+        {
+          "source_row": 20,
+          "name": "INTERIM FALLBACK (G1–G4)",
+          "value": "Build order is NOT optional. The nuisance models (outcome + propensity), cross-fitting, and the serving interface to H are REQUIRED for LTMLE regardless — that scaffolding IS the DR-learner. LTMLE = the SAME scaffolding with backward-ICE + targeting BOLTED ON. So G1–G4 is a CHECKPOINT on the LTMLE build, not a separate build; you pass through it on the way to LTMLE either way. Because the interim and LTMLE share the SAME H interface, upgrading is a drop-in swap at H's benefit prior (tau_hat_DR → psi_hat), no H change.  SEPARATE decision (NOT a build decision): whether to SERVE the interim's cohort estimates now, or stay on literature/expert priors until the panel is mature enough for LTMLE. Building the scaffolding first is MANDATORY; serving the interim is OPTIONAL."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "item_id": "ITEM 2",
+      "source_row": 22,
+      "title": "ITEM 2 · Conservative Contextual Bandit (CLUCB2)   (Layer H · rows H5 / H7)",
+      "attributes": [
+        {
+          "source_row": 23,
+          "name": "Execution plane / cadence",
+          "value": "⚑ HYBRID. Action-SELECTION per decision = cheap, INLINE. The LEARNER (theta, A, b, confidence sets, safety ledger) = a PERSISTENT STATEFUL SERVICE updated from DELAYED rewards. NOT per-tick with the filter."
+        },
+        {
+          "source_row": 24,
+          "name": "What & why",
+          "value": "Chooses which recommendation to make, among the VETO-safe set, with a FORMAL safety guarantee: cumulative performance stays within a factor (1-alpha_c) of a safe baseline w.h.p. A plain bandit explores by trying under-tested actions — unacceptable in a wellness context. Conservative bandits only spend exploration budget already banked by beating the baseline. Sits ON TOP of the 339-rule VETO gate."
+        },
+        {
+          "source_row": 25,
+          "name": "Algorithm (buildable)",
+          "value": "# linear contextual bandit:  A = lambda*I + SUM phi phi^T ;  theta = A^-1 b\nSELECT(x_t):                         # INLINE, cheap, per decision\n   A_safe = VETO_filter(x_t)          # 339 rules + personalized UL\n   if empty(A_safe): return baseline(x_t)\n   a = argmax_{a in A_safe} [ phi^T theta + alpha*sqrt(phi^T A^-1 phi) ]   # UCB\n   # conservative safety check — banked surplus Z:\n   if  Z + LCB(x_t,a) - (1-alpha_c)*baseline_reward(x_t) >= 0:\n        played = a\n   else:\n        played = baseline(x_t)\n   log_decision(id, played, phi);  return played\n\nUPDATE(decision_id, reward):         # SERVICE, on DELAYED reward arrival\n   phi = lookup(decision_id)\n   A += phi phi^T ;  b += reward*phi ;  theta = A^-1 b   # Sherman-Morrison\n   Z += reward - (1-alpha_c)*baseline_reward(decision_id)\nGUARANTEE: cumulative reward >= (1-alpha_c)*baseline w.h.p.; regret ~ LinUCB + O(1).\nCold start: Z starts 0 → early rounds default to baseline until surplus banked."
+        },
+        {
+          "source_row": 27,
+          "name": "I/O contract — INPUTS",
+          "value": "phi(x,a) firewall-safe context + action features; A_safe (from VETO/S); baseline b0 per context; LTMLE psi_hat (benefit prior / warm-start); delayed reward r (outcome pipeline)."
+        },
+        {
+          "source_row": 28,
+          "name": "I/O contract — OUTPUTS",
+          "value": "selected safe action → Tier-1 client; persisted learner state {theta, A, b, Z}. Interfaces: VETO (upstream — never bypassed), LTMLE (benefit prior), reward pipeline (delayed feedback)."
+        },
+        {
+          "source_row": 29,
+          "name": "Acceptance criteria",
+          "value": "(1) On a simulator, EMPIRICALLY never drops below (1-alpha_c)*baseline cumulative reward. (2) Regret decreases over rounds (it learns). (3) Cold-start defaults to baseline; every served action ⊆ VETO-safe set. (4) Delayed rewards correctly keyed to their originating decision."
+        },
+        {
+          "source_row": 30,
+          "name": "Effort / risk",
+          "value": "~3–5 engineer-weeks AFTER the reward pipeline is designed. Prototype offline against a simulator (validate the safety guarantee) before serving + persistence. Action-selection inline; learner is a service; reward-attribution pipeline is part of THIS task."
+        }
+      ],
+      "notes": [
+        {
+          "source_row": 26,
+          "text": "⚠  THE HARD PART — REWARD DESIGN (founder decision).  Reward in a wellness app is DELAYED (weeks) and NOISY. A proxy MUST be chosen: (a) short-horizon ADHERENCE (fast, measures compliance not benefit); (b) short-horizon MOVEMENT in the target wellness-cluster score (closer to benefit, noisier); (c) a COMPOSITE. Delayed feedback → use a delayed-reward variant, keying reward to its originating decision. This single choice shapes the ENTIRE learner and must be fixed BEFORE build."
+        }
+      ]
+    }
+  ],
+  "open_decisions": [
+    {
+      "number": 1,
+      "source_row": 34,
+      "decision": "LTMLE · Outcome Y (which cluster composite / lab delta, over what horizon)",
+      "why_it_matters": "Defines the entire estimand"
+    },
+    {
+      "number": 2,
+      "source_row": 35,
+      "decision": "LTMLE · Treatment A (adherence-to-regime vs specific intervention) + regime rule d",
+      "why_it_matters": "Defines what effect is estimated"
+    },
+    {
+      "number": 3,
+      "source_row": 36,
+      "decision": "LTMLE · Confounder set L_t",
+      "why_it_matters": "Must capture predictors of both adherence and outcome; avoid collider adjustment"
+    },
+    {
+      "number": 4,
+      "source_row": 37,
+      "decision": "LTMLE · Retrain cadence (monthly / quarterly / gated on N new outcomes)",
+      "why_it_matters": "Sets the batch schedule"
+    },
+    {
+      "number": 5,
+      "source_row": 38,
+      "decision": "Bandit · REWARD proxy (adherence / score-movement / composite) + window",
+      "why_it_matters": "Shapes the whole learner — the single biggest decision"
+    },
+    {
+      "number": 6,
+      "source_row": 39,
+      "decision": "Bandit · Baseline policy b0 (expert-rule rec vs no-action)",
+      "why_it_matters": "Anchors the safety guarantee"
+    },
+    {
+      "number": 7,
+      "source_row": 40,
+      "decision": "Bandit · alpha_c conservatism level",
+      "why_it_matters": "Trades safety vs learning speed"
+    },
+    {
+      "number": 8,
+      "source_row": 41,
+      "decision": "BOTH · confirm the historical outcome log is being written",
+      "why_it_matters": "Prerequisite — nothing offline can start without it"
+    }
+  ],
+  "external_spec": "Full external spec (algorithms, contracts, references): SahaPlus_Engine_BuildSpec_LTMLE_Bandit_Handoff.docx / .pdf. This sheet is the in-workbook embed — kept in sync with that document."
+}
