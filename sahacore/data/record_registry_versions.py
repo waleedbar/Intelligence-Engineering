@@ -78,6 +78,10 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("supplement_registry.json", None, "★ Supplement Registry"),
     "engine_internal.equation_backbone":
         ("equation_backbone.json", None, "★ Equation Backbone"),
+    "engine_internal.datamap_variable":
+        ("datamap.json", "variables", "P1 DataMap section A"),
+    "engine_internal.datamap_onboarding_field":
+        ("datamap.json", "onboarding_fields", "P1 DataMap section B"),
 }
 
 

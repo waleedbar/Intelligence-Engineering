@@ -586,3 +586,27 @@ After importing three sheets the manifest had always listed:
 
 Nine of eighteen, and the import is at 21 of 124 backend sheets. The list
 should not be sent until it is finished.
+
+## Source rows that are incomplete or inconsistent, as found
+
+A running list for the workbook's author. None of these is a parameter gap;
+each is a cell or a count the source leaves unfinished. All are loaded as-is
+and surfaced by a view rather than dropped or filled in.
+
+| Sheet | Where | What | View |
+|---|---|---|---|
+| `★ Supplement Registry` | row 20, Betaine (TMG) | name only — no effect cap, evidence position or cluster permission | `supplement_incomplete` |
+| `P1 DataMap` | row 8 | "Gamma shape parameter", Layer A, equation A1, symbol cell empty (almost certainly `k`) | `datamap_unnamed_variable` |
+| `P1 DataMap` | section A banner | claims "158+ ENGINE VARIABLES" over 96 rows | — |
+| `P1 DataMap` | section B banner | claims "105 ONBOARDING FIELDS" over 63 rows | — |
+| `P1 DataMap` | sheet title | claims "227 items" over 212 data rows in five sections | — |
+
+Some DataMap rows do name two variables in one cell ("k₁, λ₁"), which
+accounts for part of the count gap but not the whole of it. Both numbers are
+recorded — what the banner claims and what the sheet holds — rather than one
+being chosen.
+
+`P1 DataMap` sections C, D and E are deliberately not imported. D restates
+the action space and E restates the equation backbone's inputs and outputs,
+both of which are loaded from their own sheets; a second copy is a second
+thing to keep in agreement. C is integration metadata with no consumer yet.
