@@ -87,7 +87,7 @@ def test_an_authority_glosss_semicolons_do_not_split_it(fk):
 
 # --- the acceptance test ---------------------------------------------------
 
-def test_no_missing_fk_is_exactly_these_six(fk):
+def test_no_missing_fk_is_exactly_these_five(fk):
     """Build step 2's acceptance test. Pinned by (equation, key) so a change
     says which FK moved, not merely that the count did.
 
@@ -106,21 +106,18 @@ def test_no_missing_fk_is_exactly_these_six(fk):
     and beta_autophagy had been reported MISSING_FK on the strength of having
     read three sheets and not found them. They were in a fourth, which
     '01_IMPORT_MANIFEST' listed at order 21 and the import had not reached.
+
+    It went 6 -> 5 when '★ Equation Backbone' loaded: CL is not a parameter
+    at all. B4 computes it as CL_renal + CL_hepatic. Reporting it missing was
+    right about the evidence and wrong about the category.
     """
     assert set(_by_status(fk, "MISSING_FK")) == {
-        # Layer B's two-compartment ODE consumes a total clearance and an
-        # inter-compartment flow. 'P1 Parameters 134+' defines CL_int,i
-        # (intrinsic hepatic clearance) and Q_liver (hepatic blood flow) --
-        # different quantities. There is no symbol for either of these.
-        ("B-002/B-003", "CL"),
+        # Layer B's inter-compartment flow. 'P1 Parameters 134+' defines
+        # Q_liver, the hepatic blood flow -- a different quantity. B2 and B3
+        # use this Q and no backbone row defines it, so unlike CL (which
+        # left this list once '★ Equation Backbone' showed B4 computing it)
+        # there is genuinely nothing to resolve against.
         ("B-002/B-003", "Q"),
-        # K3-FIX-01's alpha_scar and beta_autophagy WERE here, and are not
-        # any more. They were never absent from the workbook: they are in
-        # '★ Param Registry +20' (0.001-0.01 and 1e-4-1e-3 per day), a sheet
-        # '01_IMPORT_MANIFEST' lists at order 21 that this build had not yet
-        # reached. They report RESOLVED_ELSEWHERE now, because M-PARAM
-        # Registry -- the authority the row actually names -- still does not
-        # carry them. The correction is in docs/parameter-gaps.md.
         # Layer H's conservative-decision objective. Its risk and uncertainty
         # penalties resolve (#132 lambda_r, #131 lambda_u), but the budget
         # penalty, the two bound z-scores and the baseline offset are in
@@ -156,9 +153,13 @@ def test_the_same_token_in_two_rows_is_not_resolved_to_one_parameter(fk):
 # --- resolution quality ----------------------------------------------------
 
 def test_every_resolved_key_names_where_it_resolved(fk):
+    """Three statuses name a place: the two that found a value, and COMPUTED,
+    which names the equation that produces one. Everything else must name
+    nothing -- a status with a location it did not earn reads as resolved."""
+    NAMES_A_PLACE = ("RESOLVED", "RESOLVED_ELSEWHERE", "COMPUTED")
     for r in fk:
         for key, v in r["key_resolution"].items():
-            if v["status"] in ("RESOLVED", "RESOLVED_ELSEWHERE"):
+            if v["status"] in NAMES_A_PLACE:
                 assert v["resolved_in"], f"{r['eq_id']}.{key} resolved to nothing"
             else:
                 assert v["resolved_in"] is None
@@ -320,3 +321,37 @@ def test_a_key_never_resolves_into_the_extension_against_a_row_that_owns_it(fk):
             if v["resolved_in"] and v["resolved_in"].startswith("param_registry_ext20:"):
                 assert v["status"] == "RESOLVED_ELSEWHERE", (
                     f"{r['eq_id']}.{key} claims {v['status']} against the extension")
+
+
+def test_CL_is_computed_rather_than_missing(fk):
+    """The status that says "this was never a value to look up". '★ Equation
+    Backbone' B4 gives CL = CL_renal + CL_hepatic, and B5/B6 give the two
+    terms, so no registry was ever going to carry it.
+
+    Q, in the same FK row, is deliberately still MISSING_FK: B2 and B3 use it
+    and no backbone row defines it. The distinction is the point -- a table
+    of "computed" keys that swallowed both would turn a real gap into a
+    reassuring word."""
+    b = next(r for r in fk if r["eq_id"] == "B-002/B-003" and r["keys_are_explicit"])
+    cl = b["key_resolution"]["CL"]
+    assert cl["status"] == "COMPUTED"
+    assert "B4" in cl["resolved_in"]
+    assert "CL_renal + CL_hepatic" in cl["resolved_in"]
+    assert b["key_resolution"]["Q"]["status"] == "MISSING_FK"
+
+
+def test_every_computed_key_cites_a_real_backbone_equation():
+    """A citation pointing at nothing would read as justification."""
+    import json as _json
+    from sahacore.data.build_eq_param_fk import COMPUTED_BY_BACKBONE
+
+    backbone = _json.loads(
+        (DATA_DIR / "equation_backbone.json").read_text(encoding="utf-8"))
+    by_id = {}
+    for r in backbone:
+        by_id.setdefault(r["eq_id"], []).append(r["formula"])
+    for key, (eq_id, formula, scope) in COMPUTED_BY_BACKBONE.items():
+        assert eq_id in by_id, f"{key} cites {eq_id}, which is not in the backbone"
+        assert any(formula in f for f in by_id[eq_id]), (
+            f"{key} cites {formula!r}, which {eq_id} does not say")
+        assert scope, f"{key} is unscoped"

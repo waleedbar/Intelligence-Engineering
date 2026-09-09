@@ -1,0 +1,582 @@
+[
+ {
+  "source_row": 6,
+  "eq_id": "ONB",
+  "layer": "Onboarding",
+  "name": "Warm-start prior",
+  "formula": "S_k(t0)=clip(w_FH·Σδ_FH + w_lab·g_lab + w_cond·I[cond] + w_age·age, 0,1)",
+  "inputs": "O6/O8/O11/O13 + Step-12 labs",
+  "outputs": "→ E (219-D state init), M0",
+  "cadence": "Init (signup / warm-start)"
+ },
+ {
+  "source_row": 7,
+  "eq_id": "ONB2",
+  "layer": "Onboarding",
+  "name": "MVPA prior",
+  "formula": "metmin_wk = 4.5·(f_mod·dur) + 7.5·(f_vig·dur)",
+  "inputs": "O2 UI selections",
+  "outputs": "→ A6, C4 (activity)",
+  "cadence": "Init (signup / warm-start)"
+ },
+ {
+  "source_row": 8,
+  "eq_id": "BRDG",
+  "layer": "Onboarding",
+  "name": "Legacy-prior → canonical 219 adapter",
+  "formula": "Warm-start maps any supported legacy prior schema into the canonical R^219 state under an explicit model_shape_version; no deleted 179→208 bridge is authoritative.",
+  "inputs": "legacy priors",
+  "outputs": "→ E state",
+  "cadence": "Init (signup / warm-start)"
+ },
+ {
+  "source_row": 9,
+  "eq_id": "A1",
+  "layer": "A Absorption",
+  "name": "Gamma absorption kernel",
+  "formula": "h_i(τ)=w_i·Γ(τ;k1,λ1)+(1−w_i)·Γ(τ;k2,λ2)",
+  "inputs": "logged food, kinetics",
+  "outputs": "→ A2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 10,
+  "eq_id": "A2",
+  "layer": "A Absorption",
+  "name": "Mass-conserving multi-meal absorption",
+  "formula": "a_i(t)=SUM_m q_i,m*F_abs,i,m*h_i*(t-t_m); INTEGRAL h_i*=1; INTEGRAL a_i=SUM q_i,m F_abs,i,m <= SUM q_i,m",
+  "inputs": "A1, meals, A3, A4",
+  "outputs": "→ B2 (plasma input)",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 11,
+  "eq_id": "A3",
+  "layer": "A Absorption",
+  "name": "Positive normalized timing modulator",
+  "formula": "m_i(t)=exp(Fourier clock + activity + gastric-emptying + sleep + matrix terms); h_i*=h_i*m_i/INTEGRAL(h_i*m_i)",
+  "inputs": "time of day",
+  "outputs": "→ A2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 12,
+  "eq_id": "A4",
+  "layer": "A Absorption",
+  "name": "Bounded absorbed fraction",
+  "formula": "F_abs=F_max*sigmoid(logit(F_base/F_max)-log1p(q/Km)+SUM gamma*tanh(z)+gamma_cook+gamma_condition), 0<=F_abs<=F_max<=1",
+  "inputs": "dose, interactions",
+  "outputs": "→ A2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 13,
+  "eq_id": "A5",
+  "layer": "A Absorption",
+  "name": "Gastric emptying (Weibull)",
+  "formula": "GE(t)=1−exp(−ln2·(t/T50)^κ)  [v39l F-I]",
+  "inputs": "meal composition",
+  "outputs": "→ A2 timing",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 14,
+  "eq_id": "A6",
+  "layer": "A Absorption",
+  "name": "Activity/sleep timing effect",
+  "formula": "m_act=exp(beta_act*MET/(MET+K_act)+beta_sleep*I_sleep); normalized through h_i*",
+  "inputs": "MET (ONB2), sleep",
+  "outputs": "→ A2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 15,
+  "eq_id": "A7",
+  "layer": "A Absorption",
+  "name": "Food-matrix guard",
+  "formula": "eta_matrix=SUM_j psi_ij*tanh(q_j/q_ref,j); enter logit(F_abs) or log m_i; psi=0 in Phase 1",
+  "inputs": "co-ingested foods",
+  "outputs": "→ B2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 16,
+  "eq_id": "B1",
+  "layer": "B Pharmacokinetics",
+  "name": "Elimination rate",
+  "formula": "k_el_i=ln2 / T_half_i",
+  "inputs": "per-nutrient half-life",
+  "outputs": "→ B2/B3",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 17,
+  "eq_id": "B2",
+  "layer": "B Pharmacokinetics",
+  "name": "Fast compartment ODE",
+  "formula": "dC1/dt = A_final/V1 − (CL+Q)/V1·C1 + Q/V1·C2",
+  "inputs": "A2, B4",
+  "outputs": "→ C1, E state[1..81]",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 18,
+  "eq_id": "B3",
+  "layer": "B Pharmacokinetics",
+  "name": "Slow compartment ODE",
+  "formula": "dC2/dt = (Q/V2)·C1 − (Q/V2)·C2",
+  "inputs": "B2",
+  "outputs": "→ C1, E state[81..160]",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 19,
+  "eq_id": "B4",
+  "layer": "B Pharmacokinetics",
+  "name": "Total clearance",
+  "formula": "CL = CL_renal + CL_hepatic",
+  "inputs": "B5, B6",
+  "outputs": "→ B2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 20,
+  "eq_id": "B5",
+  "layer": "B Pharmacokinetics",
+  "name": "Renal clearance",
+  "formula": "CL_renal = GFR·f_filtered·(1−f_reabsorbed)",
+  "inputs": "eGFR (labs)",
+  "outputs": "→ B4",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 21,
+  "eq_id": "B6",
+  "layer": "B Pharmacokinetics",
+  "name": "Hepatic clearance",
+  "formula": "CL_hepatic = Q_H·E_H  (well-stirred; E_H embeds f_u)",
+  "inputs": "protein binding",
+  "outputs": "→ B4",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 22,
+  "eq_id": "C1",
+  "layer": "C Damage",
+  "name": "Dimensionless cluster exposure",
+  "formula": "r_hi/r_lo = baseline-corrected softplus of log concentration-to-threshold ratios; E_k=SUM_i v_ik(r_hi,i+r_lo,i)",
+  "inputs": "B2/B3, weight matrix D7",
+  "outputs": "→ C2/C3",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 23,
+  "eq_id": "C2",
+  "layer": "C Damage",
+  "name": "Exact excess-damage integration",
+  "formula": "rho=exp(-k*dt); g=-expm1(-k*dt)/k; Z_hi+=rho*Z_hi+g*eta_hi*max(E-theta_hi,0)^p",
+  "inputs": "C1",
+  "outputs": "→ C4",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 24,
+  "eq_id": "C3",
+  "layer": "C Damage",
+  "name": "Exact deficiency-damage integration",
+  "formula": "rho=exp(-k*dt); g=-expm1(-k*dt)/k; Z_lo+=rho*Z_lo+g*eta_lo*max(theta_lo-E,0)^p",
+  "inputs": "C1",
+  "outputs": "→ C4",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 25,
+  "eq_id": "C4",
+  "layer": "C Damage",
+  "name": "Total damage + activity",
+  "formula": "Z_k=(Z_hi+Z_lo)·(1−δ_k·MVPA/(MVPA+K_act)) + η_sed·softplus(SED−480)·v_sed·dt",
+  "inputs": "C2,C3, MVPA",
+  "outputs": "→ C6, D-score, M1",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 26,
+  "eq_id": "C5",
+  "layer": "C Damage",
+  "name": "Dual-Hill dose-response",
+  "formula": "damage(C)=D_def·max(0,K_def^n1−C^n1)/K_def^n1 + D_tox·max(0,C^n2−K_tox^n2)/(K_tox^n2+C^n2)",
+  "inputs": "C_eff",
+  "outputs": "→ U-shaped risk",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 27,
+  "eq_id": "C6",
+  "layer": "C Damage",
+  "name": "MM repair (competitive)",
+  "formula": "repair_k=Vm·Z_k/(Km·(1+Σ_{j≠k}Z_j/K_j)+Z_k)  · f_ATP · f_NAD",
+  "inputs": "C4, QSSA f_ATP/f_NAD",
+  "outputs": "→ Z_k update",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 28,
+  "eq_id": "TVMCD",
+  "layer": "C · TVMCD (D1–D15)",
+  "name": "15 pathway disruption ODEs (general form)",
+  "formula": "d(logZ_p)/dt = [k·gate_p·H − Vm·Z_p/(Km+Z_p)] / Z_p",
+  "inputs": "biomarker gates",
+  "outputs": "→ C4 aggregation",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 29,
+  "eq_id": "D13*",
+  "layer": "C · TVMCD",
+  "name": "Hcy Vascular (fed by One-Carbon)",
+  "formula": "gate = sp_t(Hcy−10)·sp_t(Hcy−15)/t",
+  "inputs": "One-Carbon OC1 [Hcy]",
+  "outputs": "→ C12 cluster",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 30,
+  "eq_id": "D14*",
+  "layer": "C · TVMCD",
+  "name": "Microbiome Dysbiosis",
+  "formula": "gate = (1−fiber_adeq)·(1−diversity)  (bistable)",
+  "inputs": "fiber, diversity",
+  "outputs": "→ H12 hallmark",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 31,
+  "eq_id": "DSC",
+  "layer": "D Scoring",
+  "name": "Disruption score (logistic)",
+  "formula": "D_k = 100 / (1 + exp(−(a_k·ln(1+Z_k)+b_k)))",
+  "inputs": "C4/C6 Z_k",
+  "outputs": "→ composite, Tier-1 band",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 32,
+  "eq_id": "CHS",
+  "layer": "D Scoring",
+  "name": "Composite wellness score",
+  "formula": "CHS = 100 - SUM_k w_k^fix*D_final_k / SUM_k w_k^fix ; w_k^fix = FIXED display weights (adaptive only for H priority)",
+  "inputs": "D_k, domain weights",
+  "outputs": "→ Tier-1 client (firewall)",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 33,
+  "eq_id": "E1",
+  "layer": "E SR-UKF",
+  "name": "219-D state vector",
+  "formula": "x=[C_fast(81),C_slow(81),ξ_hi(12),ξ_lo(12),Lifestyle(24),G,X,I,V,x_c,y_c,F,L,A_v] ; ξ=ln(Z+ε)",
+  "inputs": "B,C,M outputs",
+  "outputs": "→ E2/E3",
+  "cadence": "Online · per-obs (filter)"
+ },
+ {
+  "source_row": 34,
+  "eq_id": "E2",
+  "layer": "E SR-UKF",
+  "name": "Rao-Blackwellized sigma-point partition",
+  "formula": "x_L=164 conditional linear-Gaussian states; x_N=55 nonlinear states; 111 sigma branches; n_total = 219",
+  "inputs": "E1 (n=219 CANONICAL; 208 legacy S0 only)",
+  "outputs": "→ E3",
+  "cadence": "Online · per-obs (filter)"
+ },
+ {
+  "source_row": 35,
+  "eq_id": "E3",
+  "layer": "E SR-UKF",
+  "name": "RB-SR-UKF predict/update",
+  "formula": "Propagate x_N with 111 sigma branches and x_L exactly conditional on each branch; square-root recombination, robust gating, no gain floor",
+  "inputs": "measurements y",
+  "outputs": "→ fused state + covariance",
+  "cadence": "Online · per-obs (filter) → ★ Uncertainty Memory E-F-G-H"
+ },
+ {
+  "source_row": 36,
+  "eq_id": "F",
+  "layer": "F Trajectory",
+  "name": "Wellness trajectory projection",
+  "formula": "project fused state forward → domain-specific trajectories",
+  "inputs": "E state",
+  "outputs": "→ Tier-1 trends",
+  "cadence": "Serve online · TRAIN offline → ★ Uncertainty Memory E-F-G-H"
+ },
+ {
+  "source_row": 37,
+  "eq_id": "G",
+  "layer": "G Causal",
+  "name": "Personalized treatment effect",
+  "formula": "TWO paths, SAME H interface. INTERIM (BUILD FIRST): static DR-learner (G1-G4) - single-decision CATE, cross-sectional, LIGHT offline. FULL (upgrade): LTMLE - longitudinal, doubly-robust, corrects time-varying confounding. Swap at H's benefit prior (tau_hat_DR -> psi_hat), NO H change.",
+  "inputs": "E state, history",
+  "outputs": "→ H ranking",
+  "cadence": "INTERIM: light offline batch (G1-G4). FULL: ⚑ heavy offline - LTMLE (scoped; handoff). → see ★ Scoped Builds — LTMLE Bandit (this workbook) → ★ Uncertainty Memory E-F-G-H"
+ },
+ {
+  "source_row": 38,
+  "eq_id": "QATP",
+  "layer": "QSSA",
+  "name": "ATP production (algebraic)",
+  "formula": "J_ATP=Σ_i(Vmax_i·[S_i]/(Km_i+[S_i]))·f_cofactor·f_activity ; f_cofactor=min(CoQ10,Mg,Fe saturations)",
+  "inputs": "nutrient states (CoQ10,Mg,Fe)",
+  "outputs": "→ f_ATP → C6 repair",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 39,
+  "eq_id": "QGSH",
+  "layer": "QSSA",
+  "name": "Glutathione (algebraic)",
+  "formula": "GSH steady-state from cysteine supply (transsulfuration) + GCL capacity",
+  "inputs": "One-Carbon cysteine flux",
+  "outputs": "→ f_GSH, D2 oxidative",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 40,
+  "eq_id": "QNAD",
+  "layer": "QSSA",
+  "name": "NAD support (algebraic)",
+  "formula": "0=J_de_novo+J_salvage−v_SIRT(NAD+)−v_PARP(NAD+)−v_CD38(NAD+)−J_other. NNMT is an indirect NAM-salvage/SAM bridge, not a direct NAD-consuming flux.",
+  "inputs": "niacin/tryptophan support, NAMPT salvage; SIRT/PARP/CD38 demand; optional NNMT bridge OFF unless identified",
+  "outputs": "→ f_NAD → C6, D4/D5",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 41,
+  "eq_id": "OC1",
+  "layer": "One-Carbon ODE",
+  "name": "Homocysteine",
+  "formula": "d[Hcy]/dt = v_SAHH − v_MTR − v_BHMT − v_CBS",
+  "inputs": "A2 (folate,B12,B6,betaine)",
+  "outputs": "→ D13 Hcy, QGSH",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 42,
+  "eq_id": "OC2",
+  "layer": "One-Carbon ODE",
+  "name": "5-methyl-THF",
+  "formula": "d[5mTHF]/dt = v_MTHFR − v_MTR",
+  "inputs": "folate",
+  "outputs": "→ OC1",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 43,
+  "eq_id": "OC3",
+  "layer": "One-Carbon ODE",
+  "name": "SAM",
+  "formula": "d[SAM]/dt = v_MAT − v_GNMT − v_DNMT",
+  "inputs": "methionine, ATP",
+  "outputs": "→ methylation score",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 44,
+  "eq_id": "OC4",
+  "layer": "One-Carbon ODE",
+  "name": "S-adenosylhomocysteine (SAH)",
+  "formula": "d[SAH]/dt=v_GNMT+v_DNMT−v_SAHH",
+  "inputs": "[SAM], methyltransferase demand, SAHH",
+  "outputs": "→ SAM/SAH ratio; OC1 through v_SAHH",
+  "cadence": "Online · per-tick ODE"
+ },
+ {
+  "source_row": 45,
+  "eq_id": "CBS",
+  "layer": "One-Carbon ODE",
+  "name": "Transsulfuration flux",
+  "formula": "v_CBS = Vmax·[Hcy]/(Km+[Hcy]) ; Km=4000 µM (MODEL-FITTED apparent Km — see note)",
+  "inputs": "OC1 [Hcy]",
+  "outputs": "→ cysteine → QGSH (bridge)",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 46,
+  "eq_id": "M0",
+  "layer": "M Memory",
+  "name": "Warm-start scar",
+  "formula": "see ONB warm-start",
+  "inputs": "onboarding",
+  "outputs": "→ M1",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 47,
+  "eq_id": "M1",
+  "layer": "M Memory",
+  "name": "Scarring accumulation",
+  "formula": "dS_k/dt = alpha_scar,k * over_k(t) * (1 - S_k)  -  beta_autophagy,k * S_k     [over_k = max(0,(Z_total,k - theta_elastic,k)/theta_elastic,k)]  —  BOUNDED BY CONSTRUCTION: S* = a*over/(a*over + b) lies in [0,1) for every input.",
+  "inputs": "C4 Z_tot",
+  "outputs": "→ M2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 48,
+  "eq_id": "M2",
+  "layer": "M Memory",
+  "name": "Repair degradation (→C6)",
+  "formula": "V_max,k^eff = V_max,k^base·exp(−γ_scar,k·S_k)",
+  "inputs": "M1 S_k",
+  "outputs": "→ C6 Vm",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 49,
+  "eq_id": "M3",
+  "layer": "M Memory",
+  "name": "Hawkes relapse intensity",
+  "formula": "λ_D(t)=μ_base+(λ_max−μ_base)·tanh( Σ_{t_i<t} δ_i·exp(−ν_D(t−t_i)) / (λ_max−μ_base) ), λ_max=5·μ_base  [v39l F-CL]",
+  "inputs": "lapse events",
+  "outputs": "→ M5, W1",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 50,
+  "eq_id": "M4",
+  "layer": "M Memory",
+  "name": "Willpower / reserve",
+  "formula": "dW/dt = ρ_w·Sleep·(1−W) − τ_w·Stress·W − Σ c_nudge",
+  "inputs": "sleep, stress",
+  "outputs": "→ M5, W1",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 51,
+  "eq_id": "M5",
+  "layer": "M Memory",
+  "name": "Friction-aware LinUCB",
+  "formula": "a*=argmax_{a∈A_safe}[Score_safe(a)−Ω·λ_D/(W+ε)·F_a]; Score_safe=Benefit_LCB−λ_r Risk_UCB−λ_u tr(J_a P J_a^T)−λ_b burden+eligible PolicyBonus",
+  "inputs": "M3,M4, VETO gate",
+  "outputs": "→ H action",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 52,
+  "eq_id": "MK",
+  "layer": "M Memory",
+  "name": "Optional 1-D Kalman re-anchor — OFF by default",
+  "formula": "predict S⁻,P⁻ ; K=P⁻/(P⁻+R) ; S=S⁻+K(S_obs−S⁻)",
+  "inputs": "M_ONLY or approved joint-model laboratory anchor; versioned replay; OFF by default",
+  "outputs": "→ S_k",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 53,
+  "eq_id": "SP1",
+  "layer": "Signature",
+  "name": "Conservative action ranking",
+  "formula": "Score=Benefit_LCB-lambda_r Risk_UCB-lambda_u tr(J_a P J_a^T)-lambda_b burden+low-risk PolicyBonus",
+  "inputs": "channel increments",
+  "outputs": "→ SP2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 54,
+  "eq_id": "SP2",
+  "layer": "Signature",
+  "name": "Snowball-lite (Chen-light)",
+  "formula": "M_t = M_{t−1}·(I+dA_t) , M_0=I  (exact to level 2)",
+  "inputs": "SP1",
+  "outputs": "→ SP3",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 55,
+  "eq_id": "SP3",
+  "layer": "Signature",
+  "name": "Lévy-area extraction",
+  "formula": "A_ij = 0.5·∫(X^i dX^j − X^j dX^i) , time+scale-normalised",
+  "inputs": "SP2",
+  "outputs": "→ W1, F, H",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 56,
+  "eq_id": "W1",
+  "layer": "W Warning",
+  "name": "Per-pattern lapse risk",
+  "formula": "R_pat = σ(w0 + w1·Levy_norm + w2·trig_norm + w3·λ_D + w4·S_k − w5·W)",
+  "inputs": "SP3, M3, M4",
+  "outputs": "→ W2",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 57,
+  "eq_id": "W2",
+  "layer": "W Warning",
+  "name": "Baseline guarantee",
+  "formula": "Allow target policy only when LCB[V_target]>= (1-epsilon_base)LCB[V_baseline]; otherwise use baseline",
+  "inputs": "W1",
+  "outputs": "→ Tier-1 warning",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 58,
+  "eq_id": "W3",
+  "layer": "W Warning",
+  "name": "Self-calibration",
+  "formula": "PREVALENCE (EWMA):  π̂ ← (1−η)·π̂ + η·lapse_occurred,  η = 0.05.   THRESHOLD:  θ_risk = f(π̂, utility).  Under a CALIBRATED risk score and EQUAL-COST errors, f reduces to θ = clip(π̂, 0.05, 0.95) (Youden). Where false-warning and missed-lapse costs differ, derive θ from the explicit cost ratio on held-out data — do NOT assume θ = π̂.   COLD START: population θ until N_lapse ≥ 10.   CALIBRATION GATE (sheet 023): valid only while Integrated Brier < 0.15 AND calibration slope ∈ [0.9, 1.1]; on breach revert to population θ and stop personalising.   NAMING: this is a prevalence EWMA, NOT \"model self-calibration\".  [v39n F-BU/SOL]",
+  "inputs": "outcomes",
+  "outputs": "→ W2 threshold",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 59,
+  "eq_id": "H",
+  "layer": "H Recommend",
+  "name": "Separated uncertainty",
+  "formula": "Policy bonus uses A_a^-1 only; physiological covariance is penalized; information actions use expected KL/entropy reduction",
+  "inputs": "M5, VETO, C2",
+  "outputs": "→ Tier-1 suggestion",
+  "cadence": "⚑ Online select; LEARNER=service - CLUCB2 (scoped; handoff) → see ★ Scoped Builds — LTMLE Bandit (this workbook) → ★ Uncertainty Memory E-F-G-H"
+ },
+ {
+  "source_row": 60,
+  "eq_id": "S",
+  "layer": "S Safety",
+  "name": "Personalized upper limit",
+  "formula": "UL_eff(i,u) = UL_base(i) · clip( PRODUCT_j g_j , 0.5 , 1.5 )     [each g_j in [0.5,1.5]; if any g_j <= 0.6 the floor becomes 0.4 with a clinician-deferral flag]",
+  "inputs": "labs, meds",
+  "outputs": "→ VETO check",
+  "cadence": "Online gate · params offline"
+ },
+ {
+  "source_row": 61,
+  "eq_id": "C2",
+  "layer": "C2 Cost-Benefit",
+  "name": "Net-value re-rank",
+  "formula": "Net_Value(a)=ΔCHS(a) − λ_cost·Cost − λ_effort·Effort − λ_risk·Risk",
+  "inputs": "H survivors",
+  "outputs": "→ H final order",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 62,
+  "eq_id": "OBS",
+  "layer": "Observability",
+  "name": "Empirical Gramian / per-state score",
+  "formula": "[Wo]_ij=(1/4ε²)∫(y_i⁺−y_i⁻)ᵀ(y_j⁺−y_j⁻)dt ; o_i=√(P_r)_ii ∈[0,1]",
+  "inputs": "E, measurement schedule",
+  "outputs": "→ score gating (trend vs numeric)",
+  "cadence": "Online · per-tick"
+ },
+ {
+  "source_row": 63,
+  "eq_id": "RB",
+  "layer": "Rao-Black.",
+  "name": "Conditional-linear factorization",
+  "formula": "partition x=[x_L(164),x_N(55)]; 111 nonlinear branches + analytic x_L recursion; full 439-point SR-UKF benchmark; fixed-lag smoother for delayed observations",
+  "inputs": "E state",
+  "outputs": "→ exact linear block",
+  "cadence": "Online · per-obs (filter)"
+ }
+]

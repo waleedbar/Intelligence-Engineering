@@ -537,3 +537,52 @@ methyl-donor with a canonical nutrient counterpart (`betaine_mg` is not in the
 81, but choline is, and the two are metabolically coupled), and the registry's
 whole purpose is to stop a supplement inheriting a dietary weight it has not
 earned. Without a cap, Betaine has no stated position at all.
+
+## 2026-09-09: '★ Equation Backbone' settles three more
+
+`missing_fk` 6 → 5, and two entries elsewhere in this document are wrong.
+
+### `CL` is not a parameter
+
+It was listed as a missing FK on B-002/B-003 with the note "the registry
+defines `CL_int,i` and `Q_liver` — different quantities. There is no symbol
+for either of these." The first half was right; the conclusion was not.
+Backbone B4:
+
+    CL = CL_renal + CL_hepatic
+    B5:  CL_renal   = GFR·f_filtered·(1−f_reabsorbed)     ← from lab eGFR
+    B6:  CL_hepatic = Q_H·E_H  (well-stirred; E_H embeds f_u)
+
+No registry was ever going to carry it. It now reports `COMPUTED`, a status
+added for exactly this: the key is real, the equation that produces it is
+named, and there is nothing to ask anyone for.
+
+`Q` in the same row is deliberately **not** reclassified. B2 and B3 consume
+it and no backbone row defines it, so it stays a missing FK. A "computed"
+bucket that absorbed both would turn a real gap into a reassuring word.
+
+### `ρ` and `g` are computed, exactly as hypothesised
+
+The earlier section "seven more parameters the registry does not hold" listed
+C-004/C-005's `ρ` and `g`, hypothesised they derive from #125 `k_Z,k`, and
+deliberately refused to encode that — "a reparameterisation rather than a
+spelling", pending confirmation. Backbone C2 gives it verbatim:
+
+    rho = exp(-k·dt);  g = -expm1(-k·dt)/k
+
+So they are not gaps. The refusal to guess was right, and the confirmation
+came from finishing the import rather than from asking.
+
+### Running total of the correction
+
+The original list was **18 parameters to request from the workbook's author**.
+After importing three sheets the manifest had always listed:
+
+| | |
+|---|---|
+| found with values (`★ Param Registry +20`) | 6 |
+| shown to be computed (`★ Equation Backbone`) | 3 — `CL`, `ρ`, `g` |
+| **still genuinely open** | **9** |
+
+Nine of eighteen, and the import is at 21 of 124 backend sheets. The list
+should not be sent until it is finished.

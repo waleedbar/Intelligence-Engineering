@@ -40,6 +40,7 @@ CONFINED_REGISTRIES = [
     "nutrient_class",
     "nutrient_class_assignment",
     "supplement_registry",
+    "equation_backbone",
     "eq_param_fk",
     "eq_build_rows",
     "eq_build_row_inputs",

@@ -68,6 +68,7 @@ jobs:
           python -m sahacore.data.load_param_registry_ext20
           python -m sahacore.data.load_nutrient_classes
           python -m sahacore.data.load_supplement_registry
+          python -m sahacore.data.load_equation_backbone
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -123,7 +124,7 @@ jobs:
               assert f == 126, f'expected 126 FK rows, got {f}'
               cur.execute('SELECT count(*) FROM engine_internal.missing_fk')
               mf = cur.fetchone()[0]
-              assert mf == 6, f'expected 6 missing FKs, got {mf}'
+              assert mf == 5, f'expected 5 missing FKs, got {mf}'
               # VETO-01, the Replay Contract's release gate: '339 rows and 339
               # unique canonical IDs; source IDs retained'. The retained source
               # ids are 319 distinct values across those 339 rows -- that gap is
@@ -147,7 +148,11 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 20, f'expected 20 versioned registries, got {versioned}'
+              assert versioned == 21, f'expected 21 versioned registries, got {versioned}'
+              # The 58-equation wiring map.
+              cur.execute('SELECT count(*) FROM engine_internal.equation_backbone')
+              eb = cur.fetchone()[0]
+              assert eb == 58, f'expected 58 backbone equations, got {eb}'
               # The NULL-CAP rule: four supplements modelled at zero effect.
               cur.execute('SELECT count(*) FROM engine_internal.supplement_null_capped')
               nc = cur.fetchone()[0]
@@ -180,7 +185,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 6 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

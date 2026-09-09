@@ -151,8 +151,8 @@
     "resolved_in": "parameter_registry:V_s,i"
    },
    "CL": {
-    "status": "MISSING_FK",
-    "resolved_in": null
+    "status": "COMPUTED",
+    "resolved_in": "equation_backbone:B4 (CL = CL_renal + CL_hepatic)"
    },
    "Q": {
     "status": "MISSING_FK",

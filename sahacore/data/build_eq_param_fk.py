@@ -152,6 +152,23 @@ EXT20_ALIASES = {
 }
 
 
+# FK keys that '★ Equation Backbone' defines as the OUTPUT of an equation
+# rather than a value to look up. Each entry cites the backbone row and the
+# formula, and is scoped to the FK rows it applies to -- the same discipline
+# as ALIASES, for the same reason.
+#
+# `CL` was reported MISSING_FK on B-002/B-003 for exactly the right reason:
+# it is in neither authority that row names. The backbone shows why. It is
+# not a parameter anyone forgot to write down; B4 computes it from B5 and B6.
+#
+# `Q` in the same row is deliberately NOT here. B2 and B3 use it and no
+# backbone row defines it, so it stays a missing FK -- which is the
+# distinction this table exists to make rather than blur.
+COMPUTED_BY_BACKBONE = {
+    "CL": ("B4", "CL = CL_renal + CL_hepatic", {"B-002/B-003"}),
+}
+
+
 def _split_authorities(cell: str | None) -> list[str]:
     """The authority cell lists one or more sheets separated by ';', often
     with a parenthetical gloss ('★ Damage Registry — Canonical (108 weighted
@@ -242,6 +259,8 @@ def resolve_key(key: str, registry_symbols: set[str],
 
     Returns (status, where). Statuses:
       NON_PARAMETER  a foreign key to an action/rule/model registry
+      COMPUTED       '★ Equation Backbone' defines it as an equation's
+                     output, so there is no value to look up
       RESOLVED       found in one of this row's loaded authorities
       NOT_LOADED     this row's authority exists in the workbook but this
                      build has not imported it yet
@@ -257,6 +276,11 @@ def resolve_key(key: str, registry_symbols: set[str],
     """
     if key in NON_PARAMETER_KEYS:
         return "NON_PARAMETER", None
+
+    # A quantity an equation computes is not a parameter with a missing value.
+    if key in COMPUTED_BY_BACKBONE and eq_id in COMPUTED_BY_BACKBONE[key][2]:
+        backbone_id, formula, _ = COMPUTED_BY_BACKBONE[key]
+        return "COMPUTED", f"equation_backbone:{backbone_id} ({formula})"
 
     for registry in loaded:
         aliases = REGISTRY_KEY_ALIASES.get(registry, {})

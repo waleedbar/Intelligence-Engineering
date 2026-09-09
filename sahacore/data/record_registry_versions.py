@@ -76,6 +76,8 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("nutrient_classes.json", "nutrients", "★ Nutrient Class Registry"),
     "engine_internal.supplement_registry":
         ("supplement_registry.json", None, "★ Supplement Registry"),
+    "engine_internal.equation_backbone":
+        ("equation_backbone.json", None, "★ Equation Backbone"),
 }
 
 
