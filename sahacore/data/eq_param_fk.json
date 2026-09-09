@@ -1,0 +1,2488 @@
+[
+ {
+  "source_row": 3,
+  "eq_id": "A-001",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "k_i1",
+   "lambda_i1",
+   "k_i2",
+   "lambda_i2",
+   "w_i"
+  ],
+  "authoritative_sheets": [
+   "P1 Nutrients 81"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "nutrient_absorption_params",
+  "validation_rule": "shape-rate convention, lambda=1/theta if imported from scale",
+  "key_resolution": {
+   "k_i1": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.nutrients.gamma_k_shape"
+   },
+   "lambda_i1": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.nutrients.lambda_per_min"
+   },
+   "k_i2": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:k2_i"
+   },
+   "lambda_i2": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:lam2_i"
+   },
+   "w_i": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.nutrients.w_fast"
+   }
+  }
+ },
+ {
+  "source_row": 4,
+  "eq_id": "A-002",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "F_base_i",
+   "F_max_i",
+   "Km_i",
+   "gamma_ij",
+   "gamma_cook",
+   "gamma_condition"
+  ],
+  "authoritative_sheets": [
+   "P1 Nutrients 81",
+   "O·O8/O·O9"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "bioavailability_params",
+  "validation_rule": "F_abs bounded 0..Fmax",
+  "key_resolution": {
+   "F_base_i": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:F_base,i"
+   },
+   "F_max_i": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.nutrients.f_max"
+   },
+   "Km_i": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:K_m,i"
+   },
+   "gamma_ij": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:gamma_ij"
+   },
+   "gamma_cook": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "gamma_condition": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 5,
+  "eq_id": "B-001",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "T_half_fast_days",
+   "T_half_slow_days"
+  ],
+  "authoritative_sheets": [
+   "P1 Nutrients 81 M:N"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "nutrient_turnover_params",
+  "validation_rule": "0<phi<=1",
+  "key_resolution": {
+   "T_half_fast_days": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.nutrients.half_life_fast_d"
+   },
+   "T_half_slow_days": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.nutrients.half_life_slow_d"
+   }
+  }
+ },
+ {
+  "source_row": 6,
+  "eq_id": "B-002/B-003",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "V1",
+   "V2",
+   "CL",
+   "Q",
+   "k_fs"
+  ],
+  "authoritative_sheets": [
+   "P1 Parameters 134+",
+   "P1 Nutrients 81"
+  ],
+  "loaded_registries": [
+   "engine_internal.parameter_registry",
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "pk_params",
+  "validation_rule": "d(V1C1+V2C2)/dt=A-CL*C1",
+  "key_resolution": {
+   "V1": {
+    "status": "RESOLVED",
+    "resolved_in": "parameter_registry:V_f,i"
+   },
+   "V2": {
+    "status": "RESOLVED",
+    "resolved_in": "parameter_registry:V_s,i"
+   },
+   "CL": {
+    "status": "MISSING_FK",
+    "resolved_in": null
+   },
+   "Q": {
+    "status": "MISSING_FK",
+    "resolved_in": null
+   },
+   "k_fs": {
+    "status": "RESOLVED",
+    "resolved_in": "parameter_registry:k_fs,i"
+   }
+  }
+ },
+ {
+  "source_row": 7,
+  "eq_id": "C-004/C-005",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "tau_damage",
+   "eta",
+   "threshold",
+   "p",
+   "side"
+  ],
+  "authoritative_sheets": [
+   "★ Damage Registry — Canonical"
+  ],
+  "loaded_registries": [
+   "engine_internal.damage_registry_canonical"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "damage_params",
+  "validation_rule": "p=1 launch default unless validated",
+  "key_resolution": {
+   "tau_damage": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.damage_registry_canonical.tau_damage_days"
+   },
+   "eta": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.damage_registry_canonical.eta_hi"
+   },
+   "threshold": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.damage_registry_canonical.theta_hi"
+   },
+   "p": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:p"
+   },
+   "side": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 8,
+  "eq_id": "D-001/D-002",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "a_k",
+   "b_k",
+   "score_weight_k",
+   "score_version"
+  ],
+  "authoritative_sheets": [
+   "P1 Scoring Alerts"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "scoring_params",
+  "validation_rule": "fixed score version prevents drift",
+  "key_resolution": {
+   "a_k": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "b_k": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "score_weight_k": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "score_version": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 9,
+  "eq_id": "E-003/E-004",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "alpha",
+   "kappa",
+   "beta",
+   "Q",
+   "R",
+   "Huber_c",
+   "NIS_alpha"
+  ],
+  "authoritative_sheets": [
+   "★ State Vector v33",
+   "★ Rao-Blackwellization",
+   "E · Estimation Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "filter_params",
+  "validation_rule": "PSD and NEES/NIS",
+  "key_resolution": {
+   "alpha": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "kappa": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "beta": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Q": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "R": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Huber_c": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "NIS_alpha": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 10,
+  "eq_id": "F-001/F-003",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "hazard_model_id",
+   "transition_Q",
+   "horizon_bins",
+   "calibration_q"
+  ],
+  "authoritative_sheets": [
+   "Layer F registry",
+   "U-Ledger"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "forecast_params",
+  "validation_rule": "S/CIF positivity",
+  "key_resolution": {
+   "hazard_model_id": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "transition_Q": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "horizon_bins": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "calibration_q": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 11,
+  "eq_id": "G-001/G-005",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "nuisance_model_id",
+   "propensity_bounds",
+   "ESS_min",
+   "bootstrap_B",
+   "E_value_method"
+  ],
+  "authoritative_sheets": [
+   "Layer G registry",
+   "Scoped Builds"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "causal_params",
+  "validation_rule": "support gate",
+  "key_resolution": {
+   "nuisance_model_id": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "propensity_bounds": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "ESS_min": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "bootstrap_B": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "E_value_method": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 12,
+  "eq_id": "H-001/H-006",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "veto_rule_id",
+   "action_id",
+   "lambda_r",
+   "lambda_u",
+   "lambda_b",
+   "z_B",
+   "z_R",
+   "baseline_delta"
+  ],
+  "authoritative_sheets": [
+   "VETO Canonical 339",
+   "Action_Space"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "decision_params",
+  "validation_rule": "VETO before ranking",
+  "key_resolution": {
+   "veto_rule_id": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "action_id": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "lambda_r": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "lambda_u": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "lambda_b": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "z_B": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "z_R": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "baseline_delta": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 13,
+  "eq_id": "QSSA-001..QREP-001",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "epsilon_max",
+   "r_max",
+   "E_QSSA_max",
+   "Km",
+   "Vmax",
+   "cofactor_hill_params"
+  ],
+  "authoritative_sheets": [
+   "P1 QSSA ATP-GSH-NAD",
+   "QSSA · Internal Canonical"
+  ],
+  "loaded_registries": [
+   "engine_internal.qssa_atp_complexes"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "qssa_params",
+  "validation_rule": "QSSA validity and bounded outputs",
+  "key_resolution": {
+   "epsilon_max": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "r_max": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "E_QSSA_max": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Km": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:K_m,i"
+   },
+   "Vmax": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "cofactor_hill_params": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 14,
+  "eq_id": "M-001..W-002",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "alpha_scar",
+   "beta_autophagy",
+   "theta_elastic",
+   "gamma_scar",
+   "hawkes_delta",
+   "hawkes_nu",
+   "W_params",
+   "cooldowns"
+  ],
+  "authoritative_sheets": [
+   "M-PARAM Registry",
+   "M · Structured Build"
+  ],
+  "loaded_registries": [
+   "engine_internal.layer_m_scarring_params"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "mw_params",
+  "validation_rule": "M handoff and cooldown tests",
+  "key_resolution": {
+   "alpha_scar": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "beta_autophagy": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "theta_elastic": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.layer_m_scarring_params.theta_elastic_au"
+   },
+   "gamma_scar": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.layer_m_scarring_params.gamma_scar"
+   },
+   "hawkes_delta": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "hawkes_nu": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "W_params": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "cooldowns": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 15,
+  "eq_id": "GLOB-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "time_config"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "time_make_clock",
+  "validation_rule": "assert Δt_day*1440=Δt_minutes",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 16,
+  "eq_id": "GLOB-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Nutrients 81",
+   "γ_k, γ_θ_min"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_a_gamma_pdf",
+  "validation_rule": "integral≈1; mean≈k/λ",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 17,
+  "eq_id": "LEDGER-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "IO · Lineage DataMap"
+  ],
+  "loaded_registries": [
+   "engine_internal.raw_events (+ ledger tables)"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "ledger_ingest_event",
+  "validation_rule": "same key does not change posterior twice",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 18,
+  "eq_id": "LEDGER-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "IO · Lineage DataMap"
+  ],
+  "loaded_registries": [
+   "engine_internal.raw_events (+ ledger tables)"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "ledger_make_packet",
+  "validation_rule": "superseded parent invalidates descendants",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 19,
+  "eq_id": "ONB-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O1 Anthropometrics"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_anthropometrics",
+  "validation_rule": "unit tests for BMI/BMR",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 20,
+  "eq_id": "ONB-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O2 MVPA Prior",
+   "P1 Activities 50"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_mvpa_prior",
+  "validation_rule": "range 0..100; monotone MET-min",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 21,
+  "eq_id": "ONB-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O3 Sleep Deficit"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_sleep_deficit",
+  "validation_rule": "deficit zero when sleep>=target",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 22,
+  "eq_id": "ONB-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O4 Stress Index"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_stress_index",
+  "validation_rule": "PSS score 0..40 maps 0..1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 23,
+  "eq_id": "ONB-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O5 Substance Exposure"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_substance_exposure",
+  "validation_rule": "nonnegative multipliers",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 24,
+  "eq_id": "ONB-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O6 Family History"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_family_history",
+  "validation_rule": "positive FH inflates P0 only for mapped clusters",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 25,
+  "eq_id": "ONB-007",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O7 Diet Pattern Priors"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_diet_priors",
+  "validation_rule": "logs dominate as n_logs increases",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 26,
+  "eq_id": "ONB-008",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O8 Condition Modifiers"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_condition_mods",
+  "validation_rule": "known conditions update mapped clusters",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 27,
+  "eq_id": "ONB-009",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O9 Drug-Nutrient Mods",
+   "P1 Drug Interactions"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_drug_nutrient_mods",
+  "validation_rule": "warfarin/VitK hard veto fires",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 28,
+  "eq_id": "ONB-010",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O10 Goal Priority Wts"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_goal_weights",
+  "validation_rule": "normalization; no physiology overwrite",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 29,
+  "eq_id": "ONB-011",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O11 Damage State Init"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_damage_warm_start",
+  "validation_rule": "all Z finite and nonnegative after transform",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 30,
+  "eq_id": "ONB-012",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O12-O14 State Init",
+   "P1 Variables 219"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_state_init_219",
+  "validation_rule": "length(x0)=219; no null locked states",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 31,
+  "eq_id": "ONB-013",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·O12-O14 State Init",
+   "★ State Classification 4-Way"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_covariance_init",
+  "validation_rule": "PSD; prior-dominated states wider than anchored",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 32,
+  "eq_id": "ONB-014",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "O·Engine Connections"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "onboarding_control_input",
+  "validation_rule": "controls are not treated as measurements",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 33,
+  "eq_id": "A-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Nutrients 81"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_a_absorption_kernel",
+  "validation_rule": "∫h_i dτ≈1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 34,
+  "eq_id": "A-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Nutrients 81",
+   "Drug mods"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_a_absorbed_fraction",
+  "validation_rule": "0≤F_abs≤F_max≤1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 35,
+  "eq_id": "A-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Core Equations A3/A5/A6"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_a_timing_density",
+  "validation_rule": "∫h_i* dτ≈1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 36,
+  "eq_id": "A-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Nutrients 81"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_a_absorption_rate",
+  "validation_rule": "∫a_i dt≤Σq_i",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 37,
+  "eq_id": "A-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Nutrients 81",
+   "O1 BMR"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_a_tef",
+  "validation_rule": "TEF range by macro class",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 38,
+  "eq_id": "A-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "IO · Lineage DataMap"
+  ],
+  "loaded_registries": [
+   "engine_internal.raw_events (+ ledger tables)"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_a_replay_late_meal",
+  "validation_rule": "no duplicate meal-CGM stacking",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 39,
+  "eq_id": "B-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Nutrients 81 M:N"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_b_decay_factors",
+  "validation_rule": "0<φ≤1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 40,
+  "eq_id": "B-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Parameters 134+",
+   "P1 Nutrients 81"
+  ],
+  "loaded_registries": [
+   "engine_internal.parameter_registry",
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_b_fast_ode",
+  "validation_rule": "mass closure with slow ODE",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 41,
+  "eq_id": "B-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Parameters 134+",
+   "P1 Nutrients 81"
+  ],
+  "loaded_registries": [
+   "engine_internal.parameter_registry",
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_b_slow_ode",
+  "validation_rule": "d(V1C1+V2C2)/dt=A-CL*C1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 42,
+  "eq_id": "B-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ Nutrient Class Registry"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_b_clearance",
+  "validation_rule": "clearance nonnegative",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 43,
+  "eq_id": "B-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Interaction registry",
+   "P1 Nutrients 81"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_b_effective_exposure",
+  "validation_rule": "positive; multiplier within bounds",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 44,
+  "eq_id": "B-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ Nutrient Class Registry"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_b_class_route",
+  "validation_rule": "all 81 nutrients have a class and class-specific observation function",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 45,
+  "eq_id": "C-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Nutrients 81",
+   "persistence registry"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrients"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_c_deviation",
+  "validation_rule": "unit-conversion invariant",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 46,
+  "eq_id": "C-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Clusters 81x12",
+   "REG long"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_c_cluster_burden",
+  "validation_rule": "columns sum to 1; weights ≥0",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 47,
+  "eq_id": "C-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ Damage Registry — Canonical"
+  ],
+  "loaded_registries": [
+   "engine_internal.damage_registry_canonical"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_c_exact_zoh_coeff",
+  "validation_rule": "g≈Δt for small Δt",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 48,
+  "eq_id": "C-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "persistence registry",
+   "P1 Core Equations"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_c_damage_high",
+  "validation_rule": "nonnegative; bounded by caps",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 49,
+  "eq_id": "C-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "persistence registry",
+   "P1 Core Equations"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_c_damage_low",
+  "validation_rule": "nonnegative; deficiency side fires when low",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 50,
+  "eq_id": "C-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 DualHill MM Repair",
+   "M-C6 Integration"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_c_repair",
+  "validation_rule": "repair nonnegative; scar reduces next-step repair",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 51,
+  "eq_id": "C-007",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Core Equations"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_c_total_damage",
+  "validation_rule": "0≤Z≤Dmax",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 52,
+  "eq_id": "C-008",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "REG · Nutrient×Cluster Long",
+   "★ Damage Registry Contract"
+  ],
+  "loaded_registries": [
+   "engine_internal.nutrient_cluster_weights"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_c_persistence_lookup",
+  "validation_rule": "108 canonical weighted rows; both sides present per row; every nutrient_id resolves in the 81-nutrient registry",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 53,
+  "eq_id": "D-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Scoring Alerts"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_d_cluster_score",
+  "validation_rule": "monotone in Z; range 0..100",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 54,
+  "eq_id": "D-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Scoring Alerts"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_d_composite_score",
+  "validation_rule": "weight version stable across days",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 55,
+  "eq_id": "D-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Clusters 81x12",
+   "U-Ledger"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_d_drivers",
+  "validation_rule": "top drivers stable under unit conversion",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 56,
+  "eq_id": "D-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Alert Architecture"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_d_alert_state",
+  "validation_rule": "hysteresis prevents flapping",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 57,
+  "eq_id": "D-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Core Equations",
+   "U-Ledger"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_d_display_from_posterior",
+  "validation_rule": "same lab cannot shrink score twice",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 58,
+  "eq_id": "D-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ UI Projection Contract"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_d_ui_projection_133",
+  "validation_rule": "payload has exactly 133 keys",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 59,
+  "eq_id": "E-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Variables 219"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_state_layout",
+  "validation_rule": "len(x)=219",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 60,
+  "eq_id": "E-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ Rao-Blackwellization"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_partition_rb",
+  "validation_rule": "164+55=219",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 61,
+  "eq_id": "E-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ Rao-Blackwellization"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_rb_predict",
+  "validation_rule": "sigma point count=111",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 62,
+  "eq_id": "E-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ State Vector v33",
+   "E · Estimation Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_sr_update",
+  "validation_rule": "PSD factor exists after update",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 63,
+  "eq_id": "E-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Observation models"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_observe",
+  "validation_rule": "food log not in y unless R is large",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 64,
+  "eq_id": "E-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "E · Estimation Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_huber_weight",
+  "validation_rule": "large outlier downweighted",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 65,
+  "eq_id": "E-007",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "E · Estimation Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_nis_gate",
+  "validation_rule": "synthetic outlier rejected",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 66,
+  "eq_id": "E-008",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ Observability Gramian"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_observability",
+  "validation_rule": "toy unobservable states dark",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 67,
+  "eq_id": "E-009",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "IO · Lineage DataMap"
+  ],
+  "loaded_registries": [
+   "engine_internal.raw_events (+ ledger tables)"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_e_fixed_lag_replay",
+  "validation_rule": "late meal not stacked",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 68,
+  "eq_id": "E-010",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 MC Engine",
+   "U-Ledger"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_e_monte_carlo",
+  "validation_rule": "coverage on synthetic truths",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 69,
+  "eq_id": "F-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Layer F forecast params"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_f_independent_hazard",
+  "validation_rule": "F∈[0,1]",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 70,
+  "eq_id": "F-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Layer F forecast params"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_f_competing_risk",
+  "validation_rule": "S+ΣF conserved",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 71,
+  "eq_id": "F-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Layer F multistate params"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_f_multistate_step",
+  "validation_rule": "probabilities sum to 1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 72,
+  "eq_id": "F-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "U-Ledger",
+   "F model registry"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_f_model_mixture",
+  "validation_rule": "between-model disagreement retained",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 73,
+  "eq_id": "F-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "U-Ledger calibration"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_f_calibration_memory",
+  "validation_rule": "coverage converges on synthetic",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 74,
+  "eq_id": "F-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Research-production mapping"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_f_challenger_deep",
+  "validation_rule": "noninferiority gates",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 75,
+  "eq_id": "G-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Layer G params",
+   "action logs"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_g_dr_aipw",
+  "validation_rule": "cross-fit no self training",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 76,
+  "eq_id": "G-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Layer G params"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_g_cate_model",
+  "validation_rule": "overlap and ESS gates",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 77,
+  "eq_id": "G-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Layer G support gates"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_g_support_gate",
+  "validation_rule": "no extrapolated CATE emitted",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 78,
+  "eq_id": "G-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "U-Ledger",
+   "calibration E-value"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_g_effect_uncertainty",
+  "validation_rule": "uncertainty components not CI-fused",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 79,
+  "eq_id": "G-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ Scoped Builds — LTMLE Bandit"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_g_ltmle_gate",
+  "validation_rule": "launch returns DATA_BLOCKED",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 80,
+  "eq_id": "G-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "H logs",
+   "U-Ledger"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_g_ope",
+  "validation_rule": "baseline gate passes before policy deploy",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 81,
+  "eq_id": "H-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 Drug Interactions",
+   "VETO Canonical 339"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_h_veto",
+  "validation_rule": "warfarin/VitK blocked",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 82,
+  "eq_id": "H-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "U-Ledger",
+   "G/F packets"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_h_bounds",
+  "validation_rule": "risk bound increases with σ",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 83,
+  "eq_id": "H-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Layer H params"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_h_score_action",
+  "validation_rule": "∂Score/∂U_phys≤0",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 84,
+  "eq_id": "H-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "Action_Space"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_h_policy_bonus",
+  "validation_rule": "no bonus for high-risk action",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 85,
+  "eq_id": "H-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "VoI catalog"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_h_value_of_information",
+  "validation_rule": "high uncertainty routes to info action",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 86,
+  "eq_id": "H-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "OPE registry"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_h_baseline_gate",
+  "validation_rule": "learned policy held when lower bound poor",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 87,
+  "eq_id": "QSSA-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ QSSA Validity & Output"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "qssa_validity_gate",
+  "validation_rule": "fails when ε high",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 88,
+  "eq_id": "QSSA-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 QSSA ATP-GSH-NAD"
+  ],
+  "loaded_registries": [
+   "engine_internal.qssa_atp_complexes"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "qssa_atp_flux",
+  "validation_rule": "bounded cofactors 0..1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 89,
+  "eq_id": "QSSA-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ QSSA Validity & Output"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "qssa_atp_support",
+  "validation_rule": "0≤f≤1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 90,
+  "eq_id": "QSSA-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 QSSA ATP-GSH-NAD"
+  ],
+  "loaded_registries": [
+   "engine_internal.qssa_atp_complexes"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "qssa_gsh_support",
+  "validation_rule": "0≤f≤1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 91,
+  "eq_id": "QSSA-005",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 QSSA ATP-GSH-NAD"
+  ],
+  "loaded_registries": [
+   "engine_internal.qssa_atp_complexes"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "qssa_nad_support",
+  "validation_rule": "0≤f≤1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 92,
+  "eq_id": "QSSA-006",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 One-Carbon ODE",
+   "Map · One-Carbon Cycle"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "qssa_one_carbon_ode",
+  "validation_rule": "Hcy decreases with adequate B12/folate/B6",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 93,
+  "eq_id": "QSSA-007",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "P1 DualHill MM Repair",
+   "M-C6 Integration"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "qssa_repair_modifier",
+  "validation_rule": "repair reduced by scar and low cofactors",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 94,
+  "eq_id": "M-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-EQ LayerM Equations"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_m_scar_step",
+  "validation_rule": "S remains 0..1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 95,
+  "eq_id": "M-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-C6 Integration"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_m_repair_overlay",
+  "validation_rule": "M affects C_{t+1} not same step",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 96,
+  "eq_id": "M-003",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-EQ LayerM Equations"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_m_hawkes_relapse",
+  "validation_rule": "λ≥0 and decays to μ",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 97,
+  "eq_id": "M-004",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-EQ LayerM Equations"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_m_reserve_step",
+  "validation_rule": "0≤W≤1",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 98,
+  "eq_id": "SIG-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-SIG Signature Snowball"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "signature_level2_update",
+  "validation_rule": "shuffle/Chen identity tests",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 99,
+  "eq_id": "SIG-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-SUB SubTraj DualStore"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "signature_dual_store",
+  "validation_rule": "raw and compact store agree on recompute",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 100,
+  "eq_id": "W-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-W LayerW Equations"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_w_pattern_risk",
+  "validation_rule": "cooldown prevents repeat spam",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 101,
+  "eq_id": "W-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "M-WPAT Patterns Alarms"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "layer_w_calibrate_thresholds",
+  "validation_rule": "threshold version changes logged",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 102,
+  "eq_id": "UI-001",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ UI Projection Contract"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "projection_projection_24",
+  "validation_rule": "24 keys present",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 103,
+  "eq_id": "UI-002",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "★ UI Projection Contract"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "projection_ui_133",
+  "validation_rule": "133 emitted scalars",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 104,
+  "eq_id": "TVMCD-D01",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d01_step",
+  "validation_rule": "D01 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 105,
+  "eq_id": "TVMCD-D02",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d02_step",
+  "validation_rule": "D02 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 106,
+  "eq_id": "TVMCD-D03",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d03_step",
+  "validation_rule": "D03 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 107,
+  "eq_id": "TVMCD-D04",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d04_step",
+  "validation_rule": "D04 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 108,
+  "eq_id": "TVMCD-D05",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d05_step",
+  "validation_rule": "D05 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 109,
+  "eq_id": "TVMCD-D06",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d06_step",
+  "validation_rule": "D06 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 110,
+  "eq_id": "TVMCD-D07",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d07_step",
+  "validation_rule": "D07 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 111,
+  "eq_id": "TVMCD-D08",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d08_step",
+  "validation_rule": "D08 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 112,
+  "eq_id": "TVMCD-D09",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d09_step",
+  "validation_rule": "D09 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 113,
+  "eq_id": "TVMCD-D10",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d10_step",
+  "validation_rule": "D10 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 114,
+  "eq_id": "TVMCD-D11",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d11_step",
+  "validation_rule": "D11 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 115,
+  "eq_id": "TVMCD-D12",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d12_step",
+  "validation_rule": "D12 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 116,
+  "eq_id": "TVMCD-D13",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d13_step",
+  "validation_rule": "D13 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 117,
+  "eq_id": "TVMCD-D14",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d14_step",
+  "validation_rule": "D14 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 118,
+  "eq_id": "TVMCD-D15",
+  "keys_are_explicit": false,
+  "consumes_keys": [],
+  "authoritative_sheets": [
+   "TVMCD · 15 Pathways Build"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_d15_step",
+  "validation_rule": "D15 synthetic threshold scenario",
+  "key_resolution": {}
+ },
+ {
+  "source_row": 140,
+  "eq_id": "K3-FIX-01",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "alpha_scar",
+   "beta_autophagy",
+   "theta_elastic"
+  ],
+  "authoritative_sheets": [
+   "M-PARAM Registry"
+  ],
+  "loaded_registries": [
+   "engine_internal.layer_m_scarring_params"
+  ],
+  "all_authorities_loaded": true,
+  "backend_object": "layer_m_params",
+  "validation_rule": "bounded scar invariant",
+  "key_resolution": {
+   "alpha_scar": {
+    "status": "MISSING_FK",
+    "resolved_in": null
+   },
+   "beta_autophagy": {
+    "status": "MISSING_FK",
+    "resolved_in": null
+   },
+   "theta_elastic": {
+    "status": "RESOLVED",
+    "resolved_in": "engine_internal.layer_m_scarring_params.theta_elastic_au"
+   }
+  }
+ },
+ {
+  "source_row": 141,
+  "eq_id": "K3-FIX-02",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "tau_gate",
+   "a",
+   "b",
+   "k"
+  ],
+  "authoritative_sheets": [
+   "P1 TVMCD Pathways",
+   "K3 Fixes"
+  ],
+  "loaded_registries": [
+   "tvmcd_pathways_15.json"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "tvmcd_gate_params",
+  "validation_rule": "smooth gate positive through band",
+  "key_resolution": {
+   "tau_gate": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:tau_gate"
+   },
+   "a": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "b": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "k": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 142,
+  "eq_id": "K3-FIX-03",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "eta_sed",
+   "v_sed",
+   "rho",
+   "g"
+  ],
+  "authoritative_sheets": [
+   "P1 Core Equations",
+   "K3 Fixes"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "damage_forcing_params",
+  "validation_rule": "sedentary forcing inside ZOH",
+  "key_resolution": {
+   "eta_sed": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "v_sed": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "rho": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "g": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 143,
+  "eq_id": "K3-FIX-04",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "lambda_max",
+   "mu_base",
+   "delta_i",
+   "nu_D"
+  ],
+  "authoritative_sheets": [
+   "M-PARAM Registry",
+   "K3 Fixes"
+  ],
+  "loaded_registries": [
+   "engine_internal.layer_m_scarring_params"
+  ],
+  "all_authorities_loaded": false,
+  "backend_object": "hawkes_params",
+  "validation_rule": "lambda bounded",
+  "key_resolution": {
+   "lambda_max": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:lambda_max"
+   },
+   "mu_base": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "delta_i": {
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:delta_ij"
+   },
+   "nu_D": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 144,
+  "eq_id": "K3-FIX-05",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "UL_base",
+   "g_factors",
+   "deferral_flag"
+  ],
+  "authoritative_sheets": [
+   "Safety/VETO",
+   "K3 Fixes"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "ul_margin_params",
+  "validation_rule": "compound clamp",
+  "key_resolution": {
+   "UL_base": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "g_factors": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   },
+   "deferral_flag": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 145,
+  "eq_id": "K3-N1",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "p1",
+   "p2",
+   "p3",
+   "n",
+   "gamma",
+   "h",
+   "Vg",
+   "Gb",
+   "Ib"
+  ],
+  "authoritative_sheets": [
+   "P1 Glucose B7"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "glucose_minimal_params",
+  "validation_rule": "CGM gate",
+  "key_resolution": {
+   "p1": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "p2": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "p3": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "n": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "gamma": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "h": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Vg": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Gb": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Ib": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 146,
+  "eq_id": "K3-N2",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "kappa_Na",
+   "R_TPR",
+   "C_art",
+   "E_venous",
+   "V0"
+  ],
+  "authoritative_sheets": [
+   "P1 Windkessel B8"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "windkessel_params",
+  "validation_rule": "home BP gate",
+  "key_resolution": {
+   "kappa_Na": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "R_TPR": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "C_art": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "E_venous": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "V0": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 147,
+  "eq_id": "K3-N3",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "tau_c",
+   "mu",
+   "A",
+   "beta_l",
+   "PRC"
+  ],
+  "authoritative_sheets": [
+   "P1 Circadian A0"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "circadian_params",
+  "validation_rule": "sleep/lux gate",
+  "key_resolution": {
+   "tau_c": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "mu": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "A": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "beta_l": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "PRC": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 148,
+  "eq_id": "K3-N4",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "rho_F",
+   "rho_L",
+   "p",
+   "gamma_F",
+   "gamma_L",
+   "delta",
+   "A_thermo"
+  ],
+  "authoritative_sheets": [
+   "P1 Energy B9"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "energy_balance_params",
+  "validation_rule": "weight history gate",
+  "key_resolution": {
+   "rho_F": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "rho_L": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "p": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "gamma_F": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "gamma_L": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "delta": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "A_thermo": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   }
+  }
+ },
+ {
+  "source_row": 149,
+  "eq_id": "K3-N6",
+  "keys_are_explicit": true,
+  "consumes_keys": [
+   "Emax",
+   "EC50",
+   "Ki",
+   "Indmax",
+   "EC50ind",
+   "evidence_tier"
+  ],
+  "authoritative_sheets": [
+   "P1 PD Emax",
+   "P1 Drug Interactions"
+  ],
+  "loaded_registries": [],
+  "all_authorities_loaded": false,
+  "backend_object": "pkpd_params",
+  "validation_rule": "numeric evidence required",
+  "key_resolution": {
+   "Emax": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "EC50": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Ki": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "Indmax": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "EC50ind": {
+    "status": "NOT_LOADED",
+    "resolved_in": null
+   },
+   "evidence_tier": {
+    "status": "NON_PARAMETER",
+    "resolved_in": null
+   }
+  }
+ }
+]

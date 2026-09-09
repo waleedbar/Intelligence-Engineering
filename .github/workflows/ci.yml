@@ -60,6 +60,7 @@ jobs:
           python -m sahacore.data.load_qssa_atp
           python -m sahacore.data.load_ledger_policy
           python -m sahacore.data.load_parameter_registry
+          python -m sahacore.data.load_eq_param_fk
 
       - name: Verify loaded row counts match source
         run: |
@@ -97,7 +98,13 @@ jobs:
               cur.execute(\"SELECT count(*) FROM engine_internal.parameter_gaps WHERE weight = 'Critical'\")
               g = cur.fetchone()[0]
               assert g == 10, f'expected 10 critical parameter gaps, got {g}'
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps')
+              cur.execute('SELECT count(*) FROM engine_internal.eq_param_fk')
+              f = cur.fetchone()[0]
+              assert f == 126, f'expected 126 FK rows, got {f}'
+              cur.execute('SELECT count(*) FROM engine_internal.missing_fk')
+              mf = cur.fetchone()[0]
+              assert mf == 4, f'expected 4 missing FKs, got {mf}'
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 4 missing FKs')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event
