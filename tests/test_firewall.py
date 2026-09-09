@@ -37,6 +37,8 @@ CONFINED_REGISTRIES = [
     # Build step 2's parameter/FK half.
     "parameter_registry",
     "parameter_registry_ext20",
+    "nutrient_class",
+    "nutrient_class_assignment",
     "eq_param_fk",
     "eq_build_rows",
     "eq_build_row_inputs",

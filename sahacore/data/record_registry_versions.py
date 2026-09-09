@@ -70,6 +70,10 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("runtime_invariants.json", None, "00_ENGINEER_START"),
     "engine_internal.parameter_registry_ext20":
         ("param_registry_ext20.json", None, "★ Param Registry +20"),
+    "engine_internal.nutrient_class":
+        ("nutrient_classes.json", "classes", "★ Nutrient Class Registry"),
+    "engine_internal.nutrient_class_assignment":
+        ("nutrient_classes.json", "nutrients", "★ Nutrient Class Registry"),
 }
 
 

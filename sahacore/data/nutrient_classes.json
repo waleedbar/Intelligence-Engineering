@@ -1,0 +1,858 @@
+{
+ "classes": [
+  {
+   "source_row": 6,
+   "class_code": "A",
+   "name": "Acute absorbed load",
+   "kinetic_character": "Minutes–hours; gamma absorption then clearance.",
+   "modelling_consequence": "Two-compartment PK fully justified. Fast assimilation cadence; CGM/postprandial anchors."
+  },
+  {
+   "source_row": 7,
+   "class_code": "B",
+   "name": "Homeostatically buffered",
+   "kinetic_character": "Serum tightly clamped by renal/endocrine control.",
+   "modelling_consequence": "⚠ Intake ≠ serum. Serum must NOT be used as an intake readout. Anchor on intake and urinary excretion; put renal/ADH/RAAS in the observation function."
+  },
+  {
+   "source_row": 8,
+   "class_code": "C",
+   "name": "Storage / body pool",
+   "kinetic_character": "Weeks–years; large reservoir buffers intake.",
+   "modelling_consequence": "Two compartments + a slow store. Anchor on the specific functional biomarker; expect long lag before intake changes move the marker."
+  },
+  {
+   "source_row": 9,
+   "class_code": "D",
+   "name": "Gut substrate / fermentation",
+   "kinetic_character": "Transit delay then microbial conversion.",
+   "modelling_consequence": "Not a plasma concentration. Model as ingestion → transit delay → fermentation → derived output. Erlang/distributed delay preferred."
+  },
+  {
+   "source_row": 10,
+   "class_code": "E",
+   "name": "Membrane · lipoprotein incorporation",
+   "kinetic_character": "Weeks–months incorporation into membranes/lipoproteins.",
+   "modelling_consequence": "Two compartments strongly defensible, with a slow observation anchor (omega-3 index, RBC FA profile, ApoB)."
+  },
+  {
+   "source_row": 11,
+   "class_code": "F",
+   "name": "Behavioural exposure",
+   "kinetic_character": "Autoregressive · circadian · self-exciting.",
+   "modelling_consequence": "⚠ Applies to the 24 LIFESTYLE states [187–210], NOT to nutrients. Must not be called pharmacokinetic compartments. Handled by Layer M/W."
+  }
+ ],
+ "nutrients": [
+  {
+   "source_row": 17,
+   "num": 1,
+   "nutrient_code": "energy_kcal",
+   "name": "Energy",
+   "category": "Macro",
+   "class_code": "A",
+   "observation_anchor": "weight trend · TDEE estimate (no direct assay)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 18,
+   "num": 2,
+   "nutrient_code": "carb_total_g",
+   "name": "Carbohydrates (total)",
+   "category": "Macro",
+   "class_code": "A",
+   "observation_anchor": "CGM / postprandial glucose",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 19,
+   "num": 3,
+   "nutrient_code": "fiber_g",
+   "name": "Fiber (total)",
+   "category": "Macro",
+   "class_code": "D",
+   "observation_anchor": "stool SCFA (research) · transit · glycaemic/lipid response",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 20,
+   "num": 4,
+   "nutrient_code": "sugar_added_g",
+   "name": "Added Sugars",
+   "category": "Macro",
+   "class_code": "A",
+   "observation_anchor": "CGM excursion · HbA1c (chronic)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 21,
+   "num": 5,
+   "nutrient_code": "starch_g",
+   "name": "Starch",
+   "category": "Macro",
+   "class_code": "A",
+   "observation_anchor": "CGM / postprandial glucose",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 22,
+   "num": 6,
+   "nutrient_code": "protein_g",
+   "name": "Protein (total)",
+   "category": "Macro",
+   "class_code": "A",
+   "observation_anchor": "no direct assay — N-balance proxy; plasma AA postprandial",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 23,
+   "num": 7,
+   "nutrient_code": "fat_total_g",
+   "name": "Fat (total)",
+   "category": "Macro",
+   "class_code": "E",
+   "observation_anchor": "lipid panel · ApoB",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 24,
+   "num": 8,
+   "nutrient_code": "fat_sat_g",
+   "name": "Saturated Fat",
+   "category": "Fat",
+   "class_code": "E",
+   "observation_anchor": "LDL-C · ApoB",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 25,
+   "num": 9,
+   "nutrient_code": "fat_trans_g",
+   "name": "Trans Fat",
+   "category": "Fat",
+   "class_code": "E",
+   "observation_anchor": "LDL-C/HDL · RBC trans-FA",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 26,
+   "num": 10,
+   "nutrient_code": "fat_mufa_g",
+   "name": "Monounsaturated Fat",
+   "category": "Fat",
+   "class_code": "E",
+   "observation_anchor": "RBC fatty-acid profile",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 27,
+   "num": 11,
+   "nutrient_code": "fat_pufa_g",
+   "name": "Polyunsaturated Fat",
+   "category": "Fat",
+   "class_code": "E",
+   "observation_anchor": "RBC fatty-acid profile",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 28,
+   "num": 12,
+   "nutrient_code": "omega3_ala_g",
+   "name": "Omega-3 ALA",
+   "category": "Fatty Acid",
+   "class_code": "E",
+   "observation_anchor": "RBC ALA (poor→EPA conversion ~5-8%)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 29,
+   "num": 13,
+   "nutrient_code": "omega3_epa_g",
+   "name": "Omega-3 EPA",
+   "category": "Fatty Acid",
+   "class_code": "E",
+   "observation_anchor": "Omega-3 index (RBC EPA+DHA) — slow, wks-mo",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 30,
+   "num": 14,
+   "nutrient_code": "omega3_dha_g",
+   "name": "Omega-3 DHA",
+   "category": "Fatty Acid",
+   "class_code": "E",
+   "observation_anchor": "Omega-3 index (RBC EPA+DHA) — slow, wks-mo",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 31,
+   "num": 15,
+   "nutrient_code": "omega6_la_g",
+   "name": "Omega-6 Linoleic Acid (LA)",
+   "category": "Fatty Acid",
+   "class_code": "E",
+   "observation_anchor": "RBC linoleic acid",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 32,
+   "num": 16,
+   "nutrient_code": "cholesterol_mg",
+   "name": "Cholesterol (dietary)",
+   "category": "Lipid",
+   "class_code": "E",
+   "observation_anchor": "serum chol is NOT a dietary readout — endogenous synthesis + ApoB dominate",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 33,
+   "num": 17,
+   "nutrient_code": "water_l",
+   "name": "Water (fluids)",
+   "category": "Hydration",
+   "class_code": "B",
+   "observation_anchor": "urine specific gravity · serum osm · Na",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 34,
+   "num": 18,
+   "nutrient_code": "alcohol_g",
+   "name": "Alcohol (ethanol)",
+   "category": "Other",
+   "class_code": "A",
+   "observation_anchor": "GGT · CDT · self-report",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 35,
+   "num": 19,
+   "nutrient_code": "caffeine_mg",
+   "name": "Caffeine",
+   "category": "Other",
+   "class_code": "A",
+   "observation_anchor": "none routine (HR/HRV/sleep-latency proxy)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 36,
+   "num": 20,
+   "nutrient_code": "vit_a_rae_ug",
+   "name": "Vitamin A (RAE)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "serum retinol / RBP — insensitive until liver stores depleted",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 37,
+   "num": 21,
+   "nutrient_code": "vit_d_iu",
+   "name": "Vitamin D",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "25-OH-vitamin D (validated)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 38,
+   "num": 22,
+   "nutrient_code": "vit_e_mg",
+   "name": "Vitamin E (alpha-tocopherol)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "serum α-tocopherol (lipid-adjusted)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 39,
+   "num": 23,
+   "nutrient_code": "vit_k_ug",
+   "name": "Vitamin K",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "PIVKA-II · undercarboxylated osteocalcin",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 40,
+   "num": 24,
+   "nutrient_code": "vit_c_mg",
+   "name": "Vitamin C",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "plasma ascorbate (saturable, plateaus ~70-80 µmol/L)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 41,
+   "num": 25,
+   "nutrient_code": "b1_mg",
+   "name": "Vitamin B1 (Thiamine)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "erythrocyte transketolase activation",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 42,
+   "num": 26,
+   "nutrient_code": "b2_mg",
+   "name": "Vitamin B2 (Riboflavin)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "EGRAC (glutathione reductase activation)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 43,
+   "num": 27,
+   "nutrient_code": "b3_mg",
+   "name": "Vitamin B3 (Niacin)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "urinary N-methylnicotinamide",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 44,
+   "num": 28,
+   "nutrient_code": "b5_mg",
+   "name": "Vitamin B5 (Pantothenic acid)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "whole-blood pantothenate (rarely measured)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 45,
+   "num": 29,
+   "nutrient_code": "b6_mg",
+   "name": "Vitamin B6 (Pyridoxine)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "plasma PLP",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 46,
+   "num": 30,
+   "nutrient_code": "b7_ug",
+   "name": "Vitamin B7 (Biotin)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "no routine marker (3-HIA urinary)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 47,
+   "num": 31,
+   "nutrient_code": "b9_ug",
+   "name": "Vitamin B9 (Folate)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "serum/RBC folate · homocysteine",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 48,
+   "num": 32,
+   "nutrient_code": "b12_ug",
+   "name": "Vitamin B12 (Cobalamin)",
+   "category": "Vitamin",
+   "class_code": "C",
+   "observation_anchor": "serum B12 + MMA + holoTC (large hepatic store, years)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 49,
+   "num": 33,
+   "nutrient_code": "choline_mg",
+   "name": "Choline",
+   "category": "Vitamin-like",
+   "class_code": "C",
+   "observation_anchor": "plasma free choline · betaine",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 50,
+   "num": 34,
+   "nutrient_code": "calcium_mg",
+   "name": "Calcium",
+   "category": "Mineral",
+   "class_code": "B",
+   "observation_anchor": "NOT serum Ca (PTH-clamped) — use intake + 25-OH-D + PTH · BMD",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 51,
+   "num": 35,
+   "nutrient_code": "phosphorus_mg",
+   "name": "Phosphorus",
+   "category": "Mineral",
+   "class_code": "B",
+   "observation_anchor": "serum PO4 (PTH/FGF23-regulated) · intake",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 52,
+   "num": 36,
+   "nutrient_code": "magnesium_mg",
+   "name": "Magnesium",
+   "category": "Mineral",
+   "class_code": "B",
+   "observation_anchor": "serum Mg INSENSITIVE (bone/intracellular pool) — RBC Mg better",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 53,
+   "num": 37,
+   "nutrient_code": "sodium_mg",
+   "name": "Sodium",
+   "category": "Electrolyte",
+   "class_code": "B",
+   "observation_anchor": "24-h urinary Na (intake) — serum Na is NOT an intake readout",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 54,
+   "num": 38,
+   "nutrient_code": "potassium_mg",
+   "name": "Potassium",
+   "category": "Electrolyte",
+   "class_code": "B",
+   "observation_anchor": "24-h urinary K · serum K (narrow, buffered)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 55,
+   "num": 39,
+   "nutrient_code": "chloride_mg",
+   "name": "Chloride",
+   "category": "Electrolyte",
+   "class_code": "B",
+   "observation_anchor": "serum Cl (buffered) · anion gap",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 56,
+   "num": 40,
+   "nutrient_code": "iron_mg",
+   "name": "Iron",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "ferritin + TSAT (CRP-adjust) · hepcidin · sTfR",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 57,
+   "num": 41,
+   "nutrient_code": "zinc_mg",
+   "name": "Zinc",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "plasma zinc (inflammation-sensitive, insensitive)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 58,
+   "num": 42,
+   "nutrient_code": "copper_mg",
+   "name": "Copper",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "serum Cu · ceruloplasmin",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 59,
+   "num": 43,
+   "nutrient_code": "selenium_ug",
+   "name": "Selenium",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "plasma Se · GPx3 activity",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 60,
+   "num": 44,
+   "nutrient_code": "iodine_ug",
+   "name": "Iodine",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "urinary iodine (UIC) · TSH",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 61,
+   "num": 45,
+   "nutrient_code": "manganese_mg",
+   "name": "Manganese",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "whole-blood Mn (no routine status marker)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 62,
+   "num": 46,
+   "nutrient_code": "chromium_ug",
+   "name": "Chromium",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "no validated status biomarker",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 63,
+   "num": 47,
+   "nutrient_code": "molybdenum_ug",
+   "name": "Molybdenum",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "no routine biomarker",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 64,
+   "num": 48,
+   "nutrient_code": "fluoride_mg",
+   "name": "Fluoride",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "no routine status biomarker (dental/skeletal endpoints)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 65,
+   "num": 49,
+   "nutrient_code": "boron_mg",
+   "name": "Boron",
+   "category": "Mineral",
+   "class_code": "C",
+   "observation_anchor": "no validated biomarker",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 66,
+   "num": 50,
+   "nutrient_code": "aa_histidine_mg",
+   "name": "Histidine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 67,
+   "num": 51,
+   "nutrient_code": "aa_isoleucine_mg",
+   "name": "Isoleucine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 68,
+   "num": 52,
+   "nutrient_code": "aa_leucine_mg",
+   "name": "Leucine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 69,
+   "num": 53,
+   "nutrient_code": "aa_lysine_mg",
+   "name": "Lysine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 70,
+   "num": 54,
+   "nutrient_code": "aa_methionine_mg",
+   "name": "Methionine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 71,
+   "num": 55,
+   "nutrient_code": "aa_phenylalanine_mg",
+   "name": "Phenylalanine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 72,
+   "num": 56,
+   "nutrient_code": "aa_threonine_mg",
+   "name": "Threonine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 73,
+   "num": 57,
+   "nutrient_code": "aa_tryptophan_mg",
+   "name": "Tryptophan",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 74,
+   "num": 58,
+   "nutrient_code": "aa_valine_mg",
+   "name": "Valine",
+   "category": "Amino Acid",
+   "class_code": "A",
+   "observation_anchor": "plasma AA (postprandial peak); no stored pool — intake-driven",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 75,
+   "num": 59,
+   "nutrient_code": "aa_alanine_mg",
+   "name": "Alanine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 76,
+   "num": 60,
+   "nutrient_code": "aa_arginine_mg",
+   "name": "Arginine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 77,
+   "num": 61,
+   "nutrient_code": "aa_asparagine_mg",
+   "name": "Asparagine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 78,
+   "num": 62,
+   "nutrient_code": "aa_aspartate_mg",
+   "name": "Aspartate",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 79,
+   "num": 63,
+   "nutrient_code": "aa_cysteine_mg",
+   "name": "Cysteine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 80,
+   "num": 64,
+   "nutrient_code": "aa_glutamate_mg",
+   "name": "Glutamate",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 81,
+   "num": 65,
+   "nutrient_code": "aa_glutamine_mg",
+   "name": "Glutamine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 82,
+   "num": 66,
+   "nutrient_code": "aa_glycine_mg",
+   "name": "Glycine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 83,
+   "num": 67,
+   "nutrient_code": "aa_proline_mg",
+   "name": "Proline",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 84,
+   "num": 68,
+   "nutrient_code": "aa_serine_mg",
+   "name": "Serine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 85,
+   "num": 69,
+   "nutrient_code": "aa_tyrosine_mg",
+   "name": "Tyrosine",
+   "category": "Amino Acid",
+   "class_code": "C",
+   "observation_anchor": "plasma AA; endogenous synthesis dominant — intake a weak driver",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 86,
+   "num": 70,
+   "nutrient_code": "taurine_g",
+   "name": "Taurine",
+   "category": "Bioactive",
+   "class_code": "C",
+   "observation_anchor": "plasma taurine (endogenous synthesis dominant)",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 87,
+   "num": 71,
+   "nutrient_code": "carnitine_g",
+   "name": "Carnitine",
+   "category": "Bioactive",
+   "class_code": "C",
+   "observation_anchor": "plasma free/acyl-carnitine (endogenous from Lys+Met)",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 88,
+   "num": 72,
+   "nutrient_code": "creatine_g",
+   "name": "Creatine",
+   "category": "Endogenous+Diet",
+   "class_code": "C",
+   "observation_anchor": "muscle creatine (supplementation effective) · serum creatinine confound",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 89,
+   "num": 73,
+   "nutrient_code": "glutathione_g",
+   "name": "Glutathione",
+   "category": "Endogenous+Diet",
+   "class_code": "C",
+   "observation_anchor": "⚠ oral GSH hydrolysed in gut — systemic GSH driven by cysteine/glycine/NAC, NOT oral GSH",
+   "endogenous_dominant": true
+  },
+  {
+   "source_row": 90,
+   "num": 74,
+   "nutrient_code": "beta_carotene_ug",
+   "name": "Beta-carotene",
+   "category": "Bioactive",
+   "class_code": "C",
+   "observation_anchor": "serum carotenoids",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 91,
+   "num": 75,
+   "nutrient_code": "lutein_ug",
+   "name": "Lutein",
+   "category": "Bioactive",
+   "class_code": "C",
+   "observation_anchor": "serum lutein · macular pigment optical density (slow)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 92,
+   "num": 76,
+   "nutrient_code": "zeaxanthin_ug",
+   "name": "Zeaxanthin",
+   "category": "Bioactive",
+   "class_code": "C",
+   "observation_anchor": "serum zeaxanthin · MPOD",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 93,
+   "num": 77,
+   "nutrient_code": "lycopene_ug",
+   "name": "Lycopene",
+   "category": "Bioactive",
+   "class_code": "C",
+   "observation_anchor": "serum lycopene",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 94,
+   "num": 78,
+   "nutrient_code": "polyphenols_mg",
+   "name": "Polyphenols (total)",
+   "category": "Bioactive",
+   "class_code": "D",
+   "observation_anchor": "urinary polyphenol metabolites (research)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 95,
+   "num": 79,
+   "nutrient_code": "flavonoids_mg",
+   "name": "Flavonoids (total)",
+   "category": "Bioactive",
+   "class_code": "D",
+   "observation_anchor": "urinary metabolites (research)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 96,
+   "num": 80,
+   "nutrient_code": "anthocyanins_mg",
+   "name": "Anthocyanins",
+   "category": "Bioactive",
+   "class_code": "D",
+   "observation_anchor": "urinary metabolites (research)",
+   "endogenous_dominant": false
+  },
+  {
+   "source_row": 97,
+   "num": 81,
+   "nutrient_code": "nitrate_mg",
+   "name": "Nitrate (dietary)",
+   "category": "Bioactive",
+   "class_code": "A",
+   "observation_anchor": "Plasma / salivary nitrate + nitrite (NOx); blood-pressure response peaks 2.5–3 h post-dose",
+   "endogenous_dominant": false
+  }
+ ]
+}
