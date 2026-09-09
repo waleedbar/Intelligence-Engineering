@@ -104,6 +104,19 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("state_admission.json", "routing", "04_BEHAVIOR_SIDECAR"),
     "engine_internal.behavior_sidecar_feature":
         ("state_admission.json", "derived_features", "04_BEHAVIOR_SIDECAR"),
+    "engine_internal.bistability_cap":
+        ("bistability_guard.json", "caps", "★ Scarring Bistability Guard"),
+    "engine_internal.bistability_probabilistic_guard":
+        ("bistability_guard.json", "probabilistic_guards",
+         "★ Scarring Bistability Guard"),
+    "engine_internal.verification_lab":
+        ("verification_labs.json", "labs", "Live Verification Lab"),
+    "engine_internal.verification_zoh_gain":
+        ("verification_labs.json", "zoh_grid", "Live Verification Lab"),
+    "engine_internal.verification_topology_vector":
+        ("verification_labs.json", "topology_vectors", "Live Verification Lab"),
+    "engine_internal.layer_m_rule":
+        ("verification_labs.json", "layer_m_rules", "Live Verification Lab"),
 }
 
 

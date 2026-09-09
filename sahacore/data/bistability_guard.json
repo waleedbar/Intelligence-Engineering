@@ -1,0 +1,316 @@
+{
+  "caps": [
+    {
+      "cluster_id": "C1",
+      "cluster_name": "Membrane Integrity",
+      "source_row": 24,
+      "tau_dam_days": 183,
+      "tau_heal_days": 196,
+      "v_repair": 1.35,
+      "cap_gamma_r": 1.45,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 2.42
+    },
+    {
+      "cluster_id": "C2",
+      "cluster_name": "Glucose Regulation",
+      "source_row": 25,
+      "tau_dam_days": 177,
+      "tau_heal_days": 173,
+      "v_repair": 1.48,
+      "cap_gamma_r": 1.35,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 2.25
+    },
+    {
+      "cluster_id": "C3",
+      "cluster_name": "Protein Turnover",
+      "source_row": 26,
+      "tau_dam_days": 12,
+      "tau_heal_days": 18,
+      "v_repair": 0.96,
+      "cap_gamma_r": 1.92,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 3.19
+    },
+    {
+      "cluster_id": "C4",
+      "cluster_name": "Electrolyte Balance",
+      "source_row": 27,
+      "tau_dam_days": 25,
+      "tau_heal_days": 44,
+      "v_repair": 0.82,
+      "cap_gamma_r": 2.13,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 3.56
+    },
+    {
+      "cluster_id": "C5",
+      "cluster_name": "Inflammatory Response",
+      "source_row": 28,
+      "tau_dam_days": 140,
+      "tau_heal_days": 100,
+      "v_repair": 2.02,
+      "cap_gamma_r": 1.08,
+      "gamma_scar": 1.2,
+      "max_alpha_beta_ratio": 0.9
+    },
+    {
+      "cluster_id": "C6",
+      "cluster_name": "Oxidative Stress",
+      "source_row": 29,
+      "tau_dam_days": 24,
+      "tau_heal_days": 104,
+      "v_repair": 0.33,
+      "cap_gamma_r": 4.86,
+      "gamma_scar": 1.2,
+      "max_alpha_beta_ratio": 4.05
+    },
+    {
+      "cluster_id": "C7",
+      "cluster_name": "Methylation / One-carbon",
+      "source_row": 30,
+      "tau_dam_days": 90,
+      "tau_heal_days": 46,
+      "v_repair": 2.82,
+      "cap_gamma_r": 0.87,
+      "gamma_scar": 1.2,
+      "max_alpha_beta_ratio": 0.72
+    },
+    {
+      "cluster_id": "C8",
+      "cluster_name": "Gut Health",
+      "source_row": 31,
+      "tau_dam_days": 23,
+      "tau_heal_days": 37,
+      "v_repair": 0.9,
+      "cap_gamma_r": 2.02,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 3.36
+    },
+    {
+      "cluster_id": "C9",
+      "cluster_name": "Neuro-Hormonal",
+      "source_row": 32,
+      "tau_dam_days": 81,
+      "tau_heal_days": 50,
+      "v_repair": 2.34,
+      "cap_gamma_r": 0.97,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 1.62
+    },
+    {
+      "cluster_id": "C10",
+      "cluster_name": "Bone Health",
+      "source_row": 33,
+      "tau_dam_days": 146,
+      "tau_heal_days": 129,
+      "v_repair": 1.64,
+      "cap_gamma_r": 1.25,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 2.09
+    },
+    {
+      "cluster_id": "C11",
+      "cluster_name": "Thyroid / Adrenal",
+      "source_row": 34,
+      "tau_dam_days": 98,
+      "tau_heal_days": 160,
+      "v_repair": 0.89,
+      "cap_gamma_r": 2.04,
+      "gamma_scar": 0.6,
+      "max_alpha_beta_ratio": 3.39
+    },
+    {
+      "cluster_id": "C12",
+      "cluster_name": "Cardiovascular",
+      "source_row": 35,
+      "tau_dam_days": 92,
+      "tau_heal_days": 114,
+      "v_repair": 1.16,
+      "cap_gamma_r": 1.63,
+      "gamma_scar": 1.2,
+      "max_alpha_beta_ratio": 1.36
+    }
+  ],
+  "receipt": [
+    {
+      "cluster_id": "C1",
+      "source_row": 73,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 1.45,
+      "max_alpha_beta_ratio": 2.42,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C2",
+      "source_row": 74,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 1.35,
+      "max_alpha_beta_ratio": 2.25,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C3",
+      "source_row": 75,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 1.92,
+      "max_alpha_beta_ratio": 3.19,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C4",
+      "source_row": 76,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 2.13,
+      "max_alpha_beta_ratio": 3.56,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C5",
+      "source_row": 77,
+      "gamma_scar": 1.2,
+      "cap_gamma_r": 1.08,
+      "max_alpha_beta_ratio": 0.9,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C6",
+      "source_row": 78,
+      "gamma_scar": 1.2,
+      "cap_gamma_r": 4.86,
+      "max_alpha_beta_ratio": 4.05,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C7",
+      "source_row": 79,
+      "gamma_scar": 1.2,
+      "cap_gamma_r": 0.87,
+      "max_alpha_beta_ratio": 0.72,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C8",
+      "source_row": 80,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 2.02,
+      "max_alpha_beta_ratio": 3.36,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C9",
+      "source_row": 81,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 0.97,
+      "max_alpha_beta_ratio": 1.62,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C10",
+      "source_row": 82,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 1.25,
+      "max_alpha_beta_ratio": 2.09,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C11",
+      "source_row": 83,
+      "gamma_scar": 0.6,
+      "cap_gamma_r": 2.04,
+      "max_alpha_beta_ratio": 3.39,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    },
+    {
+      "cluster_id": "C12",
+      "source_row": 84,
+      "gamma_scar": 1.2,
+      "cap_gamma_r": 1.63,
+      "max_alpha_beta_ratio": 1.36,
+      "f_prime_min_at_cap": "≈ 0 (tangent)",
+      "agrees": "YES"
+    }
+  ],
+  "probabilistic_guards": [
+    {
+      "guard_id": "PG-1",
+      "source_row": 55,
+      "name": "Bistability margin",
+      "specification": "B_k = cap_k / (γ_k · r_k),  r_k = α_k/β_k.  Require B_k ≥ 1.  Reported per cluster, not just pass/fail.",
+      "placement": "this sheet"
+    },
+    {
+      "guard_id": "PG-2",
+      "source_row": 56,
+      "name": "Posterior violation probability",
+      "specification": "p_viol,k = P(γ_k·r_k > cap_k) under the (γ,r) posterior — the prior until Phase-2 delivers a cohort fit.  REQUIRE p_viol,k < 0.01 at build AND at every cohort refit.",
+      "placement": "★ Validation Test Battery — test C17"
+    },
+    {
+      "guard_id": "PG-3",
+      "source_row": 57,
+      "name": "Fold-proximity freeze",
+      "specification": "If B_k < 1.25 — within 25% of the fold — stop personalising α, β or γ for that cluster in the direction of the fold, and log the event to the uncertainty ledger.",
+      "placement": "M-W LayerW Equations"
+    },
+    {
+      "guard_id": "PG-4",
+      "source_row": 58,
+      "name": "Closed-form check (lognormal)",
+      "specification": "Model γ·r = exp(N(μ_gr, σ_gr²)), with σ_gr ≈ 0.5–0.8 implied by the registry ranges. Then the requirement p_viol < 0.01 reduces to:  μ_gr < ln(cap_k) − 2.33·σ_gr.",
+      "placement": "implementable as a one-line assert"
+    }
+  ],
+  "founder_decision": [
+    {
+      "option": "NO — enforce monotonicity",
+      "source_row": 48,
+      "meaning": "One equilibrium per forcing level. Recovery mirrors decline. Simple to explain and to message.",
+      "status": "ADOPTED"
+    },
+    {
+      "option": "YES — allow a declared band",
+      "source_row": 49,
+      "meaning": "Chronic disease does show hysteresis, and 'recovery is harder than decline' is honest. But the width must be CHOSEN per cluster, and users in the scarred basin need different messaging — not the same nudge repeated.",
+      "status": "AVAILABLE — needs a declared width per cluster plus a basin-detection surface before it can ship"
+    }
+  ],
+  "unconstrained_ranges": [
+    {
+      "quantity": "α/β reachable from the declared ranges",
+      "source_row": 41,
+      "value": "0.53 – 16.67",
+      "consequence": "a 31-fold spread"
+    },
+    {
+      "quantity": "γ·(α/β) at the worst corner",
+      "source_row": 42,
+      "value": "26.7",
+      "consequence": "30× the tightest cluster bound — reachable with values the sheet called legal"
+    },
+    {
+      "quantity": "Verified hysteresis at that corner",
+      "source_row": 43,
+      "value": "34.8%",
+      "consequence": "intake must fall 35% below the tipping point to escape the scarred basin"
+    },
+    {
+      "quantity": "Who chose 35%",
+      "source_row": 44,
+      "value": "nobody",
+      "consequence": "it was an emergent accident of the parameter ranges"
+    }
+  ]
+}

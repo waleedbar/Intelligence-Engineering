@@ -1,0 +1,883 @@
+{
+  "sheet": "Live Verification Lab",
+  "banner": "★ v38 LIVE VERIFICATION LAB · the load-bearing numbers, re-derived by live formulas in front of you",
+  "layer_m_demo_point": {
+    "s_t": 0.65,
+    "z_t": 62,
+    "theta_elastic": 50,
+    "alpha_scar_per_day": 0.004,
+    "beta_autophagy_per_day": 0.001,
+    "gamma_scar": 0.69,
+    "dt_days": 1,
+    "vmax_base": 1,
+    "source_rows": {
+      "s_t": [
+        124,
+        174
+      ],
+      "z_t": [
+        125,
+        175
+      ],
+      "theta_elastic": [
+        126,
+        176
+      ],
+      "alpha_scar_per_day": [
+        127,
+        177
+      ],
+      "beta_autophagy_per_day": [
+        128,
+        178
+      ],
+      "gamma_scar": [
+        129,
+        179
+      ],
+      "dt_days": [
+        130,
+        180
+      ],
+      "vmax_base": [
+        131,
+        181
+      ]
+    }
+  },
+  "labs": [
+    {
+      "lab_id": "LAB 1",
+      "source_row": 4,
+      "title": "LAB 1 — C1 · the gamma absorption kernel integrates to 1",
+      "side_table": null,
+      "quantities": [
+        {
+          "source_row": 5,
+          "name": "k1 fast shape",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 2.5,
+          "value_text": null
+        },
+        {
+          "source_row": 6,
+          "name": "λ1 fast rate (1/min)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.04,
+          "value_text": null
+        },
+        {
+          "source_row": 7,
+          "name": "k2 slow shape",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 1.5,
+          "value_text": null
+        },
+        {
+          "source_row": 8,
+          "name": "λ2 slow rate (1/min)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.01,
+          "value_text": null
+        },
+        {
+          "source_row": 9,
+          "name": "w fast fraction",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.6,
+          "value_text": null
+        },
+        {
+          "source_row": 10,
+          "name": "grid step dt (min)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 10,
+          "value_text": null
+        },
+        {
+          "source_row": 11,
+          "name": "grid end T (min)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 720,
+          "value_text": null
+        },
+        {
+          "source_row": 12,
+          "name": "∫h·dt  (trapezoid sum)",
+          "role": "DERIVED",
+          "formula": "=SUM(H15:H87)",
+          "value_num": 0.9948037921073777,
+          "value_text": null
+        },
+        {
+          "source_row": 13,
+          "name": "verdict  (|∫h−1| < 1e-2; workbook demo-grid gate)",
+          "role": "VERDICT",
+          "formula": "=IF(ABS(B12-1)<0.01,\"PASS\",\"FAIL\")",
+          "value_num": null,
+          "value_text": "PASS"
+        }
+      ]
+    },
+    {
+      "lab_id": "LAB 2",
+      "source_row": 90,
+      "title": "LAB 2 — C5 · zero-order-hold gain vs Euler — why the exact form matters",
+      "side_table": "zoh_grid",
+      "quantities": [
+        {
+          "source_row": 91,
+          "name": "damage rate k (1/day)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.05,
+          "value_text": null
+        }
+      ]
+    },
+    {
+      "lab_id": "LAB 3",
+      "source_row": 99,
+      "title": "LAB 3 — C8 · cascade stability: power iteration on Γ re-derives ρ = 0.8663 and the η_net bound",
+      "side_table": "gamma_matrix",
+      "quantities": [
+        {
+          "source_row": 100,
+          "name": "η_net (operating gain)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.05,
+          "value_text": null
+        },
+        {
+          "source_row": 115,
+          "name": "ρ̂(Γ) — power iteration ×20, mean of last 4 ‖u‖ (damps oscillation from complex subdominant eigenvalues)",
+          "role": "DERIVED",
+          "formula": "=(SQRT(SUMSQ(AX102:AX113))+SQRT(SUMSQ(AZ102:AZ113))+SQRT(SUMSQ(BB102:BB113))+SQRT(SUMSQ(BD102:BD113)))/4",
+          "value_num": 0.8663057262734162,
+          "value_text": null
+        },
+        {
+          "source_row": 116,
+          "name": "claimed value in ★ Cluster Coupling Network",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.8663,
+          "value_text": null
+        },
+        {
+          "source_row": 117,
+          "name": "match verdict  (|ρ̂−0.8663| < 0.001)",
+          "role": "VERDICT",
+          "formula": "=IF(ABS(B115-B116)<0.001,\"PASS\",\"FAIL\")",
+          "value_num": null,
+          "value_text": "PASS"
+        },
+        {
+          "source_row": 118,
+          "name": "stability bound 1/ρ̂",
+          "role": "DERIVED",
+          "formula": "=1/B115",
+          "value_num": 1.1543268960043656,
+          "value_text": null
+        },
+        {
+          "source_row": 119,
+          "name": "margin ×0.5 (recommended ceiling)",
+          "role": "DERIVED",
+          "formula": "=0.5*B118",
+          "value_num": 0.5771634480021828,
+          "value_text": null
+        },
+        {
+          "source_row": 120,
+          "name": "C8 verdict  (η_net·ρ̂ < 1)",
+          "role": "VERDICT",
+          "formula": "=IF(B100*B115<1,\"PASS\",\"FAIL\")",
+          "value_num": null,
+          "value_text": "PASS"
+        }
+      ]
+    },
+    {
+      "lab_id": "LAB 4",
+      "source_row": 123,
+      "title": "LAB 4 — LM-P01/P03 · the Layer-M scar update, live: bounded, step-size exact, half-life ln2/β",
+      "side_table": null,
+      "quantities": [
+        {
+          "source_row": 124,
+          "name": "S_t (current scar)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.65,
+          "value_text": null
+        },
+        {
+          "source_row": 125,
+          "name": "Z_t (cluster damage)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 62,
+          "value_text": null
+        },
+        {
+          "source_row": 126,
+          "name": "θ_elastic",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 50,
+          "value_text": null
+        },
+        {
+          "source_row": 127,
+          "name": "α_scar (/day)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.004,
+          "value_text": null
+        },
+        {
+          "source_row": 128,
+          "name": "β_autophagy (/day)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.001,
+          "value_text": null
+        },
+        {
+          "source_row": 129,
+          "name": "γ_scar",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.69,
+          "value_text": null
+        },
+        {
+          "source_row": 130,
+          "name": "Δt (days)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 1,
+          "value_text": null
+        },
+        {
+          "source_row": 131,
+          "name": "Vmax_base",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 1,
+          "value_text": null
+        },
+        {
+          "source_row": 132,
+          "name": "overshoot o = MAX(0,(Z−θ)/θ)",
+          "role": "DERIVED",
+          "formula": "=MAX(0,(B125-B126)/B126)",
+          "value_num": 0.24,
+          "value_text": null
+        },
+        {
+          "source_row": 133,
+          "name": "a = α·o",
+          "role": "DERIVED",
+          "formula": "=B127*B132",
+          "value_num": 0.00096,
+          "value_text": null
+        },
+        {
+          "source_row": 134,
+          "name": "S∞ = a/(a+β)",
+          "role": "DERIVED",
+          "formula": "=IF(B133+B128=0,B124,B133/(B133+B128))",
+          "value_num": 0.489795918367347,
+          "value_text": null
+        },
+        {
+          "source_row": 135,
+          "name": "S_next = S∞+(S−S∞)·e^(−(a+β)Δt)",
+          "role": "DERIVED",
+          "formula": "=B134+(B124-B134)*EXP(-(B133+B128)*B130)",
+          "value_num": 0.6496863075190548,
+          "value_text": null
+        },
+        {
+          "source_row": 136,
+          "name": "LM-P01 bounds verdict (0 ≤ S_next ≤ 1)",
+          "role": "VERDICT",
+          "formula": "=IF(AND(B135>=0,B135<=1),\"PASS\",\"FAIL\")",
+          "value_num": null,
+          "value_text": "PASS"
+        },
+        {
+          "source_row": 137,
+          "name": "two half-steps equal one full step (LM-P02)",
+          "role": "VERDICT",
+          "formula": "=IF(ABS((B134+(B134+(B124-B134)*EXP(-(B133+B128)*B130/2)-B134)*EXP(-(B133+B128)*B130/2))-B135)<0.0000000001,\"PASS\",\"FAIL\")",
+          "value_num": null,
+          "value_text": "PASS"
+        },
+        {
+          "source_row": 138,
+          "name": "τ = 1/β (days)",
+          "role": "DERIVED",
+          "formula": "=1/B128",
+          "value_num": 1000,
+          "value_text": null
+        },
+        {
+          "source_row": 139,
+          "name": "t½ = LN(2)/β (days)  [LM-P03]",
+          "role": "DERIVED",
+          "formula": "=LN(2)/B128",
+          "value_num": 693.1471805599452,
+          "value_text": null
+        },
+        {
+          "source_row": 140,
+          "name": "Vmax_eff = Vmax_base·e^(−γ·S_next)",
+          "role": "DERIVED",
+          "formula": "=B131*EXP(-B129*B135)",
+          "value_num": 0.6387235468928708,
+          "value_text": null
+        }
+      ]
+    },
+    {
+      "lab_id": "LAB 5",
+      "source_row": 153,
+      "title": "LAB 5 — T3 · the Layer-T anomaly score on a worked example",
+      "side_table": "topology_vectors",
+      "quantities": [
+        {
+          "source_row": 160,
+          "name": "‖Δτ‖₂ = SQRT(SUMXMY2)",
+          "role": "DERIVED",
+          "formula": "=SQRT(SUMXMY2(E155:E159,F155:F159))",
+          "value_num": 1.7426990560621762,
+          "value_text": null
+        },
+        {
+          "source_row": 161,
+          "name": "‖τ(t−30d)‖₂",
+          "role": "DERIVED",
+          "formula": "=SQRT(SUMSQ(E155:E159))",
+          "value_num": 2.2721135535003527,
+          "value_text": null
+        },
+        {
+          "source_row": 162,
+          "name": "A_topo = ‖Δτ‖/(1+‖τ_ref‖)",
+          "role": "DERIVED",
+          "formula": "=B160/(1+B161)",
+          "value_num": 0.5325912525859376,
+          "value_text": null
+        },
+        {
+          "source_row": 163,
+          "name": "θ_topo",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.3,
+          "value_text": null
+        },
+        {
+          "source_row": 164,
+          "name": "consecutive nights over θ (hysteresis = 3)",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 3,
+          "value_text": null
+        },
+        {
+          "source_row": 165,
+          "name": "flag verdict (A_topo > θ AND 3 nights)",
+          "role": "VERDICT",
+          "formula": "=IF(AND(B162>B163,B164>=3),\"FIRE (context only)\",\"watch\")",
+          "value_num": null,
+          "value_text": "FIRE (context only)"
+        }
+      ]
+    },
+    {
+      "lab_id": "LAB 6",
+      "source_row": 170,
+      "title": "LAB 6 — RESTORED v37.2 LAYER-M FORMULA SET · 26 EXECUTABLE FORMULAS",
+      "side_table": null,
+      "quantities": [
+        {
+          "source_row": 174,
+          "name": "S_t",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.65,
+          "value_text": null
+        },
+        {
+          "source_row": 175,
+          "name": "Z_t",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 62,
+          "value_text": null
+        },
+        {
+          "source_row": 176,
+          "name": "theta_elastic",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 50,
+          "value_text": null
+        },
+        {
+          "source_row": 177,
+          "name": "alpha_scar /day",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.004,
+          "value_text": null
+        },
+        {
+          "source_row": 178,
+          "name": "beta_autophagy /day",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.001,
+          "value_text": null
+        },
+        {
+          "source_row": 179,
+          "name": "gamma_scar",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 0.69,
+          "value_text": null
+        },
+        {
+          "source_row": 180,
+          "name": "dt_days",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 1,
+          "value_text": null
+        },
+        {
+          "source_row": 181,
+          "name": "Vmax_base",
+          "role": "INPUT",
+          "formula": null,
+          "value_num": 1,
+          "value_text": null
+        },
+        {
+          "source_row": 174,
+          "name": "overshoot o",
+          "role": "DERIVED",
+          "formula": "=MAX(0,(B175-B176)/B176)",
+          "value_num": 0.24,
+          "value_text": null
+        },
+        {
+          "source_row": 175,
+          "name": "a = alpha·o",
+          "role": "DERIVED",
+          "formula": "=B177*E174",
+          "value_num": 0.00096,
+          "value_text": null
+        },
+        {
+          "source_row": 176,
+          "name": "q = a+beta",
+          "role": "DERIVED",
+          "formula": "=E175+B178",
+          "value_num": 0.00196,
+          "value_text": null
+        },
+        {
+          "source_row": 177,
+          "name": "S_inf",
+          "role": "DERIVED",
+          "formula": "=IF(E176=0,B174,E175/E176)",
+          "value_num": 0.489795918367347,
+          "value_text": null
+        },
+        {
+          "source_row": 178,
+          "name": "S_next",
+          "role": "DERIVED",
+          "formula": "=IF(E176=0,B174,E177+(B174-E177)*EXP(-E176*B180))",
+          "value_num": 0.6496863075190548,
+          "value_text": null
+        },
+        {
+          "source_row": 179,
+          "name": "time constant tau_days",
+          "role": "DERIVED",
+          "formula": "=1/B178",
+          "value_num": 1000,
+          "value_text": null
+        },
+        {
+          "source_row": 180,
+          "name": "half-life t1/2_days",
+          "role": "DERIVED",
+          "formula": "=LN(2)/B178",
+          "value_num": 693.1471805599452,
+          "value_text": null
+        },
+        {
+          "source_row": 181,
+          "name": "repair ratio",
+          "role": "DERIVED",
+          "formula": "=EXP(-B179*E178)",
+          "value_num": 0.6387235468928708,
+          "value_text": null
+        },
+        {
+          "source_row": 182,
+          "name": "Vmax_eff",
+          "role": "DERIVED",
+          "formula": "=B181*E181",
+          "value_num": 0.6387235468928708,
+          "value_text": null
+        },
+        {
+          "source_row": 183,
+          "name": "bounds check",
+          "role": "VERDICT",
+          "formula": "=AND(E178>=0,E178<=1)",
+          "value_num": null,
+          "value_text": "TRUE"
+        }
+      ]
+    }
+  ],
+  "zoh_grid": [
+    {
+      "source_row": 93,
+      "dt_days": 0.25,
+      "analytic_gain": 0.24844399012237117,
+      "euler_gain": 0.25,
+      "relative_error": 0.006263020799426118
+    },
+    {
+      "source_row": 94,
+      "dt_days": 1,
+      "analytic_gain": 0.9754115099857197,
+      "euler_gain": 1,
+      "relative_error": 0.02520832465329459
+    },
+    {
+      "source_row": 95,
+      "dt_days": 5,
+      "analytic_gain": 4.423984338571902,
+      "euler_gain": 5,
+      "relative_error": 0.13020291604694978
+    }
+  ],
+  "gamma_matrix": {
+    "clusters": [
+      "C1 Memb",
+      "C2 Gluc",
+      "C3 Prot",
+      "C4 Elec",
+      "C5 Infl",
+      "C6 Oxid",
+      "C7 Methyl",
+      "C8 Gut",
+      "C9 Neuro",
+      "C10 Bone",
+      "C11 Thy/Adr",
+      "C12 Cardio"
+    ],
+    "rows": [
+      {
+        "source_row": 102,
+        "driver": "C1 Memb",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source_row": 103,
+        "driver": "C2 Gluc",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.5
+        ]
+      },
+      {
+        "source_row": 104,
+        "driver": "C3 Prot",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.3,
+          0,
+          0
+        ]
+      },
+      {
+        "source_row": 105,
+        "driver": "C4 Elec",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.5
+        ]
+      },
+      {
+        "source_row": 106,
+        "driver": "C5 Infl",
+        "weights": [
+          0,
+          0.6,
+          0,
+          0,
+          0,
+          0.8,
+          0,
+          0,
+          0.4,
+          0.4,
+          0,
+          0.6
+        ]
+      },
+      {
+        "source_row": 107,
+        "driver": "C6 Oxid",
+        "weights": [
+          0.6,
+          0,
+          0,
+          0,
+          0.5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.4
+        ]
+      },
+      {
+        "source_row": 108,
+        "driver": "C7 Methyl",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.5,
+          0,
+          0,
+          0.3
+        ]
+      },
+      {
+        "source_row": 109,
+        "driver": "C8 Gut",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0.7,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source_row": 110,
+        "driver": "C9 Neuro",
+        "weights": [
+          0,
+          0.3,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source_row": 111,
+        "driver": "C10 Bone",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source_row": 112,
+        "driver": "C11 Thy/Adr",
+        "weights": [
+          0,
+          0.5,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0.4,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "source_row": 113,
+        "driver": "C12 Cardio",
+        "weights": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "topology_vectors": [
+    {
+      "source_row": 155,
+      "component": "β₀",
+      "tau_reference": 2,
+      "tau_now": 3,
+      "difference": 1
+    },
+    {
+      "source_row": 156,
+      "component": "β₁",
+      "tau_reference": 1,
+      "tau_now": 2,
+      "difference": 1
+    },
+    {
+      "source_row": 157,
+      "component": "β₂",
+      "tau_reference": 0,
+      "tau_now": 1,
+      "difference": 1
+    },
+    {
+      "source_row": 158,
+      "component": "persist₁",
+      "tau_reference": 0.35,
+      "tau_now": 0.52,
+      "difference": 0.17000000000000004
+    },
+    {
+      "source_row": 159,
+      "component": "persist₂",
+      "tau_reference": 0.2,
+      "tau_now": 0.11,
+      "difference": -0.09000000000000001
+    }
+  ],
+  "layer_m_rules": [
+    {
+      "source_row": 185,
+      "name": "Production equation",
+      "statement": "dS/dt = alpha·o·(1−S) − beta·S"
+    },
+    {
+      "source_row": 186,
+      "name": "Exact update",
+      "statement": "S_next = S_inf + (S−S_inf)·exp[−(alpha·o+beta)·dt]"
+    },
+    {
+      "source_row": 187,
+      "name": "Parameter rules",
+      "statement": "S∈[0,1]; theta>0; alpha>=0; beta>0; gamma>=0; dt>=0; Vmax_base>=0"
+    },
+    {
+      "source_row": 188,
+      "name": "Replay rule",
+      "statement": "Start from stored S_k/P_S checkpoint before evidence support; never reset S from a late lab."
+    },
+    {
+      "source_row": 189,
+      "name": "External formula syntax",
+      "statement": "Microsoft EXP/LN/MAX/IF/AND documentation URLs are recorded in 06_DATA_SERVER_EQUATIONS."
+    }
+  ]
+}

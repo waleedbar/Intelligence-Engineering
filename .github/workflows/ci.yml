@@ -74,6 +74,8 @@ jobs:
           python -m sahacore.data.load_core_equations
           python -m sahacore.data.load_state_admission
           python -m sahacore.data.load_organ_registries
+          python -m sahacore.data.load_bistability_guard
+          python -m sahacore.data.load_verification_labs
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -153,7 +155,31 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 34, f'expected 34 versioned registries, got {versioned}'
+              assert versioned == 40, f'expected 40 versioned registries, got {versioned}'
+              # The twelve per-cluster ceilings on the scarring feedback loop,
+              # each confirmed by the sheet's own section-8 audit receipt.
+              cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
+              bc = cur.fetchone()[0]
+              assert bc == 12, f'expected 12 bistability caps, got {bc}'
+              # The workbook's six worked examples, with the exact Excel
+              # formula stored beside every published result.
+              cur.execute('SELECT role, count(*) FROM engine_internal.verification_lab_quantity GROUP BY role')
+              lab_roles = dict(cur.fetchall())
+              assert lab_roles == {'INPUT': 28, 'DERIVED': 23, 'VERDICT': 7}, lab_roles
+              cur.execute('SELECT count(*), count(*) FILTER (WHERE weight <> 0) FROM engine_internal.cluster_coupling_gamma')
+              cells, edges = cur.fetchone()
+              assert (cells, edges) == (144, 19), f'candidate Gamma: {(cells, edges)}'
+              # FINDING: the labs' Layer-M demo point runs at gamma*r = 2.76,
+              # above the cap for eleven of the twelve clusters. Only C6
+              # admits it. Reported in docs/parameter-gaps.md, not corrected.
+              cur.execute('SELECT count(*) FROM engine_internal.demo_point_outside_admitted_region')
+              outside = cur.fetchone()[0]
+              assert outside == 11, f'expected 11 refusing clusters, got {outside}'
+              # FINDING: LAB 3 calls 0.05 an operating gain where the runtime
+              # invariant, parameter #138 and parameter #141 all say otherwise.
+              cur.execute('SELECT count(*) FROM engine_internal.eta_net_disagreement')
+              eta = cur.fetchone()[0]
+              assert eta == 1, f'expected 1 eta_net disagreement, got {eta}'
               # 48 organ-pathway links over 13 pathways: none for D14/D15,
               # which is gate d14_d15_fail_closed agreeing with the data.
               cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
@@ -219,7 +245,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 40 versioned registries')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

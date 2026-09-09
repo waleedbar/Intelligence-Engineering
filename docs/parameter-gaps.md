@@ -687,3 +687,115 @@ have no Institute of Medicine DRI or UL at all. The sheet's own note:
 
 `engine_internal.targets_without_official_basis` is the list any rendering
 code must consult.
+
+## 2026-09-09: the verification lab runs Layer M outside its own admitted region
+
+`Live Verification Lab` (manifest order 5) is the sheet that calls itself
+*"the load-bearing numbers, re-derived by live formulas in front of you"*.
+Six labs, each a worked example with a PASS/FAIL verdict. Every one of them
+reproduces here to machine precision — `tests/test_verification_labs.py`
+recomputes each published quantity in Python from the sheet's own inputs.
+
+One of them is exercised at a point its sibling sheet forbids.
+
+LAB 4 and LAB 6 both run the Layer-M scar update at:
+
+| input | value |
+|---|---|
+| `γ_scar` | 0.69 |
+| `α_scar` | 0.004 /day |
+| `β_autophagy` | 0.001 /day |
+| `θ_elastic` | 50 |
+
+So `r = α/β = 4` and the destabilising group `γ·r = 2.76`.
+
+`★ Scarring Bistability Guard` (manifest order 17) caps `γ·r` per cluster and
+says of the cap, in its section 3 heading, *"assert these at build time"*.
+Against 2.76:
+
+- **eleven of the twelve caps are below it.** C7 admits 0.87, C9 0.97, C5 1.08.
+- **only C6 admits it**, at 4.86.
+- `γ_scar = 0.69` **is not a value the registry assigns to any cluster** —
+  `M-PARAM Registry` uses 0.6 and 1.2, and nothing else.
+- `θ_elastic = 50` **is C5's value**, and C5's cap is 1.08, the second
+  tightest in the table.
+
+Both labs return PASS, and both are right to. LM-P01 asks only whether
+`0 ≤ S_next ≤ 1`, and LM-P02 whether two half-steps equal one full step; the
+demo satisfies both. The gap is that **neither lab evaluates the bistability
+margin at all**. LAB 6's own `Parameter rules` row lists what it checks —
+
+> S∈[0,1]; theta>0; alpha>=0; beta>0; gamma>=0; dt>=0; Vmax_base>=0
+
+— and the group `γ·r` is not among them.
+
+**Not corrected here.** Amending a published worked example is the workbook
+owner's call, and the labs' arithmetic is not in question. What this build
+does instead:
+
+- `engine_internal.bistability_margin(γ, α, β)` implements PG-1 —
+  `B_k = cap_k / (γ_k · r_k)`, reported per cluster as the sheet asks, with
+  PG-3's `B_k < 1.25` proximity flag alongside the pass.
+- `engine_internal.demo_point_outside_admitted_region` is the eleven rows,
+  asserted in CI.
+- A CHECK constraint refuses any `gamma_scar` outside {0.6, 1.2} in the caps
+  table, so a third value has to be a deliberate edit.
+
+**For Dr. Ali:** should the demo point move onto an admitted cluster, or is
+0.69 there deliberately to exercise the formula away from the calibrated
+values?
+
+## 2026-09-09: LAB 3 calls a gain 'operating' that three sources call zero
+
+Same sheet, separate finding. LAB 3 row 100 is labelled:
+
+> η_net (operating gain)
+
+and holds **0.05**. Three places in the workbook say otherwise:
+
+| source | says |
+|---|---|
+| `00_ENGINEER_START` row 27, gate `eta_net_zero` | `Cluster coupling — OFF (ETA=0)` |
+| `P1 Parameters 134+` #138 `eta_net` | *"production value is exactly 0"*; range *"0 production; any non-zero value is shadow/data-derived"* |
+| `P1 Parameters 134+` #141 `rho_Gamma` | *"matrix diagnostic; **do not derive an eta ceiling from 1/rho alone**"* |
+
+And rows 118–119 of the lab do exactly what #141 rules out by name: they
+compute `stability bound 1/ρ̂ = 1.1543` and then a `margin ×0.5 (recommended
+ceiling)` of **0.577**. Parameter #141's reason is stated too — the spectral
+radius *"describes Γ but is not a stability governor for the complete
+physiological dynamics"*.
+
+The candidate Γ supports that reading. Of its 144 cells, **19** are non-zero;
+C10 and C12 drive nothing, and C3, C4, C7, C8 and C11 are never driven. It is
+a sketch of a few proposed pathways, not a coupling model of the twelve.
+
+The lab's arithmetic is sound and its verdict (`η_net·ρ̂ < 1`) is true. The
+disagreement is over what the number *means* — a shadow value being exercised,
+or an operating one. Read as operating, an engineer building from this sheet
+would ship cluster coupling switched on at a gain the invariant says is off,
+with a ceiling derived the way #141 forbids.
+
+**This build follows the invariant and the registry: `η_net` stays 0.**
+`engine_internal.eta_net_disagreement` records all three sides in one row, and
+CI asserts it returns exactly one. `tests/test_verification_labs.py` pins both
+positions, and says in its docstring that if the lab is ever corrected the
+test should be deleted rather than loosened.
+
+**For Dr. Ali:** is 0.05 in LAB 3 a shadow-mode value that should be labelled
+as one, and should rows 118–119 carry #141's caveat?
+
+## And a corroboration worth as much
+
+The lab's spectral radius is a 20-iteration estimate, `ρ̂ = 0.86630573`. Run
+the power iteration to convergence and the true radius is `0.86631229` — a
+difference of **6.6e-6**, comfortably inside the lab's own `|ρ̂ − 0.8663| <
+1e-3` gate, which both values pass. The sheet's estimate is honest and its
+tolerance is the right size for it.
+
+Likewise the twelve caps: `★ Scarring Bistability Guard` states them twice —
+once in section 3 and once in a section 8 *"INDEPENDENT VERIFICATION
+RECEIPT"* — and `M-PARAM Registry`, a different sheet imported days earlier,
+carries the same twelve rows again. All three agree on `γ_scar`, the cap, the
+max `α/β` ratio, `τ_dam`, `τ_heal` and `V`. Both stated identities hold to the
+source's own two-decimal precision: `cap = γ_scar × max(α/β)` and
+`V = 1.443 · τ_dam/τ_heal`, worst deviation 0.0068.
