@@ -1,0 +1,488 @@
+{
+ "sys_registry": [
+  {
+   "source_row": 5,
+   "sys_code": "SYS1",
+   "organ_system": "Cardiovascular",
+   "process_cluster": "C1 Membrane Integrity",
+   "note": null
+  },
+  {
+   "source_row": 6,
+   "sys_code": "SYS2",
+   "organ_system": "Metabolic",
+   "process_cluster": "C2 Glucose Regulation",
+   "note": null
+  },
+  {
+   "source_row": 7,
+   "sys_code": "SYS3",
+   "organ_system": "Hepatic",
+   "process_cluster": "C3 Protein Turnover",
+   "note": null
+  },
+  {
+   "source_row": 8,
+   "sys_code": "SYS4",
+   "organ_system": "Renal",
+   "process_cluster": "C4 Electrolyte Balance",
+   "note": null
+  },
+  {
+   "source_row": 9,
+   "sys_code": "SYS5",
+   "organ_system": "Musculoskeletal",
+   "process_cluster": "C5 Inflammatory Response",
+   "note": null
+  },
+  {
+   "source_row": 10,
+   "sys_code": "SYS6",
+   "organ_system": "Hematologic",
+   "process_cluster": "C6 Oxidative Stress",
+   "note": null
+  },
+  {
+   "source_row": 11,
+   "sys_code": "SYS7",
+   "organ_system": "Neurological",
+   "process_cluster": "C7 Methylation / One-carbon",
+   "note": "Neurological sits at SYS7 — this is why SYS11 cannot also be Neurological."
+  },
+  {
+   "source_row": 12,
+   "sys_code": "SYS8",
+   "organ_system": "Immune",
+   "process_cluster": "C8 Gut Health",
+   "note": null
+  },
+  {
+   "source_row": 13,
+   "sys_code": "SYS9",
+   "organ_system": "GI / Microbiome",
+   "process_cluster": "C9 Neuro-Hormonal",
+   "note": null
+  },
+  {
+   "source_row": 14,
+   "sys_code": "SYS10",
+   "organ_system": "Dermatological",
+   "process_cluster": "C10 Bone Health",
+   "note": null
+  },
+  {
+   "source_row": 15,
+   "sys_code": "SYS11",
+   "organ_system": "Respiratory",
+   "process_cluster": "C11 Thyroid / Adrenal",
+   "note": "RESOLVED as Respiratory. The card catalogues' 'Neurological' referred to SYS7; naming SYS11 Neurological would duplicate SYS7 and drop Respiratory entirely."
+  },
+  {
+   "source_row": 16,
+   "sys_code": "SYS12",
+   "organ_system": "Reproductive",
+   "process_cluster": "C12 Cardiovascular / Vascular",
+   "note": null
+  }
+ ],
+ "organ_pathway": [
+  {
+   "source_row": 7,
+   "organ_id": "O1",
+   "organ_node": "Cardiovascular",
+   "pathway_id": "D1",
+   "weight": "1"
+  },
+  {
+   "source_row": 8,
+   "organ_id": "O1",
+   "organ_node": "Cardiovascular",
+   "pathway_id": "D3",
+   "weight": "0.5"
+  },
+  {
+   "source_row": 9,
+   "organ_id": "O1",
+   "organ_node": "Cardiovascular",
+   "pathway_id": "D6",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 10,
+   "organ_id": "O1",
+   "organ_node": "Cardiovascular",
+   "pathway_id": "D7",
+   "weight": "1"
+  },
+  {
+   "source_row": 11,
+   "organ_id": "O1",
+   "organ_node": "Cardiovascular",
+   "pathway_id": "D13",
+   "weight": "0.8"
+  },
+  {
+   "source_row": 12,
+   "organ_id": "O2",
+   "organ_node": "Metabolic",
+   "pathway_id": "D1",
+   "weight": "0.8"
+  },
+  {
+   "source_row": 13,
+   "organ_id": "O2",
+   "organ_node": "Metabolic",
+   "pathway_id": "D3",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 14,
+   "organ_id": "O2",
+   "organ_node": "Metabolic",
+   "pathway_id": "D5",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 15,
+   "organ_id": "O2",
+   "organ_node": "Metabolic",
+   "pathway_id": "D6",
+   "weight": "1"
+  },
+  {
+   "source_row": 16,
+   "organ_id": "O2",
+   "organ_node": "Metabolic",
+   "pathway_id": "D8",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 17,
+   "organ_id": "O3",
+   "organ_node": "Hepatic",
+   "pathway_id": "D3",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 18,
+   "organ_id": "O3",
+   "organ_node": "Hepatic",
+   "pathway_id": "D6",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 19,
+   "organ_id": "O3",
+   "organ_node": "Hepatic",
+   "pathway_id": "D8",
+   "weight": "1"
+  },
+  {
+   "source_row": 20,
+   "organ_id": "O3",
+   "organ_node": "Hepatic",
+   "pathway_id": "D12",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 21,
+   "organ_id": "O4",
+   "organ_node": "Renal",
+   "pathway_id": "D1",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 22,
+   "organ_id": "O4",
+   "organ_node": "Renal",
+   "pathway_id": "D3",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 23,
+   "organ_id": "O4",
+   "organ_node": "Renal",
+   "pathway_id": "D6",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 24,
+   "organ_id": "O4",
+   "organ_node": "Renal",
+   "pathway_id": "D7",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 25,
+   "organ_id": "O4",
+   "organ_node": "Renal",
+   "pathway_id": "D9",
+   "weight": "1"
+  },
+  {
+   "source_row": 26,
+   "organ_id": "O4",
+   "organ_node": "Renal",
+   "pathway_id": "D13",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 27,
+   "organ_id": "O5",
+   "organ_node": "Musculoskeletal",
+   "pathway_id": "D3",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 28,
+   "organ_id": "O5",
+   "organ_node": "Musculoskeletal",
+   "pathway_id": "D10",
+   "weight": "1"
+  },
+  {
+   "source_row": 29,
+   "organ_id": "O5",
+   "organ_node": "Musculoskeletal",
+   "pathway_id": "D11",
+   "weight": "0.8"
+  },
+  {
+   "source_row": 30,
+   "organ_id": "O6",
+   "organ_node": "Hematologic",
+   "pathway_id": "D12",
+   "weight": "1"
+  },
+  {
+   "source_row": 31,
+   "organ_id": "O6",
+   "organ_node": "Hematologic",
+   "pathway_id": "D13",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 32,
+   "organ_id": "O7",
+   "organ_node": "Neurological",
+   "pathway_id": "D2",
+   "weight": "0.5"
+  },
+  {
+   "source_row": 33,
+   "organ_id": "O7",
+   "organ_node": "Neurological",
+   "pathway_id": "D3",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 34,
+   "organ_id": "O7",
+   "organ_node": "Neurological",
+   "pathway_id": "D4",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 35,
+   "organ_id": "O7",
+   "organ_node": "Neurological",
+   "pathway_id": "D5",
+   "weight": "0.4"
+  },
+  {
+   "source_row": 36,
+   "organ_id": "O7",
+   "organ_node": "Neurological",
+   "pathway_id": "D13",
+   "weight": "0.5"
+  },
+  {
+   "source_row": 37,
+   "organ_id": "O8",
+   "organ_node": "Immune",
+   "pathway_id": "D2",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 38,
+   "organ_id": "O8",
+   "organ_node": "Immune",
+   "pathway_id": "D3",
+   "weight": "1"
+  },
+  {
+   "source_row": 39,
+   "organ_id": "O8",
+   "organ_node": "Immune",
+   "pathway_id": "D5",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 40,
+   "organ_id": "O8",
+   "organ_node": "Immune",
+   "pathway_id": "D12",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 41,
+   "organ_id": "O9",
+   "organ_node": "GI/Microbiome",
+   "pathway_id": "D3",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 42,
+   "organ_id": "O9",
+   "organ_node": "GI/Microbiome",
+   "pathway_id": "D12",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 43,
+   "organ_id": "O10",
+   "organ_node": "Dermatological",
+   "pathway_id": "D1",
+   "weight": "0.5"
+  },
+  {
+   "source_row": 44,
+   "organ_id": "O10",
+   "organ_node": "Dermatological",
+   "pathway_id": "D2",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 45,
+   "organ_id": "O10",
+   "organ_node": "Dermatological",
+   "pathway_id": "D3",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 46,
+   "organ_id": "O10",
+   "organ_node": "Dermatological",
+   "pathway_id": "D4",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 47,
+   "organ_id": "O10",
+   "organ_node": "Dermatological",
+   "pathway_id": "D5",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 48,
+   "organ_id": "O11",
+   "organ_node": "Respiratory",
+   "pathway_id": "D2",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 49,
+   "organ_id": "O11",
+   "organ_node": "Respiratory",
+   "pathway_id": "D3",
+   "weight": "0.5"
+  },
+  {
+   "source_row": 50,
+   "organ_id": "O12",
+   "organ_node": "Reproductive",
+   "pathway_id": "D3",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 51,
+   "organ_id": "O12",
+   "organ_node": "Reproductive",
+   "pathway_id": "D5",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 52,
+   "organ_id": "O12",
+   "organ_node": "Reproductive",
+   "pathway_id": "D6",
+   "weight": "0.3"
+  },
+  {
+   "source_row": 53,
+   "organ_id": "O12",
+   "organ_node": "Reproductive",
+   "pathway_id": "D10",
+   "weight": "0.2"
+  },
+  {
+   "source_row": 54,
+   "organ_id": "O12",
+   "organ_node": "Reproductive",
+   "pathway_id": "D12",
+   "weight": "0.3"
+  }
+ ],
+ "targets": [
+  {
+   "source_row": 6,
+   "variable_key": "choline_mg",
+   "display_name": "Choline",
+   "unit": "mg",
+   "daily_target": "550 (M) / 425 (F)",
+   "upper_limit": "3500",
+   "basis_source": "IOM DRI (AI + UL)",
+   "version": "v32.8.2"
+  },
+  {
+   "source_row": 7,
+   "variable_key": "coq10_mg",
+   "display_name": "Coenzyme Q10",
+   "unit": "mg",
+   "daily_target": "~100 (proxy; higher if statin/>40y)",
+   "upper_limit": "none established (well-tolerated to ~1200 in trials)",
+   "basis_source": "NO official DRI/UL — literature wellness proxy",
+   "version": "v32.8.2"
+  },
+  {
+   "source_row": 8,
+   "variable_key": "betaine_mg",
+   "display_name": "Betaine (TMG)",
+   "unit": "mg",
+   "daily_target": "~500–1000 (proxy)",
+   "upper_limit": "none formal; caution >4000 (LDL↑)",
+   "basis_source": "NO official DRI/UL — literature wellness proxy",
+   "version": "v32.8.2"
+  },
+  {
+   "source_row": 9,
+   "variable_key": "folate_ug",
+   "display_name": "Folate (DFE)",
+   "unit": "µg",
+   "daily_target": "400",
+   "upper_limit": "1000 (synthetic folic acid)",
+   "basis_source": "IOM DRI (RDA + UL)",
+   "version": "v32.8.2"
+  },
+  {
+   "source_row": 10,
+   "variable_key": "vitamin_b12_ug",
+   "display_name": "Vitamin B12",
+   "unit": "µg",
+   "daily_target": "2.4",
+   "upper_limit": "none established",
+   "basis_source": "IOM DRI (RDA)",
+   "version": "v32.8.2"
+  },
+  {
+   "source_row": 11,
+   "variable_key": "vitamin_b6_mg",
+   "display_name": "Vitamin B6",
+   "unit": "mg",
+   "daily_target": "1.3–1.7",
+   "upper_limit": "100",
+   "basis_source": "IOM DRI (RDA + UL)",
+   "version": "v32.8.2"
+  }
+ ]
+}

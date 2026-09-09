@@ -84,6 +84,12 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("datamap.json", "variables", "P1 DataMap section A"),
     "engine_internal.datamap_onboarding_field":
         ("datamap.json", "onboarding_fields", "P1 DataMap section B"),
+    "engine_internal.organ_system":
+        ("organ_registries.json", "sys_registry", "★ SYS Registry (organs)"),
+    "engine_internal.organ_pathway_weight":
+        ("organ_registries.json", "organ_pathway", "REG · Organ×Pathway Long"),
+    "engine_internal.nutrient_target":
+        ("organ_registries.json", "targets", "★ Target Registry (versioned)"),
     "engine_internal.core_equation":
         ("core_equations.json", None, "P1 Core Equations"),
     "engine_internal.state_admission_constant":

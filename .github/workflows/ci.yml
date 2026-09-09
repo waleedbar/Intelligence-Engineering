@@ -73,6 +73,7 @@ jobs:
           python -m sahacore.data.load_datamap
           python -m sahacore.data.load_core_equations
           python -m sahacore.data.load_state_admission
+          python -m sahacore.data.load_organ_registries
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -152,7 +153,12 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 31, f'expected 31 versioned registries, got {versioned}'
+              assert versioned == 34, f'expected 34 versioned registries, got {versioned}'
+              # 48 organ-pathway links over 13 pathways: none for D14/D15,
+              # which is gate d14_d15_fail_closed agreeing with the data.
+              cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
+              links, paths = cur.fetchone()
+              assert (links, paths) == (48, 13), f'organ-pathway: {(links, paths)}'
               # The 24 message templates the VETO rules render, now a real FK.
               cur.execute('SELECT count(*) FROM engine_internal.veto_rule_message')
               vm = cur.fetchone()[0]

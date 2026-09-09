@@ -61,6 +61,9 @@ CONFINED_REGISTRIES = [
     # arm the engine will ever consider.
     "veto_drug_nutrient",
     "veto_message",
+    "organ_system",
+    "organ_pathway_weight",
+    "nutrient_target",
     "action_space",
     "action_space_info",
     "action_space_phase",

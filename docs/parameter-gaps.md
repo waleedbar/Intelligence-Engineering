@@ -643,3 +643,47 @@ template stops the build.
 
 **For Dr. Ali:** should `MSG-CRITICAL-STABLE` carry the prescriber referral
 its two rules already specify?
+
+## 2026-09-09: two sheets disagree about the organ namespace
+
+`★ SYS Registry (organs)` is marked AUTHORITATIVE and states a binding rule:
+
+> **Why NOT O1–O12** — the O-namespace is occupied by onboarding.
+> **Binding rule** — any NEW organ reference must use a SYS code.
+
+`REG · Organ×Pathway Long` uses `O1`–`O12` for its 12 organ nodes.
+
+It predates the ruling — the SYS sheet says *new* references — so this is not
+a violation to fix in the loader. But the collision is live: `O1` is the
+cardiovascular organ node in one sheet and the anthropometrics module in
+`O·O1 Anthropometrics`, which Layer 0 will read. Both are loaded as written,
+and a test asserts the disagreement still exists so it cannot be resolved by
+an accidental edit in either direction.
+
+**For Dr. Ali:** should `REG · Organ×Pathway Long` be regenerated with SYS
+codes, or is the O-namespace grandfathered there?
+
+### And one place where two sheets agree, which is worth as much
+
+`REG · Organ×Pathway Long` holds 48 links over 12 organs and **13** pathways,
+D1 to D13. There are no organ weights for D14 or D15.
+
+`00_ENGINEER_START` gate `d14_d15_fail_closed` reads GLOBAL_MODIFIER_PENDING:
+*"No invented organ weights. Fail closed until evidence-locked mapping is
+signed off."*
+
+The gate came from one sheet and the weights from another, imported days
+apart. They agree. A CHECK constraint now stops a D14 or D15 weight being
+inserted at all, and the extractor refuses to write one.
+
+### Targets with no official basis
+
+`★ Target Registry (versioned)` carries 6 rows. Two — CoQ10 and betaine —
+have no Institute of Medicine DRI or UL at all. The sheet's own note:
+
+> literature-based wellness proxies for adequacy display only, NOT clinical
+> dosing. This matters for FDA General Wellness positioning — they must
+> render as adequacy %, never as a treatment dose.
+
+`engine_internal.targets_without_official_basis` is the list any rendering
+code must consult.
