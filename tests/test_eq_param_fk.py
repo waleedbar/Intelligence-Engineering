@@ -87,12 +87,21 @@ def test_an_authority_glosss_semicolons_do_not_split_it(fk):
 
 # --- the acceptance test ---------------------------------------------------
 
-def test_no_missing_fk_is_exactly_these_four(fk):
+def test_no_missing_fk_is_exactly_these_eight(fk):
     """Build step 2's acceptance test. Pinned by (equation, key) so a change
     says which FK moved, not merely that the count did.
 
-    Both entries are real holes in the workbook rather than unfinished work
-    here, and both are documented in docs/parameter-gaps.md.
+    Every entry is a real hole in the workbook rather than unfinished work
+    here, and all are documented in docs/parameter-gaps.md.
+
+    THE COUNT GREW FROM FOUR TO EIGHT WHEN THE SAFETY REGISTRIES LOADED, and
+    that is the number becoming more truthful rather than the build
+    regressing. H-001/H-006 declares 'VETO Canonical 339' and 'Action_Space'
+    authoritative for its keys. While neither was imported, its keys were
+    NOT_LOADED -- unfinished importing, not a missing FK, exactly as
+    test_a_missing_fk_is_only_claimed_when_every_authority_is_loaded
+    requires. Both are now loaded, so the four keys neither table carries are
+    reported for what they are.
     """
     assert set(_by_status(fk, "MISSING_FK")) == {
         # Layer B's two-compartment ODE consumes a total clearance and an
@@ -106,6 +115,14 @@ def test_no_missing_fk_is_exactly_these_four(fk):
         # and its guard -- never the two rates on their own.
         ("K3-FIX-01", "alpha_scar"),
         ("K3-FIX-01", "beta_autophagy"),
+        # Layer H's conservative-decision objective. Its risk and uncertainty
+        # penalties resolve (#132 lambda_r, #131 lambda_u), but the budget
+        # penalty, the two bound z-scores and the baseline offset are in
+        # neither authority it names, nor in the parameter registry.
+        ("H-001/H-006", "lambda_b"),
+        ("H-001/H-006", "z_B"),
+        ("H-001/H-006", "z_R"),
+        ("H-001/H-006", "baseline_delta"),
     }
 
 
@@ -215,6 +232,23 @@ def test_the_registries_this_build_still_owes_are_recorded(fk):
             if any(v["status"] == "NOT_LOADED" for v in r["key_resolution"].values())
             for sheet in r["authoritative_sheets"]
             if not r["all_authorities_loaded"]}
-    assert "VETO Canonical 339" in owed
-    assert "Action_Space" in owed
     assert "P1 Scoring Alerts" in owed
+    assert "K3 Fixes" in owed
+    assert "QSSA · Internal Canonical" in owed
+
+    # No longer owed: both safety registries are loaded. 'VETO Canonical 339'
+    # is the FK sheet's historical name for the active registry, which that
+    # sheet itself redirects to MERGE·VETO Drug-Nutrient 339.
+    assert "VETO Canonical 339" not in owed
+    assert "Action_Space" not in owed
+
+
+def test_the_veto_authority_name_resolves_to_the_registry_not_the_stub_sheet():
+    """The redirect, made explicit. A loader that took 'VETO Canonical 339'
+    at face value would import a 266-row REFERENCE ONLY sheet as the safety
+    table, so the mapping is stated once, here and in LOADED_REGISTRIES,
+    rather than left to whoever reads the authority column next."""
+    from sahacore.data.build_eq_param_fk import LOADED_REGISTRIES
+
+    assert LOADED_REGISTRIES["VETO Canonical 339"] == "engine_internal.veto_drug_nutrient"
+    assert LOADED_REGISTRIES["Action_Space"] == "engine_internal.action_space"

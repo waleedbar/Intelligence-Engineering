@@ -62,6 +62,8 @@ jobs:
           python -m sahacore.data.load_parameter_registry
           python -m sahacore.data.load_eq_param_fk
           python -m sahacore.data.load_eq_build_rows
+          python -m sahacore.data.load_veto_registry
+          python -m sahacore.data.load_action_space
 
       - name: Verify loaded row counts match source
         run: |
@@ -104,7 +106,27 @@ jobs:
               assert f == 126, f'expected 126 FK rows, got {f}'
               cur.execute('SELECT count(*) FROM engine_internal.missing_fk')
               mf = cur.fetchone()[0]
-              assert mf == 4, f'expected 4 missing FKs, got {mf}'
+              assert mf == 8, f'expected 8 missing FKs, got {mf}'
+              # VETO-01, the Replay Contract's release gate: '339 rows and 339
+              # unique canonical IDs; source IDs retained'. The retained source
+              # ids are 319 distinct values across those 339 rows -- that gap is
+              # the primary-key collision the canonical id repaired, and it must
+              # stay visible rather than be deduplicated away.
+              cur.execute('SELECT count(*), count(DISTINCT rule_id), count(DISTINCT source_rule_id) FROM engine_internal.veto_drug_nutrient')
+              rows, ids, src = cur.fetchone()
+              assert (rows, ids, src) == (339, 339, 319), f'VETO-01 failed: {(rows, ids, src)}'
+              cur.execute(\"SELECT count(*) FROM engine_internal.veto_hard\")
+              hard = cur.fetchone()[0]
+              assert hard == 94, f'expected 94 hard vetoes, got {hard}'
+              # The action ontology keeps all 127 arms; arm 127 carries the
+              # sheet's own safety hold. Deliberately NOT asserting 127
+              # activatable arms -- the source sheet forbids that test.
+              cur.execute('SELECT count(*), count(activation_hold) FROM engine_internal.action_space')
+              acts, held = cur.fetchone()
+              assert (acts, held) == (127, 1), f'expected 127 actions with 1 held, got {(acts, held)}'
+              cur.execute('SELECT count(*) FROM engine_internal.action_space_info')
+              info = cur.fetchone()[0]
+              assert info == 7, f'expected 7 information actions, got {info}'
               cur.execute('SELECT count(*) FROM engine_internal.eq_build_rows')
               b = cur.fetchone()[0]
               assert b == 119, f'expected 119 build rows, got {b}'
@@ -121,7 +143,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 4 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 8 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

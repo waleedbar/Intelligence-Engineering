@@ -393,8 +393,11 @@
    "VETO Canonical 339",
    "Action_Space"
   ],
-  "loaded_registries": [],
-  "all_authorities_loaded": false,
+  "loaded_registries": [
+   "engine_internal.veto_drug_nutrient",
+   "engine_internal.action_space"
+  ],
+  "all_authorities_loaded": true,
   "backend_object": "decision_params",
   "validation_rule": "VETO before ranking",
   "key_resolution": {
@@ -407,27 +410,27 @@
     "resolved_in": null
    },
    "lambda_r": {
-    "status": "NOT_LOADED",
-    "resolved_in": null
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:lambda_r"
    },
    "lambda_u": {
-    "status": "NOT_LOADED",
-    "resolved_in": null
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "parameter_registry:lambda_u"
    },
    "lambda_b": {
-    "status": "NOT_LOADED",
+    "status": "MISSING_FK",
     "resolved_in": null
    },
    "z_B": {
-    "status": "NOT_LOADED",
+    "status": "MISSING_FK",
     "resolved_in": null
    },
    "z_R": {
-    "status": "NOT_LOADED",
+    "status": "MISSING_FK",
     "resolved_in": null
    },
    "baseline_delta": {
-    "status": "NOT_LOADED",
+    "status": "MISSING_FK",
     "resolved_in": null
    }
   }
@@ -1531,7 +1534,9 @@
    "P1 Drug Interactions",
    "VETO Canonical 339"
   ],
-  "loaded_registries": [],
+  "loaded_registries": [
+   "engine_internal.veto_drug_nutrient"
+  ],
   "all_authorities_loaded": false,
   "backend_object": "layer_h_veto",
   "validation_rule": "warfarin/VitK blocked",
@@ -1574,8 +1579,10 @@
   "authoritative_sheets": [
    "Action_Space"
   ],
-  "loaded_registries": [],
-  "all_authorities_loaded": false,
+  "loaded_registries": [
+   "engine_internal.action_space"
+  ],
+  "all_authorities_loaded": true,
   "backend_object": "layer_h_policy_bonus",
   "validation_rule": "no bonus for high-risk action",
   "key_resolution": {}

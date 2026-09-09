@@ -107,6 +107,15 @@ LOADED_REGISTRIES = {
     "M-PARAM Registry": "engine_internal.layer_m_scarring_params",
     "P1 QSSA ATP-GSH-NAD": "engine_internal.qssa_atp_complexes",
     "IO · Lineage DataMap": "engine_internal.raw_events (+ ledger tables)",
+    "Action_Space": "engine_internal.action_space",
+    # The FK sheet names the authority by its historical sheet name. That
+    # sheet is not the registry: its own third row reads "REFERENCE ONLY --
+    # the sheet name is historical and does not guarantee the active registry
+    # row count. Production/build loaders MUST use MERGE·VETO Drug-Nutrient
+    # 339, the active registry with 339 unique canonical rule_ids." So the
+    # authority this name denotes IS the table below, and the redirect is the
+    # workbook's own, not a guess about which sheet was meant.
+    "VETO Canonical 339": "engine_internal.veto_drug_nutrient",
 }
 
 
@@ -277,6 +286,10 @@ def main() -> None:
             (here / "qssa_atp_complexes_5.json").read_text(encoding="utf-8"))[0]),
         "tvmcd_pathways_15.json": set(json.loads(
             (here / "tvmcd_pathways_15.json").read_text(encoding="utf-8"))[0]),
+        "engine_internal.veto_drug_nutrient": set(json.loads(
+            (here / "veto_drug_nutrient_339.json").read_text(encoding="utf-8"))[0]),
+        "engine_internal.action_space": set(json.loads(
+            (here / "action_space_127.json").read_text(encoding="utf-8"))["actions"][0]),
     }
 
     for row in rows:

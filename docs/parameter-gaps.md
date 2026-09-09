@@ -419,3 +419,48 @@ Adding to the request in "Consequence for the build" above:
   `mu_k`, which are the same two numbers in the other parameterisation
 * the Hawkes `δ` (and `μ`, `ν`) for `K3-FIX-04`, which live in the
   unimported `K3 Fixes` sheet
+
+## 2026-09-09: four more, from loading the safety registries
+
+`missing_fk` went from 4 to 8 when `MERGE·VETO Drug-Nutrient 339` and
+`Action_Space` loaded. The count did not regress — it became truthful.
+
+`H-001/H-006` (Layer H's conservative-decision objective) declares those two
+sheets authoritative for its keys. While neither was imported, its keys were
+`NOT_LOADED` — unfinished importing on our side, which this build deliberately
+does not report as a missing FK. Both are loaded now, so the keys neither
+table carries are reported for what they are:
+
+| Key | Meaning in H1/H6 | Where it is not |
+|---|---|---|
+| `lambda_b` | budget penalty weight | not in VETO, Action_Space, or the parameter registry |
+| `z_B` | budget-bound z-score | same |
+| `z_R` | risk-bound z-score | same |
+| `baseline_delta` | baseline offset for the decision comparison | same |
+
+Its two siblings **do** resolve: `lambda_u` is #131 (physiological uncertainty
+penalty) and `lambda_r` is #132 (risk upper-bound penalty), both Layer H, both
+`RESOLVED_ELSEWHERE` against the parameter registry. So the objective is
+half-parameterised: the penalties on uncertainty and risk exist, the budget
+penalty and the two bounds that make them comparable do not.
+
+### One naming trap worth recording
+
+The FK sheet names `VETO Canonical 339` as the authority. That sheet is **not**
+the registry. Its own third row:
+
+> REFERENCE ONLY — the sheet name is historical and does not guarantee the
+> active registry row count. Production/build loaders MUST use MERGE·VETO
+> Drug-Nutrient 339, the active registry with 339 unique canonical rule_ids.
+
+It holds 266 rows. A loader that matched the authority column against sheet
+names would have imported a truncated safety table under the right-looking
+name. The redirect is recorded in `build_eq_param_fk.LOADED_REGISTRIES` and
+pinned by `test_the_veto_authority_name_resolves_to_the_registry_not_the_stub_sheet`.
+
+### What to ask for
+
+Adding to the earlier requests:
+
+* `lambda_b`, `z_B`, `z_R` and `baseline_delta` for H1/H6 — or confirmation
+  that they live in a sheet not yet named as authoritative for that row

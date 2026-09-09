@@ -34,6 +34,21 @@ CONFINED_REGISTRIES = [
     "damage_registry_canonical",
     "layer_m_scarring_params",
     "qssa_atp_complexes",
+    # Build step 2's parameter/FK half.
+    "parameter_registry",
+    "eq_param_fk",
+    "eq_build_rows",
+    "eq_build_row_inputs",
+    # Build step 2's safety half. The VETO library is the sharpest case
+    # DBF-005 covers: 339 curated drug-nutrient interaction rules with
+    # clinical rationales and interaction coefficients are exactly the
+    # "proprietary model parameters" the firewall exists to keep inside, and
+    # a consumer role that could read the action space could enumerate every
+    # arm the engine will ever consider.
+    "veto_drug_nutrient",
+    "action_space",
+    "action_space_info",
+    "action_space_phase",
 ]
 
 # Ledger tables from build step 1.
