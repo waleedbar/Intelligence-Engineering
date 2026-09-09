@@ -59,6 +59,7 @@ jobs:
           python -m sahacore.data.load_layer_m
           python -m sahacore.data.load_qssa_atp
           python -m sahacore.data.load_ledger_policy
+          python -m sahacore.data.load_parameter_registry
 
       - name: Verify loaded row counts match source
         run: |
@@ -90,7 +91,13 @@ jobs:
               cur.execute(\"SELECT count(*) FROM engine_internal.replay_lag_policy WHERE status = 'ACTIVE'\")
               p = cur.fetchone()[0]
               assert p == 1, f'expected exactly 1 active replay lag policy, got {p}'
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy')
+              cur.execute('SELECT count(*) FROM engine_internal.parameter_registry')
+              r = cur.fetchone()[0]
+              assert r == 192, f'expected 192 registry parameters, got {r}'
+              cur.execute(\"SELECT count(*) FROM engine_internal.parameter_gaps WHERE weight = 'Critical'\")
+              g = cur.fetchone()[0]
+              assert g == 10, f'expected 10 critical parameter gaps, got {g}'
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event
