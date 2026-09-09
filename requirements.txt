@@ -11,3 +11,7 @@ pytest==9.1.1
 # the tests import those modules for the alias and gap tables declared in
 # them, so the dependency is real in CI.
 openpyxl==3.1.5
+# tests/test_ci_workflow_is_valid_shell.py parses .github/workflows/ci.yml
+# to check its shell quoting -- CI was red for three commits on a bug no
+# Python-level test could see.
+PyYAML==6.0.1

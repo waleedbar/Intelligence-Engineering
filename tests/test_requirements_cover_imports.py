@@ -19,14 +19,20 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 FIRST_PARTY = {"sahacore", "tests", "conftest"}
 
+# Import name -> distribution name, for the packages where the two differ.
+# The docstring above used to say they never do in this repo; PyYAML is the
+# first exception, and it is declared here rather than special-cased inside
+# the comparison.
+DISTRIBUTION_NAMES = {"yaml": "pyyaml"}
+
 
 def _pinned() -> set[str]:
     """The distribution names in requirements.txt, normalised.
 
     'psycopg[binary]==3.3.5' -> 'psycopg'. Comment and blank lines are
-    skipped; a package's import name and its distribution name are the same
-    for everything this repo uses, and the test says so if that ever stops
-    being true.
+    skipped. Where an import name differs from its distribution name,
+    DISTRIBUTION_NAMES declares the pairing -- PyYAML is imported as `yaml`
+    and is so far the only one.
     """
     names = set()
     for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
@@ -62,7 +68,7 @@ def test_every_third_party_import_is_pinned_in_requirements():
         for module, files in _imported().items()
         if module not in sys.stdlib_module_names
         and module not in FIRST_PARTY
-        and module.lower() not in pinned
+        and DISTRIBUTION_NAMES.get(module, module).lower() not in pinned
     }
     assert not missing, (
         "these modules are imported but not pinned in requirements.txt, so "
@@ -80,9 +86,10 @@ def test_the_check_actually_looks_at_third_party_imports():
     actually changed rather than passing on a stale list.
     """
     imported = _imported()
-    for module in ("psycopg", "pytest", "openpyxl"):
+    for module in ("psycopg", "pytest", "openpyxl", "yaml"):
         assert imported.get(module), f"{module} should be imported somewhere"
-        assert module in _pinned(), f"{module} should be pinned"
+        distribution = DISTRIBUTION_NAMES.get(module, module)
+        assert distribution in _pinned(), f"{module} should be pinned"
 
 
 def test_nothing_is_pinned_that_no_longer_has_a_home():
@@ -96,6 +103,7 @@ def test_nothing_is_pinned_that_no_longer_has_a_home():
     demands the pin again.
     """
     imported = _imported()
-    orphans = sorted(m for m in _pinned() if not imported.get(m))
+    distributions = {DISTRIBUTION_NAMES.get(m, m).lower() for m in imported}
+    orphans = sorted(m for m in _pinned() if m not in distributions)
     assert not orphans, (
         f"pinned but imported nowhere in sahacore/ or tests/: {orphans}")

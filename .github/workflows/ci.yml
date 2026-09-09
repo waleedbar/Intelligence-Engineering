@@ -161,7 +161,7 @@ jobs:
               ec = cur.fetchone()[0]
               assert ec == 19, f'expected 19 recorded corrections, got {ec}'
               # The DataMap's stored-vs-computed split, and the step-3 input contract.
-              cur.execute("SELECT count(*) FROM engine_internal.datamap_computed")
+              cur.execute('SELECT count(*) FROM engine_internal.datamap_computed')
               dc = cur.fetchone()[0]
               assert dc == 44, f'expected 44 computed variables, got {dc}'
               cur.execute('SELECT count(*) FROM engine_internal.datamap_onboarding_field')
