@@ -72,8 +72,30 @@ def test_every_third_party_import_is_pinned_in_requirements():
 
 def test_the_check_actually_looks_at_third_party_imports():
     """A rule that finds nothing to check would pass just as quietly. These
-    four are what it is scanning for, so an empty or broken scan fails here."""
+    three are what it is scanning for, so an empty or broken scan fails here.
+
+    `scipy` was on this list until the layer modules moved to archive/ and
+    took the only imports of it with them. This test caught that, which is
+    the behaviour wanted: the canary noticed the build's dependencies had
+    actually changed rather than passing on a stale list.
+    """
     imported = _imported()
-    for module in ("psycopg", "pytest", "scipy", "openpyxl"):
+    for module in ("psycopg", "pytest", "openpyxl"):
         assert imported.get(module), f"{module} should be imported somewhere"
         assert module in _pinned(), f"{module} should be pinned"
+
+
+def test_nothing_is_pinned_that_no_longer_has_a_home():
+    """The manifest and the source must agree in both directions. A pin left
+    behind after its last import moved away is how a requirements file grows
+    packages nobody can account for.
+
+    archive/ is deliberately not scanned: parking a module must not keep its
+    dependency alive on the engine's manifest. When one comes back to
+    sahacore/, test_every_third_party_import_is_pinned_in_requirements
+    demands the pin again.
+    """
+    imported = _imported()
+    orphans = sorted(m for m in _pinned() if not imported.get(m))
+    assert not orphans, (
+        f"pinned but imported nowhere in sahacore/ or tests/: {orphans}")

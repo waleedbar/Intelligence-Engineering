@@ -1,6 +1,11 @@
 psycopg[binary]==3.3.5
 pytest==9.1.1
-scipy==1.17.1
+# scipy was here for the Layer A/B/C equations. Those modules are parked in
+# archive/ until the build reaches step 4 (see archive/README.md), and with
+# them went the only imports of it. Re-pin it when they come back --
+# tests/test_requirements_cover_imports.py will insist on it the moment one
+# returns to sahacore/.
+#
 # The sahacore.data.build_* extractors read the master workbook. The engine
 # itself never opens a spreadsheet -- it reads the JSON they produce -- but
 # the tests import those modules for the alias and gap tables declared in
