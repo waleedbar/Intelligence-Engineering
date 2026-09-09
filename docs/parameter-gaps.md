@@ -270,3 +270,87 @@ were fed into our own A4 implementation with every modifier set to zero:
 Six-decimal agreement from the trace's own numbers through the canonical
 equation. Those are calibrated values, not illustrations — and they are not
 in any table we hold.
+
+## 2026-09-09: the rulings master arrived, and it settles the question
+
+`10_01_26_SahaPlusAI_MASTER_Claude_Sol_Kimi_v39k.xlsx` — **244 sheets** — is
+the "rulings master" the four product workbooks cite in their ANCHORS tables
+as `v39s.xlsx (245 sheets)`. It contains **62 sheets absent from the build
+master**, including the four this document had listed as missing
+(`★ v35.9 Rulings D01-D13`, `★ v35.9 Definitions`,
+`★ v35.9 Ledger & M5 Calibration`, `★ D-01 CORRECTED SYS`) and the
+`P1 Nutrients 80` sheet the Worked Trace cites as its source.
+
+### The "removed columns" theory is disproven
+
+`P1 Nutrients 80` in v39k has the **identical 21 columns** as
+`P1 Nutrients 81` in the build master:
+
+    # · ID · Name · Category · Unit · γ_k · γ_θ · λ · κ_fast · κ_slow ·
+    w_fast · T½_fast · T½_slow · V_f · State Semantics · Canonical State
+    Unit · F_max · s_hi · s_lo · Evidence Prior
+
+and the same values: **`F_max = 1` on all 81 rows**, `V_f = 50 dL` on 80 of
+81. No `F_base`, no `K_m`, no `V_s`, no `Q`, no `CL`.
+
+So nothing was stripped between the rulings master and the build handoff.
+The table has always had this shape. Earlier entries in this document
+inferred a removal; that inference was wrong and is retracted.
+
+### Scanning the 62 new sheets
+
+Every occurrence of the five missing parameters across the sheets unique to
+v39k:
+
+| Parameter | Hits | What they are |
+|---|---|---|
+| `F_base` | 9 | The A4 formula, the `D5 · Parameter Registry` definition row, and a GLP-1 route label. No values. |
+| `K_m` | 44 | The QSSA CBS constant (4000 µM), the 15 pathway Vm/Km pairs (which we already hold and which match exactly), and definitions. No per-nutrient absorption Km. |
+| `CL_int` | 2 | Both definitions — `D1 · Core Equations` and `D5 · Parameter Registry`. |
+| `f_u_ref` | 7 | Definitions in `P1 Variables 208+` and `D5 · Parameter Registry`. |
+| `w_k^fix` | **0** | Absent entirely. |
+
+`v39guide.docx` (89,000 characters of narrative) contains no `F_base`,
+`F_max`, `K_m`, `CL_int`, `f_unbound` or `w_k` value either — its only `Km`
+references are the CBS constant and the pathway table.
+
+### Conclusion
+
+Across **449 sheets in two masters**, plus a 4-page guide, five product
+workbooks, a signal database, five PDFs and four CSVs, these values appear
+**only as definitions and formulas, never as data**:
+
+* `F_base,i` — 18 of 81 recoverable from the Bariatric and GLP-1 module
+  tables; the other 63 have never been authored
+* `K_m,i` — 0 of 81
+* `f_u_ref,i` — 0 of 81
+* `CL_int,i` — 0 of 81
+* `w_k^fix` — 0 of 12
+
+They were **never written**, not removed. That is a materially different
+message to send: it is a request for a decision, not for a lost file.
+
+The Worked Trace's numbers (vitamin C F_base 0.75 / Km 200; magnesium 0.30 /
+250) remain the only concrete values anywhere, and `18_GAPS` GAP015 rules on
+that sheet directly: *"Worked trace is static: workbook has zero formulas
+even though it says every number is computed and reproducible … do not treat
+this sheet alone as validation."* They reproduce the sheet's own F_abs
+through our A4 to six decimals, so someone computed them — but they are two
+nutrients, not a registry.
+
+### What v39k does give us
+
+Genuinely new, and worth loading:
+
+* `★ v35.9 Rulings D01-D13` — the founder rulings, including D-01, the
+  C-namespace / O-namespace split that `18_GAPS` GAP025/GAP026 depend on
+* `★ v35.9 Ledger & M5 Calibration` — the `adaptation_ledger` table schema
+  (append-only, RLS-scoped, `engine_internal` holds before/after values while
+  `client_render` exposes only the type) and the M5 weight calibration
+  protocol with safe initial values
+* `★ v35.9 Definitions`, `★ D-01 CORRECTED SYS`
+* `D1 · Core Equations` … `D15 · API & DB Schema` — a fifteen-sheet
+  machine-level reference series
+* `★ v37.1 Replay Contract`, `★ v38 Live Verification Lab`,
+  `★ v38 Param Addendum`, `★ State Migration 208→219`, and the v34–v39
+  adjudication trail
