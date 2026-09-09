@@ -799,3 +799,115 @@ carries the same twelve rows again. All three agree on `γ_scar`, the cap, the
 max `α/β` ratio, `τ_dam`, `τ_heal` and `V`. Both stated identities hold to the
 source's own two-decimal precision: `cap = γ_scar × max(α/β)` and
 `V = 1.443 · τ_dam/τ_heal`, worst deviation 0.0068.
+
+## 2026-09-09: the test battery answers two of the questions above
+
+`★ Validation Test Battery` (manifest order 14) turned out to hold answers to
+questions this file was about to put to Dr. Ali. Importing it first was the
+right order, and the reason is recorded here as much as the result.
+
+### It confirms η_net = 0, and rules out the 1/ρ ceiling a fourth time
+
+Test **C8**, BLOCKING, opens its method with *"With η=0 as production
+baseline"* and sets the criterion as *"η remains 0 unless held-out
+calibration improves and max Re eig(J_full)…"*. Test **S7**, BLOCKING, comes
+at it from the other side: *"Refit with η_net = 0 against the fitted value.
+Coupling is retained only if held-out calibration IMPROVES."*
+
+Neither mentions the spectral radius. The battery's stability criterion is
+the **full Jacobian**, exactly as parameter #141 says. So `Live Verification
+Lab` rows 118–119 — `stability bound 1/ρ̂` and a `margin ×0.5 (recommended
+ceiling)` of 0.577 — are not shorthand for the real gate; they are a
+different, looser one that the battery does not recognise.
+
+**The question to Dr. Ali narrows accordingly.** It is no longer *"is 0.05 a
+shadow value?"* — the workbook answers that in four places. It is: *should
+LAB 3 rows 118–119 carry C8's caveat, so an engineer reading the lab does not
+implement the 1/ρ ceiling?*
+
+### It already specifies the bistability guard as a blocking test
+
+Test **C17**, BLOCKING: *"For each cluster compute B_k = cap_k/(γ_k·r_k) and
+the posterior violation probability p_viol,k… B_k ≥ 1 AND p_viol,k < 0.01 for
+all 12 clusters. A point estimate passing while p_viol ≥ 0.01 [is not a
+pass]."* That is PG-2 from `★ Scarring Bistability Guard`, which names C17 as
+its placement — the two sheets corroborate each other exactly.
+
+The battery also carries **C14** (the point check), **C15** (exactly one
+equilibrium per forcing level), **C16** (θ_elastic ratified per cluster,
+42–70 AU) and **S11** (recovery symmetry). So the guard is not an isolated
+worry; it is a five-test admission block.
+
+`bistability_margin()` implements the B_k half. The `p_viol` half needs a
+posterior over (γ, r) that Phase 2's cohort fit has not produced — which the
+guard sheet says itself. Recorded as PARTIAL, not ENFORCED.
+
+### Two of this repo's own tests were looser than the battery requires
+
+Found by importing the criteria and diffing them against what the repo
+actually asserts:
+
+| test | battery says | this repo said | now |
+|---|---|---|---|
+| **I7** 81×12 column simplex | *"All twelve columns sum to 100.0 exactly"* | `abs=1e-2` | exact equality |
+| **I8** REG column simplex | *"All twelve columns sum to 1.000000"* | `abs=1e-4` | `abs=1e-9` |
+
+The data met the tighter criteria all along — the damage columns each sum to
+the float `100.0` and the nutrient-cluster columns to within 4e-16. But a
+tolerance of 1e-2 would have accepted a column that was half a percent wrong,
+which is a real weight error hiding under a passing test.
+
+## 2026-09-09: what C1 actually costs, and why the demo grid cannot meet it
+
+Test **C1**, BLOCKING: *"Integrate the normalised kernel over 0→∞
+numerically. |∫h − 1| < 1e-6 for all 81 nutrients."*
+
+`Live Verification Lab` LAB 1 integrates the same kernel and gets
+**0.99480379**, a residual of **5.2e-3** — four orders of magnitude above
+C1. The lab's own gate is `< 1e-2` and its note calls it the *"workbook
+demo-grid gate"*, so the sheet knows. But the size of the gap is worth
+recording, because the reason is not obvious.
+
+**The kernel is fine.** Refining the grid converges on 1:
+
+| dt (min) | T (min) | ∫h·dt | \|1−I\| | C1 |
+|---|---|---|---|---|
+| 10 | 720 | 0.9948037921 | 5.20e-03 | fail |
+| 1 | 4320 | 0.9999025558 | 9.74e-05 | fail |
+| 0.1 | 20000 | 0.9999970215 | 2.98e-06 | fail |
+| 0.01 | 40000 | 0.9999999061 | 9.39e-08 | **pass** |
+
+**The cost is the quadrature order, and it is not the one you would assume.**
+Measured convergence of the trapezoid rule on each component:
+
+| component | shape k | observed order |
+|---|---|---|
+| fast | 2.5 | 2.50 |
+| slow | **1.5** | **1.50** |
+| (control) | 3.0 | 4.00 |
+
+The order equals `k`. A gamma pdf carries `t^(k-1)` at the origin: for
+k = 1.5 that is `t^0.5`, whose derivative is unbounded at t = 0, and the
+endpoint singularity — not the smooth interior — sets the rate. So the
+mixture converges at **O(dt^1.5)**, not the O(dt²) trapezoid gives on a
+smooth integrand, and reaching 1e-6 needs dt ≈ 0.01 min.
+
+**Consequences for whoever implements C1:**
+
+1. Sizing the grid from an assumed O(dt²) will miss the target by orders of
+   magnitude. Halving dt buys a factor of 2.8, not 4.
+2. Any nutrient whose shape parameter is nearer 1 is worse still — at k = 1.1
+   the rate is O(dt^1.1) and 1e-6 is out of reach by refinement alone.
+3. The fix is not a finer grid. Each component of the mixture is a normalised
+   pdf, so the analytic integral is `w + (1−w) = 1` by construction; C1's
+   real content is that the **implementation's** normalisation constant
+   (the division by Γ(k)) and its `w ∈ [0,1]` are right. A singularity-aware
+   quadrature, or integrating each component analytically, meets the
+   criterion without a four-million-point grid.
+
+This is why C1 is recorded as PARTIAL rather than ENFORCED: this build
+verifies the kernel against the workbook's published integral, on the
+workbook's grid, and that grid does not meet the workbook's own criterion.
+Nothing here needs Dr. Ali's decision — it is an implementation note for the
+engineer who builds Layer A, which is why it is written down now rather than
+discovered then.

@@ -117,6 +117,10 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("verification_labs.json", "topology_vectors", "Live Verification Lab"),
     "engine_internal.layer_m_rule":
         ("verification_labs.json", "layer_m_rules", "Live Verification Lab"),
+    "engine_internal.validation_test":
+        ("validation_battery.json", "tests", "★ Validation Test Battery"),
+    "engine_internal.validation_section":
+        ("validation_battery.json", "sections", "★ Validation Test Battery"),
 }
 
 

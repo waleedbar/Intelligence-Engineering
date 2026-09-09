@@ -76,6 +76,7 @@ jobs:
           python -m sahacore.data.load_organ_registries
           python -m sahacore.data.load_bistability_guard
           python -m sahacore.data.load_verification_labs
+          python -m sahacore.data.load_validation_battery
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -155,7 +156,7 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 40, f'expected 40 versioned registries, got {versioned}'
+              assert versioned == 42, f'expected 42 versioned registries, got {versioned}'
               # The twelve per-cluster ceilings on the scarring feedback loop,
               # each confirmed by the sheet's own section-8 audit receipt.
               cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
@@ -180,6 +181,17 @@ jobs:
               cur.execute('SELECT count(*) FROM engine_internal.eta_net_disagreement')
               eta = cur.fetchone()[0]
               assert eta == 1, f'expected 1 eta_net disagreement, got {eta}'
+              # The engine's acceptance criteria, and how many this build runs.
+              # 41 BLOCKING criteria are not enforced yet; that number is the
+              # build's backlog and is expected to shrink, never to be hidden.
+              cur.execute('SELECT gate, coverage, count(*) FROM engine_internal.validation_test GROUP BY gate, coverage')
+              battery = {(g, c): n for g, c, n in cur.fetchall()}
+              assert sum(battery.values()) == 71, battery
+              assert battery[('BLOCKING', 'ENFORCED')] == 6, battery
+              assert battery[('BLOCKING', 'PARTIAL')] == 7, battery
+              cur.execute('SELECT count(*) FROM engine_internal.blocking_tests_not_enforced')
+              backlog = cur.fetchone()[0]
+              assert backlog == 41, f'expected 41 unenforced BLOCKING tests, got {backlog}'
               # 48 organ-pathway links over 13 pathways: none for D14/D15,
               # which is gate d14_d15_fail_closed agreeing with the data.
               cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
@@ -245,7 +257,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 40 versioned registries')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 42 versioned registries')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

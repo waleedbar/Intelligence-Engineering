@@ -70,11 +70,20 @@ def test_no_duplicate_nutrient_cluster_pairs(nutrient_cluster_weights):
 
 
 def test_each_cluster_column_sums_to_one(nutrient_cluster_weights):
+    """Battery test I8, 'REG column simplex after nitrate', BLOCKING:
+    'Sum each cluster column of REG · Nutrient×Cluster Long. All twelve
+    columns sum to 1.000000.'
+
+    This was written at abs=1e-4 before '★ Validation Test Battery' was
+    imported. The battery asks for six decimal places, and the data has
+    always met it -- the twelve sums differ from 1.0 by at most 4e-16, which
+    is float addition order, not a data error. Held to the battery now.
+    """
     sums = defaultdict(float)
     for row in nutrient_cluster_weights:
         sums[row["cluster_id"]] += row["weight"]
     for cluster in VALID_CLUSTERS:
-        assert sums[cluster] == pytest.approx(1.0, abs=1e-4), f"{cluster}: sum={sums[cluster]}"
+        assert sums[cluster] == pytest.approx(1.0, abs=1e-9), f"{cluster}: sum={sums[cluster]}"
 
 
 # --- damage_registry_canonical.json ---
@@ -95,11 +104,20 @@ def test_no_duplicate_cluster_nutrient_pairs(damage_registry):
 
 
 def test_each_cluster_weight_pct_sums_to_100(damage_registry):
+    """Battery test I7, '81×12 column simplex', BLOCKING: 'Sum each cluster
+    column of the canonical damage registry. All twelve columns sum to 100.0
+    exactly.'
+
+    This was written at abs=1e-2 before '★ Validation Test Battery' was
+    imported. The battery says exactly, and all twelve do -- each sum is the
+    float 100.0, not merely close to it. A tolerance of 1e-2 would have
+    accepted a column that was 0.5% wrong.
+    """
     sums = defaultdict(float)
     for row in damage_registry:
         sums[row["cluster_id"]] += row["weight_pct"]
     for cluster in VALID_CLUSTERS:
-        assert sums[cluster] == pytest.approx(100.0, abs=1e-2), f"{cluster}: sum={sums[cluster]}"
+        assert sums[cluster] == 100.0, f"{cluster}: sum={sums[cluster]!r}"
 
 
 def test_theta_hi_and_theta_lo_are_null_together_only_for_c7_and_c9(damage_registry):
