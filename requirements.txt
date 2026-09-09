@@ -1,3 +1,8 @@
 psycopg[binary]==3.3.5
 pytest==9.1.1
 scipy==1.17.1
+# The sahacore.data.build_* extractors read the master workbook. The engine
+# itself never opens a spreadsheet -- it reads the JSON they produce -- but
+# the tests import those modules for the alias and gap tables declared in
+# them, so the dependency is real in CI.
+openpyxl==3.1.5
