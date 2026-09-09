@@ -53,6 +53,9 @@ CONFINED_REGISTRIES = [
     # its content hashes are a fingerprint of every proprietary registry in
     # the build, and DBF-005 keeps those inside.
     "registry_version",
+    # The canonical invariants and fail-closed gates. They describe the
+    # engine's own safety posture, which is not consumer-facing.
+    "runtime_invariant",
 ]
 
 # Ledger tables from build step 1.

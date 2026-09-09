@@ -64,6 +64,7 @@ jobs:
           python -m sahacore.data.load_eq_build_rows
           python -m sahacore.data.load_veto_registry
           python -m sahacore.data.load_action_space
+          python -m sahacore.data.load_runtime_invariants
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -143,7 +144,11 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 15, f'expected 15 versioned registries, got {versioned}'
+              assert versioned == 16, f'expected 16 versioned registries, got {versioned}'
+              # The canonical invariants and their fail-closed gates.
+              cur.execute('SELECT count(*), count(gate), count(enforced_by) FROM engine_internal.runtime_invariant')
+              inv, gated, enforced = cur.fetchone()
+              assert (inv, gated, enforced) == (23, 18, 6), f'invariants: {(inv, gated, enforced)}'
               cur.execute('SELECT count(*) FROM engine_internal.eq_build_rows')
               b = cur.fetchone()[0]
               assert b == 119, f'expected 119 build rows, got {b}'
