@@ -65,6 +65,19 @@ jobs:
           python -m sahacore.data.load_veto_registry
           python -m sahacore.data.load_action_space
 
+      # Every registry gets the version a derived packet must cite, and the
+      # recorder refuses to version content the loader did not actually write.
+      - name: Record registry versions
+        run: python -m sahacore.data.record_registry_versions
+
+      # A reload of unchanged content must not mint a new version, or the
+      # version history becomes noise and comparing two packets' versions
+      # stops meaning anything.
+      - name: Re-record registry versions (must create nothing new)
+        run: |
+          python -m sahacore.data.record_registry_versions | tee /tmp/versions.txt
+          grep -q '(0 new,' /tmp/versions.txt
+
       - name: Verify loaded row counts match source
         run: |
           python -c "
@@ -127,6 +140,10 @@ jobs:
               cur.execute('SELECT count(*) FROM engine_internal.action_space_info')
               info = cur.fetchone()[0]
               assert info == 7, f'expected 7 information actions, got {info}'
+              # Every registry a packet could cite has exactly one ACTIVE version.
+              cur.execute('SELECT count(*) FROM engine_internal.registry_current')
+              versioned = cur.fetchone()[0]
+              assert versioned == 15, f'expected 15 versioned registries, got {versioned}'
               cur.execute('SELECT count(*) FROM engine_internal.eq_build_rows')
               b = cur.fetchone()[0]
               assert b == 119, f'expected 119 build rows, got {b}'

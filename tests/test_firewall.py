@@ -49,6 +49,10 @@ CONFINED_REGISTRIES = [
     "action_space",
     "action_space_info",
     "action_space_phase",
+    # What version each registry is at. It carries no parameter values, but
+    # its content hashes are a fingerprint of every proprietary registry in
+    # the build, and DBF-005 keeps those inside.
+    "registry_version",
 ]
 
 # Ledger tables from build step 1.
