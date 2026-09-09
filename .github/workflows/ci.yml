@@ -61,6 +61,7 @@ jobs:
           python -m sahacore.data.load_ledger_policy
           python -m sahacore.data.load_parameter_registry
           python -m sahacore.data.load_eq_param_fk
+          python -m sahacore.data.load_eq_build_rows
 
       - name: Verify loaded row counts match source
         run: |
@@ -104,7 +105,23 @@ jobs:
               cur.execute('SELECT count(*) FROM engine_internal.missing_fk')
               mf = cur.fetchone()[0]
               assert mf == 4, f'expected 4 missing FKs, got {mf}'
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 4 missing FKs')
+              cur.execute('SELECT count(*) FROM engine_internal.eq_build_rows')
+              b = cur.fetchone()[0]
+              assert b == 119, f'expected 119 build rows, got {b}'
+              # The FK coverage this sheet buys, and the five rows it does not:
+              # two '..' spans the workbook never enumerates and three K3-N
+              # rows with no build row at all. Counted over FK rows, of which
+              # 126 carry 123 distinct equation IDs.
+              cur.execute('SELECT count(*) FROM engine_internal.fk_coverage WHERE NOT has_build_row')
+              u = cur.fetchone()[0]
+              assert u == 5, f'expected 5 FK rows without a build row, got {u}'
+              # Input tokens resolve only where the registry holds the spelling
+              # once, for a layer the row does not contradict. The 11 withheld
+              # near-misses are pinned by (equation, token) in the test suite.
+              cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
+              kinds = dict(cur.fetchall())
+              assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 4 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

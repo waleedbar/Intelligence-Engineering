@@ -354,3 +354,68 @@ Genuinely new, and worth loading:
 * `★ v37.1 Replay Contract`, `★ v38 Live Verification Lab`,
   `★ v38 Param Addendum`, `★ State Migration 208→219`, and the v34–v39
   adjudication trail
+
+## 2026-09-09: seven more parameters the registry does not hold
+
+Found while closing FK coverage by loading `EQ · Canonical Build Rows`. This
+section is a different kind of finding from the ones above: not a per-nutrient
+column that was never filled in, but a *symbol an equation consumes that the
+192-row registry does not carry under that equation's layer at all*.
+
+They surfaced because the matcher now refuses to resolve a token to a
+parameter of another layer. Eleven input tokens spell a registry symbol
+without being one; `engine_internal.withheld_input_tokens` lists them and
+`tests/test_eq_build_rows.py::test_the_tokens_that_look_like_parameters_and_are_not_are_named`
+pins every one by (equation, token).
+
+Seven of them are the substantive findings:
+
+| Equation | Token | Needed for | Nearest registry symbol | Why it is not the same |
+|---|---|---|---|---|
+| C-004, C-005, K3-FIX-03 | `ρ` | persistence decay in `Z_hi,k,n+1 = ρ_hi Z_hi,k,n + …` | #108 `rho`, Layer H | #108 is the ADMM penalty parameter |
+| C-004, C-005 | `g` | forcing gain in the same recursion | — | no `g` in the registry |
+| D-001 | `a_k` | score logistic slope | — | no `a_k` in the registry |
+| D-001 | `b_k` | score logistic intercept | #93 `b_k (F2)`, Layer F | #93 is the cause-specific bias of a Layer F sub-network |
+| K3-FIX-01 | `α` | scarring rate (`alpha_scar`) | #73 `alpha (UKF)`, #102 `alpha (UCB)` | UKF sigma-point spread and UCB exploration constant |
+| K3-FIX-01 | `β` | autophagy rate (`beta_autophagy`) | #75 `beta (UKF)`, #98 `beta_jk` | same |
+| K3-FIX-04 | `δ` | Hawkes decay, off `M-PARAM Registry` | #16 `delta_ij`, Layer A | co-nutrient absorption interaction coefficient |
+
+Two of these are **not** new gaps once the workbook is read carefully, and
+neither is bridged in code, because the correspondence is a
+reparameterisation rather than a spelling — writing it into the loader would
+be exactly the invention this build refuses:
+
+* **C-004/C-005's `ρ` and `g`.** The registry states the same recursion in
+  exact-discretisation form: #125 `k_Z,k` (damage decay constant) and #126
+  `g_Z(k,dt)` (exact forcing multiplier), both C2,C3. `ρ` is a function of
+  `k_Z,k` and the step; it is not another name for it. Dr. Ali should confirm
+  the intended mapping.
+* **D-001's `a_k` and `b_k`.** D1 states the same logistic as #58 `beta_k`
+  (steepness) and #59 `mu_k` (midpoint), so `a_k = β_k` and `b_k = −β_k μ_k`.
+  Both #58 and #59 are already in this document's gap list and in
+  `build_parameter_registry.DELIBERATELY_UNRESOLVED` — no values were ever
+  authored for them either way.
+
+`K3-FIX-01`'s `α`/`β` are the same two rates already recorded above as the
+`missing_fk` pair `(K3-FIX-01, alpha_scar)` and `(K3-FIX-01, beta_autophagy)`
+— the `M-PARAM Registry` ships `max_alpha_beta_ratio` and `bound_gamma_r`,
+the ratio and its guard, never the rates. This is a second, independent
+confirmation of that gap from a different sheet.
+
+`K3-FIX-04`'s `δ` is the Hawkes decay. It is worth naming separately because
+it is the *third* time this token has tried to resolve to #16 `delta_ij`: an
+unscoped alias table did it once in the FK loader, a reviewer caught it, and
+the Greek spelling in the build sheet did it again. It is now blocked by the
+layer rule as well as by the alias scoping.
+
+### What to ask for
+
+Adding to the request in "Consequence for the build" above:
+
+* the persistence pair for C2/C3 — either `ρ_hi/ρ_lo` and `g_hi/g_lo`
+  directly, or confirmation that `k_Z,k` and `g_Z(k,dt)` are the intended
+  form and the conversion to use
+* the score logistic's `a_k` and `b_k` for the 12 clusters — or `beta_k` and
+  `mu_k`, which are the same two numbers in the other parameterisation
+* the Hawkes `δ` (and `μ`, `ν`) for `K3-FIX-04`, which live in the
+  unimported `K3 Fixes` sheet

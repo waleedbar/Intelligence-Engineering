@@ -1,0 +1,4093 @@
+[
+ {
+  "source_row": 3,
+  "eq_id": "GLOB-001",
+  "layer_module": "Global",
+  "formula_or_rule": "Δt_minutes > 0; Δt_day = Δt_minutes / 1440; all engine timestamps in UTC with user-local render offset",
+  "inputs_verbatim": "server clock; user timezone",
+  "outputs": "canonical time packet",
+  "units": "minutes, days",
+  "cadence": "all layers",
+  "parameter_registry_ref": "time_config",
+  "python_module_function": "sahacore.time.make_clock",
+  "validation_test": "assert Δt_day*1440=Δt_minutes",
+  "evidence_provenance": "Canonical equation conventions; existing P1 Core Equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "server clock",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "user timezone",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "GLOB-001"
+  ]
+ },
+ {
+  "source_row": 4,
+  "eq_id": "GLOB-002",
+  "layer_module": "Global",
+  "formula_or_rule": "GammaPDF(τ;k,λ)=λ^k τ^(k-1) exp(-λτ)/Γ(k), τ≥0; λ=1/θ_scale if source uses scale",
+  "inputs_verbatim": "k, λ, τ",
+  "outputs": "density h(τ)",
+  "units": "1/min",
+  "cadence": "Layer A",
+  "parameter_registry_ref": "P1 Nutrients 81; γ_k, γ_θ_min",
+  "python_module_function": "sahacore.layer_a.gamma_pdf",
+  "validation_test": "integral≈1; mean≈k/λ",
+  "evidence_provenance": "Canonical v4.1.1; DeepSeek corrections",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "k",
+    "kind": "AMBIGUOUS",
+    "registry_symbol": null,
+    "candidates": [
+     "K_ij",
+     "K (folds)"
+    ]
+   },
+   {
+    "token": "λ",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "τ",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "GLOB-002"
+  ]
+ },
+ {
+  "source_row": 5,
+  "eq_id": "LEDGER-001",
+  "layer_module": "Evidence ledger",
+  "formula_or_rule": "event_key=(adapter_source_id, source_event_id); duplicate event ingestion is idempotent no-op",
+  "inputs_verbatim": "raw_events",
+  "outputs": "deduped event stream",
+  "units": "n/a",
+  "cadence": "ingest",
+  "parameter_registry_ref": "IO · Lineage DataMap",
+  "python_module_function": "sahacore.ledger.ingest_event",
+  "validation_test": "same key does not change posterior twice",
+  "evidence_provenance": "U-Ledger / MoU semantics",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "raw_events",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "LEDGER-001"
+  ]
+ },
+ {
+  "source_row": 6,
+  "eq_id": "LEDGER-002",
+  "layer_module": "Evidence ledger",
+  "formula_or_rule": "Every packet carries parent_packet_ids, parent_versions, lineage_hash, as_of_time, status",
+  "inputs_verbatim": "E/F/G/H packets",
+  "outputs": "lineage-aware packets",
+  "units": "n/a",
+  "cadence": "all downstream",
+  "parameter_registry_ref": "IO · Lineage DataMap",
+  "python_module_function": "sahacore.ledger.make_packet",
+  "validation_test": "superseded parent invalidates descendants",
+  "evidence_provenance": "U-Ledger / MoU semantics",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "F",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "G",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "H packets",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "LEDGER-002"
+  ]
+ },
+ {
+  "source_row": 7,
+  "eq_id": "ONB-001",
+  "layer_module": "Anthropometrics",
+  "formula_or_rule": "BMI=weight_kg/height_m^2; WHtR=waist_cm/height_cm; BSA=sqrt(height_cm*weight_kg/3600); BMR=MifflinStJeor(age,sex,height,weight)",
+  "inputs_verbatim": "O1 answers",
+  "outputs": "baseline anthropometrics; BMR; prior modifiers",
+  "units": "kg,m,cm,kcal/day",
+  "cadence": "signup; profile edit",
+  "parameter_registry_ref": "O·O1 Anthropometrics",
+  "python_module_function": "sahacore.onboarding.anthropometrics",
+  "validation_test": "unit tests for BMI/BMR",
+  "evidence_provenance": "O·O1 + Clinical Nutrition source",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "O1 answers",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-001"
+  ]
+ },
+ {
+  "source_row": 8,
+  "eq_id": "ONB-002",
+  "layer_module": "MVPA prior",
+  "formula_or_rule": "MET_min_week = Σ_bouts MET_a * minutes_a; PA_benefit = 100*(1-exp(-MET_min_week/K_PA))",
+  "inputs_verbatim": "O2 activity frequency/duration; wearable history",
+  "outputs": "activity prior; MVPA control prior",
+  "units": "MET-min/week; 0-100",
+  "cadence": "signup; weekly refresh",
+  "parameter_registry_ref": "O·O2 MVPA Prior; P1 Activities 50",
+  "python_module_function": "sahacore.onboarding.mvpa_prior",
+  "validation_test": "range 0..100; monotone MET-min",
+  "evidence_provenance": "P1 Activities 50; screen specs",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "O2 activity frequency",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "duration",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "wearable history",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-002"
+  ]
+ },
+ {
+  "source_row": 9,
+  "eq_id": "ONB-003",
+  "layer_module": "Sleep deficit",
+  "formula_or_rule": "sleep_deficit_h=max(0,target_sleep_h-sleep_h); SDS=sleep_deficit_h*quality_penalty; k_inflam_mod=1+β_sleep*SDS",
+  "inputs_verbatim": "sleep hours; sleep quality; consistency",
+  "outputs": "sleep deficit score; modifiers to C/M/W",
+  "units": "hours; dimensionless",
+  "cadence": "signup; daily",
+  "parameter_registry_ref": "O·O3 Sleep Deficit",
+  "python_module_function": "sahacore.onboarding.sleep_deficit",
+  "validation_test": "deficit zero when sleep>=target",
+  "evidence_provenance": "O·O3; wearable sleep input",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "sleep hours",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "sleep quality",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "consistency",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-003"
+  ]
+ },
+ {
+  "source_row": 10,
+  "eq_id": "ONB-004",
+  "layer_module": "Stress index",
+  "formula_or_rule": "stress_idx=PSS10_score/40; γ_cort=1+β_cort*stress_idx; λ_repair_mod=max(λ_min,1-β_repair*stress_idx)",
+  "inputs_verbatim": "PSS-10 answers",
+  "outputs": "stress modifier; repair modifier",
+  "units": "0-1",
+  "cadence": "signup; weekly/monthly",
+  "parameter_registry_ref": "O·O4 Stress Index",
+  "python_module_function": "sahacore.onboarding.stress_index",
+  "validation_test": "PSS score 0..40 maps 0..1",
+  "evidence_provenance": "O·O4; stress screen spec",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "PSS-10 answers",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-004"
+  ]
+ },
+ {
+  "source_row": 11,
+  "eq_id": "ONB-005",
+  "layer_module": "Substance exposure",
+  "formula_or_rule": "λ_smoke=1+β_pack_years*pack_years; λ_alcohol=1+β_alcohol*drinks_week; k_ox=λ_smoke*λ_alcohol",
+  "inputs_verbatim": "smoking status; pack-years; alcohol drinks/week",
+  "outputs": "oxidative and hepatic risk modifiers",
+  "units": "dimensionless",
+  "cadence": "signup; update on change",
+  "parameter_registry_ref": "O·O5 Substance Exposure",
+  "python_module_function": "sahacore.onboarding.substance_exposure",
+  "validation_test": "nonnegative multipliers",
+  "evidence_provenance": "O·O5",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "smoking status",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "pack-years",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "alcohol drinks",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "week",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-005"
+  ]
+ },
+ {
+  "source_row": 12,
+  "eq_id": "ONB-006",
+  "layer_module": "Family history",
+  "formula_or_rule": "FH_risk_k = log(OR_k)*I[first_degree_history]; P0 inflation applies to relevant state covariances",
+  "inputs_verbatim": "family history flags",
+  "outputs": "prior mean shift; covariance inflation",
+  "units": "log odds; variance factor",
+  "cadence": "signup",
+  "parameter_registry_ref": "O·O6 Family History",
+  "python_module_function": "sahacore.onboarding.family_history",
+  "validation_test": "positive FH inflates P0 only for mapped clusters",
+  "evidence_provenance": "O·O6",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "family history flags",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-006"
+  ]
+ },
+ {
+  "source_row": 13,
+  "eq_id": "ONB-007",
+  "layer_module": "Diet pattern priors",
+  "formula_or_rule": "C_i(0)=Σ_pattern π_p * μ_{i,p}; σ_i^2(0)=σ_prior^2/(1+n_logs/K_log)",
+  "inputs_verbatim": "diet pattern selection; early food logs",
+  "outputs": "nutrient prior mean/variance",
+  "units": "native nutrient units",
+  "cadence": "signup; days 1-14",
+  "parameter_registry_ref": "O·O7 Diet Pattern Priors",
+  "python_module_function": "sahacore.onboarding.diet_priors",
+  "validation_test": "logs dominate as n_logs increases",
+  "evidence_provenance": "O·O7; food logging spec",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "diet pattern selection",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "early food logs",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-007"
+  ]
+ },
+ {
+  "source_row": 14,
+  "eq_id": "ONB-008",
+  "layer_module": "Condition modifiers",
+  "formula_or_rule": "η_k ← η_k * condition_multiplier_{condition,k}; thresholds θ may be shifted only by validated condition rule",
+  "inputs_verbatim": "diagnosed conditions",
+  "outputs": "condition-adjusted sensitivities/thresholds",
+  "units": "dimensionless; native units",
+  "cadence": "signup; medical update",
+  "parameter_registry_ref": "O·O8 Condition Modifiers",
+  "python_module_function": "sahacore.onboarding.condition_mods",
+  "validation_test": "known conditions update mapped clusters",
+  "evidence_provenance": "O·O8; internal medicine source",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "diagnosed conditions",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-008"
+  ]
+ },
+ {
+  "source_row": 15,
+  "eq_id": "ONB-009",
+  "layer_module": "Drug-nutrient modifiers",
+  "formula_or_rule": "F_abs_i ← F_abs_i * drug_abs_modifier; action veto applies before recommendation if drug_rule severity=hard",
+  "inputs_verbatim": "medications; supplements",
+  "outputs": "PK modifiers; VETO flags",
+  "units": "dimensionless",
+  "cadence": "signup; med change",
+  "parameter_registry_ref": "O·O9 Drug-Nutrient Mods; P1 Drug Interactions",
+  "python_module_function": "sahacore.onboarding.drug_nutrient_mods",
+  "validation_test": "warfarin/VitK hard veto fires",
+  "evidence_provenance": "P1 Drug Interactions",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "medications",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "supplements",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-009"
+  ]
+ },
+ {
+  "source_row": 16,
+  "eq_id": "ONB-010",
+  "layer_module": "Goal priority weights",
+  "formula_or_rule": "π_goal,k = base_weight_k * selected_goal_multiplier; normalize Σ_k π=1 for display only",
+  "inputs_verbatim": "selected goals",
+  "outputs": "goal display/ranking weights",
+  "units": "dimensionless",
+  "cadence": "signup; goal edit",
+  "parameter_registry_ref": "O·O10 Goal Priority Wts",
+  "python_module_function": "sahacore.onboarding.goal_weights",
+  "validation_test": "normalization; no physiology overwrite",
+  "evidence_provenance": "O·O10",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "selected goals",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-010"
+  ]
+ },
+ {
+  "source_row": 17,
+  "eq_id": "ONB-011",
+  "layer_module": "Damage warm-start",
+  "formula_or_rule": "Z_k(t0)=ln(0.1 + composite_risk_k); composite_risk_k=Σ_j w_{kj} feature_j with clipping",
+  "inputs_verbatim": "anthropometrics; conditions; FH; labs; diet; substances",
+  "outputs": "initial Z_hi/Z_lo and M scar priors",
+  "units": "AU/log scale",
+  "cadence": "signup; warm-start",
+  "parameter_registry_ref": "O·O11 Damage State Init",
+  "python_module_function": "sahacore.onboarding.damage_warm_start",
+  "validation_test": "all Z finite and nonnegative after transform",
+  "evidence_provenance": "O·O11",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "anthropometrics",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "conditions",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "FH",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "labs",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "diet",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "substances",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-011"
+  ]
+ },
+ {
+  "source_row": 18,
+  "eq_id": "ONB-012",
+  "layer_module": "State vector init",
+  "formula_or_rule": "x0=[C_fast(81)@1–81, C_slow(81)@82–162, Z_hi(12)@163–174, Z_lo(12)@175–186, lifestyle(24)@187–210, N1 G/X/I@211–213, N2 V@214, N3 x_c/y_c@215–216, N4 F/L@217–218, N5 A_v@219] with semantic class and uncertainty for every slot",
+  "inputs_verbatim": "nutrient priors; warm-start; lifestyle answers",
+  "outputs": "219-state mean vector",
+  "units": "mixed native / normalized",
+  "cadence": "signup; reset",
+  "parameter_registry_ref": "O·O12-O14 State Init; P1 Variables 219",
+  "python_module_function": "sahacore.onboarding.state_init_219",
+  "validation_test": "length(x0)=219; every canonical slot allocated; unobserved means prior-dominated, not absent",
+  "evidence_provenance": "P1 Variables 219",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient priors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "warm-start",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lifestyle answers",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-012"
+  ]
+ },
+ {
+  "source_row": 19,
+  "eq_id": "ONB-013",
+  "layer_module": "Covariance init",
+  "formula_or_rule": "P0=diag(σ_i^2); inflate by family history, missing anchors and measurement staleness; never collapse unobserved states",
+  "inputs_verbatim": "priors; anchor availability",
+  "outputs": "219×219 covariance factor",
+  "units": "state^2",
+  "cadence": "signup; re-init",
+  "parameter_registry_ref": "O·O12-O14 State Init; ★ State Classification 4-Way",
+  "python_module_function": "sahacore.onboarding.covariance_init",
+  "validation_test": "PSD; prior-dominated states wider than anchored",
+  "evidence_provenance": "State Classification",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "priors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "anchor availability",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-013"
+  ]
+ },
+ {
+  "source_row": 20,
+  "eq_id": "ONB-014",
+  "layer_module": "Control input assembly",
+  "formula_or_rule": "u_t=[dose_1..81, MVPA, sleep, stress, hydration, med/supp events, context flags] with event provenance",
+  "inputs_verbatim": "food logs; activity; sleep; stress; meds",
+  "outputs": "control vector for Layer A/B/C/E",
+  "units": "mixed",
+  "cadence": "per event / per tick",
+  "parameter_registry_ref": "O·Engine Connections",
+  "python_module_function": "sahacore.onboarding.control_input",
+  "validation_test": "controls are not treated as measurements",
+  "evidence_provenance": "Canonical EKF contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "food logs",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "sleep",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "stress",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "meds",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "ONB-014"
+  ]
+ },
+ {
+  "source_row": 21,
+  "eq_id": "A-001",
+  "layer_module": "Layer A",
+  "formula_or_rule": "h_i(τ)=w_i Γ(τ;k_i1,λ_i1)+(1-w_i)Γ(τ;k_i2,λ_i2)",
+  "inputs_verbatim": "k_i1,λ_i1,k_i2,λ_i2,w_i",
+  "outputs": "base absorption density",
+  "units": "1/min",
+  "cadence": "per tick after meal",
+  "parameter_registry_ref": "P1 Nutrients 81",
+  "python_module_function": "sahacore.layer_a.absorption_kernel",
+  "validation_test": "∫h_i dτ≈1",
+  "evidence_provenance": "P1 Core Equations; canonical v4.1.1",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "k_i1",
+    "kind": "SYMBOL",
+    "registry_symbol": "k1_i"
+   },
+   {
+    "token": "λ_i1",
+    "kind": "SYMBOL",
+    "registry_symbol": "lam1_i"
+   },
+   {
+    "token": "k_i2",
+    "kind": "SYMBOL",
+    "registry_symbol": "k2_i"
+   },
+   {
+    "token": "λ_i2",
+    "kind": "SYMBOL",
+    "registry_symbol": "lam2_i"
+   },
+   {
+    "token": "w_i",
+    "kind": "SYMBOL",
+    "registry_symbol": "w_i"
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "A-001"
+  ]
+ },
+ {
+  "source_row": 22,
+  "eq_id": "A-002",
+  "layer_module": "Layer A",
+  "formula_or_rule": "F_abs=F_max σ(logit(F_base/F_max)-log1p(q/Km)+Σγ_ij tanh(z_j)+γ_cook+γ_condition)",
+  "inputs_verbatim": "dose; interactions; conditions; cooking",
+  "outputs": "bounded absorbed fraction",
+  "units": "0..1",
+  "cadence": "per meal",
+  "parameter_registry_ref": "P1 Nutrients 81; Drug mods",
+  "python_module_function": "sahacore.layer_a.absorbed_fraction",
+  "validation_test": "0≤F_abs≤F_max≤1",
+  "evidence_provenance": "v32.10 mass-conserving correction",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "dose",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "interactions",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "conditions",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "cooking",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "A-002"
+  ]
+ },
+ {
+  "source_row": 23,
+  "eq_id": "A-003",
+  "layer_module": "Layer A",
+  "formula_or_rule": "m_i(t)=exp(clock Fourier + activity + gastric_emptying + sleep + matrix terms); h_i*=h_i m_i / ∫h_i m_i",
+  "inputs_verbatim": "time; MVPA; sleep; meal matrix",
+  "outputs": "normalized timing density",
+  "units": "1/min",
+  "cadence": "per tick",
+  "parameter_registry_ref": "P1 Core Equations A3/A5/A6",
+  "python_module_function": "sahacore.layer_a.timing_density",
+  "validation_test": "∫h_i* dτ≈1",
+  "evidence_provenance": "P1 Core Equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "time",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "MVPA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "sleep",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "meal matrix",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "A-003"
+  ]
+ },
+ {
+  "source_row": 24,
+  "eq_id": "A-004",
+  "layer_module": "Layer A",
+  "formula_or_rule": "a_i(t)=Σ_m q_{i,m} F_abs,i,m h_i*(t-t_m)",
+  "inputs_verbatim": "meal doses; F_abs; h_i*",
+  "outputs": "absorbed flux rate",
+  "units": "mass/time",
+  "cadence": "per tick",
+  "parameter_registry_ref": "P1 Nutrients 81",
+  "python_module_function": "sahacore.layer_a.absorption_rate",
+  "validation_test": "∫a_i dt≤Σq_i",
+  "evidence_provenance": "Layer A mass closure",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "meal doses",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "F_abs",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "h_i*",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "A-004"
+  ]
+ },
+ {
+  "source_row": 25,
+  "eq_id": "A-005",
+  "layer_module": "Layer A",
+  "formula_or_rule": "TEF(t)=Σ_meals [η_P kcal_P + η_C kcal_C + η_F kcal_F] κ_IR(t)",
+  "inputs_verbatim": "meal macros; insulin-resistance modifier",
+  "outputs": "thermic-effect feature",
+  "units": "kcal/time or dimensionless",
+  "cadence": "per meal/per hour",
+  "parameter_registry_ref": "P1 Nutrients 81; O1 BMR",
+  "python_module_function": "sahacore.layer_a.tef",
+  "validation_test": "TEF range by macro class",
+  "evidence_provenance": "Clinical Nutrition energy/TEF",
+  "production_status": "PRODUCTION_OPTIONAL",
+  "input_tokens": [
+   {
+    "token": "meal macros",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "insulin-resistance modifier",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "A-005"
+  ]
+ },
+ {
+  "source_row": 26,
+  "eq_id": "A-006",
+  "layer_module": "Layer A",
+  "formula_or_rule": "Late meal insert rewinds fixed-lag window to occurred_at, replays A→E, supersedes old descendants",
+  "inputs_verbatim": "late food event; fixed-lag buffer",
+  "outputs": "corrected posterior version",
+  "units": "n/a",
+  "cadence": "late data",
+  "parameter_registry_ref": "IO · Lineage DataMap",
+  "python_module_function": "sahacore.layer_a.replay_late_meal",
+  "validation_test": "no duplicate meal-CGM stacking",
+  "evidence_provenance": "U-Ledger / fixed-lag",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "late food event",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "fixed-lag buffer",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "A-006"
+  ]
+ },
+ {
+  "source_row": 27,
+  "eq_id": "B-001",
+  "layer_module": "Layer B",
+  "formula_or_rule": "k_el_i=ln(2)/T_half_i; φ_i=exp(-k_el_i Δt_day)",
+  "inputs_verbatim": "T½_fast/T½_slow",
+  "outputs": "decay factors φ_f,φ_s",
+  "units": "1/day; dimensionless",
+  "cadence": "per tick",
+  "parameter_registry_ref": "P1 Nutrients 81 M:N",
+  "python_module_function": "sahacore.layer_b.decay_factors",
+  "validation_test": "0<φ≤1",
+  "evidence_provenance": "Canonical equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "T½_fast",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "T½_slow",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "B-001"
+  ]
+ },
+ {
+  "source_row": 28,
+  "eq_id": "B-002",
+  "layer_module": "Layer B",
+  "formula_or_rule": "dC1/dt=A/V1-(CL+Q)/V1*C1+Q/V1*C2",
+  "inputs_verbatim": "A=a_i(t); V1; CL; Q; C1; C2",
+  "outputs": "fast exposure state derivative",
+  "units": "native concentration/time",
+  "cadence": "per tick",
+  "parameter_registry_ref": "P1 Parameters 134+; P1 Nutrients 81",
+  "python_module_function": "sahacore.layer_b.fast_ode",
+  "validation_test": "mass closure with slow ODE",
+  "evidence_provenance": "v32.10 corrected ODE",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "A=a_i(t)",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "V1",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "CL",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Q",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "C1",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "C2",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "B-002/B-003",
+   "B-002"
+  ]
+ },
+ {
+  "source_row": 29,
+  "eq_id": "B-003",
+  "layer_module": "Layer B",
+  "formula_or_rule": "dC2/dt=Q/V2*C1-Q/V2*C2",
+  "inputs_verbatim": "Q; V2; C1; C2",
+  "outputs": "slow exposure state derivative",
+  "units": "native concentration/time",
+  "cadence": "per tick",
+  "parameter_registry_ref": "P1 Parameters 134+; P1 Nutrients 81",
+  "python_module_function": "sahacore.layer_b.slow_ode",
+  "validation_test": "d(V1C1+V2C2)/dt=A-CL*C1",
+  "evidence_provenance": "Layer B mass proof",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "Q",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "V2",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "C1",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "C2",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "B-002/B-003",
+   "B-003"
+  ]
+ },
+ {
+  "source_row": 30,
+  "eq_id": "B-004",
+  "layer_module": "Layer B",
+  "formula_or_rule": "CL=CL_renal+CL_hepatic+CL_other; CL terms gated by class-specific route",
+  "inputs_verbatim": "eGFR; liver markers; nutrient class",
+  "outputs": "clearance",
+  "units": "volume/time",
+  "cadence": "per tick; labs update",
+  "parameter_registry_ref": "★ Nutrient Class Registry",
+  "python_module_function": "sahacore.layer_b.clearance",
+  "validation_test": "clearance nonnegative",
+  "evidence_provenance": "Class-specific routing",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "eGFR",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "liver markers",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "nutrient class",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "B-004"
+  ]
+ },
+ {
+  "source_row": 31,
+  "eq_id": "B-005",
+  "layer_module": "Layer B",
+  "formula_or_rule": "C_eff_i=(w_i C_f+(1-w_i)C_s)*exp(Σ_j γ_ij tanh(C_j/s_ij)); clamp interaction log-sum",
+  "inputs_verbatim": "C_f,C_s,interaction graph",
+  "outputs": "effective exposure",
+  "units": "native unit or exposure equivalent",
+  "cadence": "per tick",
+  "parameter_registry_ref": "Interaction registry; P1 Nutrients 81",
+  "python_module_function": "sahacore.layer_b.effective_exposure",
+  "validation_test": "positive; multiplier within bounds",
+  "evidence_provenance": "Canonical B3",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "C_f",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "C_s",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "interaction graph",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "B-005"
+  ]
+ },
+ {
+  "source_row": 32,
+  "eq_id": "B-006",
+  "layer_module": "Layer B",
+  "formula_or_rule": "Class route controls whether C_f/C_s represent absorbed load, body-pool proxy, store proxy, behavior proxy, or derived lab function",
+  "inputs_verbatim": "nutrient class A-E",
+  "outputs": "state semantics and observation map",
+  "units": "n/a",
+  "cadence": "configuration",
+  "parameter_registry_ref": "★ Nutrient Class Registry",
+  "python_module_function": "sahacore.layer_b.class_route",
+  "validation_test": "all 81 have class and observation function",
+  "evidence_provenance": "Nutrient Class Registry",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient class A-E",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "B-006"
+  ]
+ },
+ {
+  "source_row": 33,
+  "eq_id": "C-001",
+  "layer_module": "Layer C",
+  "formula_or_rule": "r_i^hi=[log((C_eff_i+ε)/θ_i^hi)]_+; r_i^lo=[log(θ_i^lo/(C_eff_i+ε))]_+",
+  "inputs_verbatim": "C_eff; thresholds",
+  "outputs": "dimensionless deviations",
+  "units": "dimensionless",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "P1 Nutrients 81; persistence registry",
+  "python_module_function": "sahacore.layer_c.deviation",
+  "validation_test": "unit-conversion invariant",
+  "evidence_provenance": "Dimensionless aggregation correction",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "C_eff",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "thresholds",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-001"
+  ]
+ },
+ {
+  "source_row": 34,
+  "eq_id": "C-002",
+  "layer_module": "Layer C",
+  "formula_or_rule": "E_k^side=Σ_i v_ik^side r_i^side",
+  "inputs_verbatim": "dimensionless deviations; canonical 81×12 weights",
+  "outputs": "cluster exposure burden",
+  "units": "dimensionless",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "P1 Clusters 81x12; REG long",
+  "python_module_function": "sahacore.layer_c.cluster_burden",
+  "validation_test": "columns sum to 1; weights ≥0",
+  "evidence_provenance": "Cluster simplex",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "dimensionless deviations",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "canonical 81×12 weights",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-002"
+  ]
+ },
+ {
+  "source_row": 35,
+  "eq_id": "C-003",
+  "layer_module": "Layer C",
+  "formula_or_rule": "k_side,k=ln2/T_half_damage; ρ=exp(-kΔt); g=(1-ρ)/k",
+  "inputs_verbatim": "damage half-life; Δt",
+  "outputs": "exact decay/forcing coefficients",
+  "units": "1/time; time",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "★ Damage Registry — Canonical (108 weighted nutrient×cluster rows; high/low parameters on each row)",
+  "python_module_function": "sahacore.layer_c.exact_zoh_coeff",
+  "validation_test": "g≈Δt for small Δt",
+  "evidence_provenance": "Exact ZOH damage forcing",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "damage half-life",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Δt",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-003"
+  ]
+ },
+ {
+  "source_row": 36,
+  "eq_id": "C-004",
+  "layer_module": "Layer C",
+  "formula_or_rule": "Z_hi,k,n+1=ρ_hi Z_hi,k,n + g_hi η_hi,k [max(E_k-θ_hi,k,0)]^p_hi",
+  "inputs_verbatim": "E_k; θ_hi; η_hi; p_hi; ρ/g",
+  "outputs": "high-side damage",
+  "units": "AU",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "persistence registry; P1 Core Equations",
+  "python_module_function": "sahacore.layer_c.damage_high",
+  "validation_test": "nonnegative; bounded by caps",
+  "evidence_provenance": "Canonical C3 with exact forcing",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "θ_hi",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "η_hi",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "p_hi",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "ρ",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "rho (layer H)"
+    ]
+   },
+   {
+    "token": "g",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-004/C-005",
+   "C-004"
+  ]
+ },
+ {
+  "source_row": 37,
+  "eq_id": "C-005",
+  "layer_module": "Layer C",
+  "formula_or_rule": "Z_lo,k,n+1=ρ_lo Z_lo,k,n + g_lo η_lo,k [max(θ_lo,k-E_k,0)]^p_lo",
+  "inputs_verbatim": "E_k; θ_lo; η_lo; p_lo; ρ/g",
+  "outputs": "low-side damage",
+  "units": "AU",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "persistence registry; P1 Core Equations",
+  "python_module_function": "sahacore.layer_c.damage_low",
+  "validation_test": "nonnegative; deficiency side fires when low",
+  "evidence_provenance": "Canonical C4 with exact forcing",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "θ_lo",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "η_lo",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "p_lo",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "ρ",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "rho (layer H)"
+    ]
+   },
+   {
+    "token": "g",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-004/C-005",
+   "C-005"
+  ]
+ },
+ {
+  "source_row": 38,
+  "eq_id": "C-006",
+  "layer_module": "Layer C",
+  "formula_or_rule": "Repair_k=Vmax_eff,k * Z_k/(Km_k+Z_k); Vmax_eff=Vmax_base*f_QSSA*exp(-γ_scar*S_k)",
+  "inputs_verbatim": "Z_k; QSSA support; M scar S_k",
+  "outputs": "repair rate",
+  "units": "AU/time",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "P1 DualHill MM Repair; M-C6 Integration",
+  "python_module_function": "sahacore.layer_c.repair",
+  "validation_test": "repair nonnegative; scar reduces next-step repair",
+  "evidence_provenance": "DualHill/MM repair",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "Z_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA support",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "M scar S_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-006"
+  ]
+ },
+ {
+  "source_row": 39,
+  "eq_id": "C-007",
+  "layer_module": "Layer C",
+  "formula_or_rule": "Z_total,k=clip(Z_hi,k+Z_lo,k-repair_integral,0,Dmax)",
+  "inputs_verbatim": "Z_hi; Z_lo; repair",
+  "outputs": "total damage",
+  "units": "AU",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "P1 Core Equations",
+  "python_module_function": "sahacore.layer_c.total_damage",
+  "validation_test": "0≤Z≤Dmax",
+  "evidence_provenance": "P1 Core Equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "Z_hi",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Z_lo",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "repair",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-007"
+  ]
+ },
+ {
+  "source_row": 40,
+  "eq_id": "C-008",
+  "layer_module": "Layer C",
+  "formula_or_rule": "Canonical persistence row=(nutrient_id, cluster_id, weight_pct, tau_damage, tau_heal, eta_hi, eta_lo, theta_hi, theta_lo, unit, evidence/context); high and low sides are stored together on one weighted row",
+  "inputs_verbatim": "81 nutrients; 12 clusters; 2 sides",
+  "outputs": "long-form persistence contract",
+  "units": "mixed",
+  "cadence": "configuration",
+  "parameter_registry_ref": "REG · Nutrient×Cluster Long; ★ Damage Registry Contract",
+  "python_module_function": "sahacore.layer_c.persistence_lookup",
+  "validation_test": "108 weighted canonical rows; every nutrient_id resolves in the 81-nutrient registry; both side parameter sets present",
+  "evidence_provenance": "New completeness contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "81 nutrients",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "12 clusters",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "2 sides",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "C-008"
+  ]
+ },
+ {
+  "source_row": 41,
+  "eq_id": "D-001",
+  "layer_module": "Layer D",
+  "formula_or_rule": "Score_k=100/(1+exp(-(a_k ln(1+Z_k)+b_k)))",
+  "inputs_verbatim": "Z_total,k; a_k; b_k",
+  "outputs": "cluster score 0-100",
+  "units": "score",
+  "cadence": "daily/real-time render",
+  "parameter_registry_ref": "P1 Scoring Alerts",
+  "python_module_function": "sahacore.layer_d.cluster_score",
+  "validation_test": "monotone in Z; range 0..100",
+  "evidence_provenance": "Canonical D1",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "Z_total",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "k",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "K_ij (layer A)",
+     "K (folds) (layer G)"
+    ]
+   },
+   {
+    "token": "a_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "b_k",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "b_k (F2) (layer F)"
+    ]
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "D-001/D-002",
+   "D-001"
+  ]
+ },
+ {
+  "source_row": 42,
+  "eq_id": "D-002",
+  "layer_module": "Layer D",
+  "formula_or_rule": "Composite score=Σ_k fixed_weight_k Score_k; display weights are score-versioned, not adaptive",
+  "inputs_verbatim": "cluster scores; fixed weights",
+  "outputs": "SahaScore",
+  "units": "0-100",
+  "cadence": "daily/render",
+  "parameter_registry_ref": "P1 Scoring Alerts",
+  "python_module_function": "sahacore.layer_d.composite_score",
+  "validation_test": "weight version stable across days",
+  "evidence_provenance": "D4 regression fix",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "cluster scores",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "fixed weights",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "D-001/D-002",
+   "D-002"
+  ]
+ },
+ {
+  "source_row": 43,
+  "eq_id": "D-003",
+  "layer_module": "Layer D",
+  "formula_or_rule": "Top driver_i,k = v_ik (r_i^hi+r_i^lo) signed by side and scaled by posterior confidence",
+  "inputs_verbatim": "deviations; weights; E uncertainty",
+  "outputs": "driver ranking",
+  "units": "dimensionless",
+  "cadence": "daily/render",
+  "parameter_registry_ref": "P1 Clusters 81x12; U-Ledger",
+  "python_module_function": "sahacore.layer_d.drivers",
+  "validation_test": "top drivers stable under unit conversion",
+  "evidence_provenance": "Dimensionless driver contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "deviations",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "weights",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "E uncertainty",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "D-003"
+  ]
+ },
+ {
+  "source_row": 44,
+  "eq_id": "D-004",
+  "layer_module": "Layer D",
+  "formula_or_rule": "Traffic band: green/yellow/orange/red or 0/1/2/3 severity with hysteresis and cooldown",
+  "inputs_verbatim": "Score_k; previous alert state",
+  "outputs": "alert state",
+  "units": "categorical",
+  "cadence": "render/event",
+  "parameter_registry_ref": "Alert Architecture",
+  "python_module_function": "sahacore.layer_d.alert_state",
+  "validation_test": "hysteresis prevents flapping",
+  "evidence_provenance": "P1 Scoring Alerts",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "Score_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "previous alert state",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "D-004"
+  ]
+ },
+ {
+  "source_row": 45,
+  "eq_id": "D-005",
+  "layer_module": "Layer D",
+  "formula_or_rule": "Labs are not re-blended after E; display reads E posterior only; lab age is quality metadata",
+  "inputs_verbatim": "E posterior; lab packet metadata",
+  "outputs": "display score and quality badges",
+  "units": "n/a",
+  "cadence": "render",
+  "parameter_registry_ref": "P1 Core Equations; U-Ledger",
+  "python_module_function": "sahacore.layer_d.display_from_posterior",
+  "validation_test": "same lab cannot shrink score twice",
+  "evidence_provenance": "D3 lab double-counting fix",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E posterior",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab packet metadata",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "D-005"
+  ]
+ },
+ {
+  "source_row": 46,
+  "eq_id": "D-006",
+  "layer_module": "Layer D",
+  "formula_or_rule": "133 emitted scalars=1 composite +12 cluster levels +12 momentum +81 nutrient adequacy +12 organ +12 HM +3 cell",
+  "inputs_verbatim": "E posterior; projections",
+  "outputs": "UI payload",
+  "units": "mixed",
+  "cadence": "render",
+  "parameter_registry_ref": "★ UI Projection Contract",
+  "python_module_function": "sahacore.layer_d.ui_projection_133",
+  "validation_test": "payload has exactly 133 keys",
+  "evidence_provenance": "UI Projection Contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E posterior",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "projections",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "D-006"
+  ]
+ },
+ {
+  "source_row": 47,
+  "eq_id": "E-001",
+  "layer_module": "Layer E",
+  "formula_or_rule": "x=[C_fast_1..81, C_slow_1..81, Z_hi_1..12, Z_lo_1..12, lifestyle_1..24, G,X,I (211-213), V (214), x_c,y_c (215-216), F,L (217-218), A_v (219)] ∈ R^219",
+  "inputs_verbatim": "state registry",
+  "outputs": "canonical posterior",
+  "units": "mixed",
+  "cadence": "all estimation",
+  "parameter_registry_ref": "P1 Variables 219",
+  "python_module_function": "sahacore.layer_e.state_layout",
+  "validation_test": "len(x)=219",
+  "evidence_provenance": "P1 Variables 219",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "state registry",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-001"
+  ]
+ },
+ {
+  "source_row": 48,
+  "eq_id": "E-002",
+  "layer_module": "Layer E",
+  "formula_or_rule": "Partition x=[x_L,x_N], dim(x_L)=164, dim(x_N)=55; x_L conditionally linear, x_N nonlinear",
+  "inputs_verbatim": "state registry",
+  "outputs": "RB partition",
+  "units": "mixed",
+  "cadence": "per tick",
+  "parameter_registry_ref": "★ Rao-Blackwellization",
+  "python_module_function": "sahacore.layer_e.partition_rb",
+  "validation_test": "164+55=219",
+  "evidence_provenance": "RB-SR-UKF contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "state registry",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-002"
+  ]
+ },
+ {
+  "source_row": 49,
+  "eq_id": "E-003",
+  "layer_module": "Layer E",
+  "formula_or_rule": "RB prediction: propagate x_N by sigma/cubature points; conditionally update x_L analytically per x_N branch",
+  "inputs_verbatim": "posterior mean/cov; process",
+  "outputs": "predicted posterior",
+  "units": "mixed",
+  "cadence": "per tick",
+  "parameter_registry_ref": "★ Rao-Blackwellization",
+  "python_module_function": "sahacore.layer_e.rb_predict",
+  "validation_test": "sigma point count=111",
+  "evidence_provenance": "RB-SR-UKF contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "posterior mean",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "cov",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "process",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-003/E-004",
+   "E-003"
+  ]
+ },
+ {
+  "source_row": 50,
+  "eq_id": "E-004",
+  "layer_module": "Layer E",
+  "formula_or_rule": "SR covariance update uses QR/Cholesky factors; no covariance matrix inversion except solved triangular systems",
+  "inputs_verbatim": "P factor; Q/R factors",
+  "outputs": "stable square-root posterior",
+  "units": "state units",
+  "cadence": "per update",
+  "parameter_registry_ref": "★ State Vector v33 (219); ★ Rao-Blackwellization; E · Estimation Build",
+  "python_module_function": "sahacore.layer_e.sr_update",
+  "validation_test": "PSD factor exists after update",
+  "evidence_provenance": "SR-UKF stability",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "P factor",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Q",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "R factors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-003/E-004",
+   "E-004"
+  ]
+ },
+ {
+  "source_row": 51,
+  "eq_id": "E-005",
+  "layer_module": "Layer E",
+  "formula_or_rule": "Observation y=h(x)+v; food/activity are controls u_t, sensors/labs are y_t with R_t",
+  "inputs_verbatim": "measurement packets",
+  "outputs": "innovation vector",
+  "units": "native units",
+  "cadence": "per observation",
+  "parameter_registry_ref": "Observation models",
+  "python_module_function": "sahacore.layer_e.observe",
+  "validation_test": "food log not in y unless R is large",
+  "evidence_provenance": "Canonical EKF contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "measurement packets",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-005"
+  ]
+ },
+ {
+  "source_row": 52,
+  "eq_id": "E-006",
+  "layer_module": "Layer E",
+  "formula_or_rule": "Huber robust weight w=min(1,c/|standardized_residual|); innovation covariance inflated by 1/w",
+  "inputs_verbatim": "innovation; R",
+  "outputs": "robust innovation",
+  "units": "dimensionless",
+  "cadence": "per observation",
+  "parameter_registry_ref": "E · Estimation Build",
+  "python_module_function": "sahacore.layer_e.huber_weight",
+  "validation_test": "large outlier downweighted",
+  "evidence_provenance": "Robust gating",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "innovation",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "R",
+    "kind": "SYMBOL",
+    "registry_symbol": "R"
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-006"
+  ]
+ },
+ {
+  "source_row": 53,
+  "eq_id": "E-007",
+  "layer_module": "Layer E",
+  "formula_or_rule": "NIS=(y-h(x))ᵀS⁻¹(y-h(x)); gate if NIS>χ²(df,α); mark as outlier or widen R",
+  "inputs_verbatim": "innovation; S",
+  "outputs": "accept/reject/soft-weight",
+  "units": "χ²",
+  "cadence": "per observation",
+  "parameter_registry_ref": "E · Estimation Build",
+  "python_module_function": "sahacore.layer_e.nis_gate",
+  "validation_test": "synthetic outlier rejected",
+  "evidence_provenance": "NIS consistency",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "innovation",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "S",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-007"
+  ]
+ },
+ {
+  "source_row": 54,
+  "eq_id": "E-008",
+  "layer_module": "Layer E",
+  "formula_or_rule": "Empirical observability Gramian W_o=Σ ΦᵀHᵀR⁻¹HΦ over window; score_i from diagonal/eigen-structure",
+  "inputs_verbatim": "transition sensitivities; H; R",
+  "outputs": "observability class",
+  "units": "dimensionless",
+  "cadence": "nightly/weekly",
+  "parameter_registry_ref": "★ Observability Gramian",
+  "python_module_function": "sahacore.layer_e.observability",
+  "validation_test": "toy unobservable states dark",
+  "evidence_provenance": "Observability audit",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "transition sensitivities",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "H",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "R",
+    "kind": "SYMBOL",
+    "registry_symbol": "R"
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-008"
+  ]
+ },
+ {
+  "source_row": 55,
+  "eq_id": "E-009",
+  "layer_module": "Layer E",
+  "formula_or_rule": "Bi-temporal replay uses effective_at (specimen_at for labs) and knowledge_at (ingested_at). Restore the latest checkpoint strictly before effective_at; insert/dedupe the event; replay A/B/C/E, then sequential M, signatures, W, F, projections and analytical H; supersede all derived descendants while preserving immutable served_action and served_warning events.",
+  "inputs_verbatim": "immutable event ledger; checkpoint; fixed-lag/deep-replay policy; effective_at; knowledge_at",
+  "outputs": "revised posterior and all dependent derived versions; replay receipt; preserved served-history facts",
+  "units": "n/a",
+  "cadence": "late data / approved deep replay",
+  "parameter_registry_ref": "Replay Contract; IO · Lineage DataMap; H · U-Ledger Fusion Rules",
+  "python_module_function": "sahacore.replay.run",
+  "validation_test": "active M/W/F/UI/H lineage descends from revised posterior; served history unchanged; duplicate event no-op",
+  "evidence_provenance": "v37.1 replay/lineage ruling",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "immutable event ledger",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "checkpoint",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "fixed-lag",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "deep-replay policy",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "effective_at",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "knowledge_at",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-009"
+  ]
+ },
+ {
+  "source_row": 56,
+  "eq_id": "E-010",
+  "layer_module": "Layer E",
+  "formula_or_rule": "Monte Carlo draw x^(m)~posterior, input errors, parameter draws; propagate to F/G/H for intervals",
+  "inputs_verbatim": "posterior; uncertainty components",
+  "outputs": "samples/credible intervals",
+  "units": "mixed",
+  "cadence": "nightly/on demand",
+  "parameter_registry_ref": "P1 MC Engine; U-Ledger",
+  "python_module_function": "sahacore.layer_e.monte_carlo",
+  "validation_test": "coverage on synthetic truths",
+  "evidence_provenance": "MC uncertainty engine",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "posterior",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "uncertainty components",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "E-010"
+  ]
+ },
+ {
+  "source_row": 57,
+  "eq_id": "F-001",
+  "layer_module": "Layer F",
+  "formula_or_rule": "Independent co-occurring outcome: H_k(t+Δ)=H_k(t)+λ_k(t)Δt; F_k=1-exp(-H_k)",
+  "inputs_verbatim": "E posterior; covariates",
+  "outputs": "outcome-specific cumulative burden",
+  "units": "probability",
+  "cadence": "daily/nightly",
+  "parameter_registry_ref": "Layer F forecast params",
+  "python_module_function": "sahacore.layer_f.independent_hazard",
+  "validation_test": "F∈[0,1]",
+  "evidence_provenance": "Exact hazard discretization",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E posterior",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "covariates",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "F-001/F-003",
+   "F-001"
+  ]
+ },
+ {
+  "source_row": 58,
+  "eq_id": "F-002",
+  "layer_module": "Layer F",
+  "formula_or_rule": "Competing first-event: S_{n+1}=S_n exp(-Λ_nΔt); ΔF_k=S_n(λ_k/Λ)(1-exp(-ΛΔt))",
+  "inputs_verbatim": "hazards λ_k",
+  "outputs": "S, CIF increments",
+  "units": "probability",
+  "cadence": "nightly",
+  "parameter_registry_ref": "Layer F forecast params",
+  "python_module_function": "sahacore.layer_f.competing_risk",
+  "validation_test": "S+ΣF conserved",
+  "evidence_provenance": "Survival positivity fix",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "hazards λ_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "F-002"
+  ]
+ },
+ {
+  "source_row": 59,
+  "eq_id": "F-003",
+  "layer_module": "Layer F",
+  "formula_or_rule": "Multistate transition p_{n+1}=p_n exp(Q_n Δt); Q off-diagonal≥0, rows sum 0",
+  "inputs_verbatim": "transition intensity Q",
+  "outputs": "state probabilities",
+  "units": "probability",
+  "cadence": "nightly",
+  "parameter_registry_ref": "Layer F multistate params",
+  "python_module_function": "sahacore.layer_f.multistate_step",
+  "validation_test": "probabilities sum to 1",
+  "evidence_provenance": "Multi-state topology",
+  "production_status": "PRODUCTION_OPTIONAL",
+  "input_tokens": [
+   {
+    "token": "transition intensity Q",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "F-001/F-003",
+   "F-003"
+  ]
+ },
+ {
+  "source_row": 60,
+  "eq_id": "F-004",
+  "layer_module": "Layer F",
+  "formula_or_rule": "Model-mixture covariance: Σ=Σ_m w_m[Σ_m+(μ_m-μ)(μ_m-μ)ᵀ]",
+  "inputs_verbatim": "model predictions; weights",
+  "outputs": "forecast mean/covariance",
+  "units": "mixed",
+  "cadence": "nightly",
+  "parameter_registry_ref": "U-Ledger; F model registry",
+  "python_module_function": "sahacore.layer_f.model_mixture",
+  "validation_test": "between-model disagreement retained",
+  "evidence_provenance": "Law of total covariance",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "model predictions",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "weights",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "F-004"
+  ]
+ },
+ {
+  "source_row": 61,
+  "eq_id": "F-005",
+  "layer_module": "Layer F",
+  "formula_or_rule": "Conformal/calibration multiplier q_{t+1}=clip(q_t exp(η(I_miss-α)),q_min,q_max)",
+  "inputs_verbatim": "forecast misses",
+  "outputs": "horizon calibration state",
+  "units": "dimensionless",
+  "cadence": "weekly/monthly",
+  "parameter_registry_ref": "U-Ledger calibration",
+  "python_module_function": "sahacore.layer_f.calibration_memory",
+  "validation_test": "coverage converges on synthetic",
+  "evidence_provenance": "Calibration memory",
+  "production_status": "PRODUCTION_OPTIONAL",
+  "input_tokens": [
+   {
+    "token": "forecast misses",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "F-005"
+  ]
+ },
+ {
+  "source_row": 62,
+  "eq_id": "F-006",
+  "layer_module": "Layer F",
+  "formula_or_rule": "Deep/Recurrent survival is challenger only until event support and calibration pass gates",
+  "inputs_verbatim": "state history; training data",
+  "outputs": "challenger forecast",
+  "units": "probability",
+  "cadence": "offline/train",
+  "parameter_registry_ref": "Research-production mapping",
+  "python_module_function": "sahacore.layer_f.challenger_deep",
+  "validation_test": "noninferiority gates",
+  "evidence_provenance": "Data maturity gate",
+  "production_status": "SHADOW_ONLY",
+  "input_tokens": [
+   {
+    "token": "state history",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "training data",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "F-006"
+  ]
+ },
+ {
+  "source_row": 63,
+  "eq_id": "G-001",
+  "layer_module": "Layer G",
+  "formula_or_rule": "Static DR/AIPW pseudo-outcome ψ_a=μ_a(X)+1[A=a]/p_a(X)*(Y-μ_a(X))",
+  "inputs_verbatim": "single decision episode; X,A,Y",
+  "outputs": "effect estimate",
+  "units": "outcome units",
+  "cadence": "offline/batch",
+  "parameter_registry_ref": "Layer G params; action logs",
+  "python_module_function": "sahacore.layer_g.dr_aipw",
+  "validation_test": "cross-fit no self training",
+  "evidence_provenance": "Launch causal method",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "single decision episode",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "X",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "A",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Y",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "G-001/G-005",
+   "G-001"
+  ]
+ },
+ {
+  "source_row": 64,
+  "eq_id": "G-002",
+  "layer_module": "Layer G",
+  "formula_or_rule": "CATE_a(X)=E[ψ_a-ψ_baseline|X] with cross-fitting and support gates",
+  "inputs_verbatim": "ψ_a; X",
+  "outputs": "CATE with uncertainty",
+  "units": "outcome units",
+  "cadence": "offline/batch",
+  "parameter_registry_ref": "Layer G params",
+  "python_module_function": "sahacore.layer_g.cate_model",
+  "validation_test": "overlap and ESS gates",
+  "evidence_provenance": "DR/AIPW launch path",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "ψ_a",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "X",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "G-002"
+  ]
+ },
+ {
+  "source_row": 65,
+  "eq_id": "G-003",
+  "layer_module": "Layer G",
+  "formula_or_rule": "Overlap gate: e_min≤p_a(X)≤e_max; ESS=(Σw)^2/Σw^2; block if support insufficient",
+  "inputs_verbatim": "propensity; weights",
+  "outputs": "support status",
+  "units": "dimensionless",
+  "cadence": "offline/batch/inference",
+  "parameter_registry_ref": "Layer G support gates",
+  "python_module_function": "sahacore.layer_g.support_gate",
+  "validation_test": "no extrapolated CATE emitted",
+  "evidence_provenance": "Causal support gate",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "propensity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "weights",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "G-003"
+  ]
+ },
+ {
+  "source_row": 66,
+  "eq_id": "G-004",
+  "layer_module": "Layer G",
+  "formula_or_rule": "Influence-function or bootstrap variance for effect; sensitivity bound/E-value stored as separate component",
+  "inputs_verbatim": "ψ_a; bootstrap samples; sensitivity model",
+  "outputs": "causal uncertainty packet",
+  "units": "outcome^2",
+  "cadence": "offline/batch",
+  "parameter_registry_ref": "U-Ledger; calibration E-value",
+  "python_module_function": "sahacore.layer_g.effect_uncertainty",
+  "validation_test": "uncertainty components not CI-fused",
+  "evidence_provenance": "U-Ledger correction",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "ψ_a",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "bootstrap samples",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "sensitivity model",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "G-004"
+  ]
+ },
+ {
+  "source_row": 67,
+  "eq_id": "G-005",
+  "layer_module": "Layer G",
+  "formula_or_rule": "LTMLE/longitudinal path requires repeated decision times, treatment/adherence histories, time-varying covariates and matured outcomes",
+  "inputs_verbatim": "longitudinal panel",
+  "outputs": "DATA_BLOCKED or active longitudinal effect",
+  "units": "outcome units",
+  "cadence": "future/offline",
+  "parameter_registry_ref": "★ Scoped Builds — LTMLE Bandit",
+  "python_module_function": "sahacore.layer_g.ltmle_gate",
+  "validation_test": "launch returns DATA_BLOCKED",
+  "evidence_provenance": "Data maturity gate",
+  "production_status": "DATA_BLOCKED",
+  "input_tokens": [
+   {
+    "token": "longitudinal panel",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "G-001/G-005",
+   "G-005"
+  ]
+ },
+ {
+  "source_row": 68,
+  "eq_id": "G-006",
+  "layer_module": "Layer G",
+  "formula_or_rule": "Off-policy evaluation: IPS, SNIPS and DR-OPE tracked before deploying learned policies",
+  "inputs_verbatim": "logs; propensities; rewards",
+  "outputs": "policy value intervals",
+  "units": "reward units",
+  "cadence": "offline/batch",
+  "parameter_registry_ref": "H logs; U-Ledger",
+  "python_module_function": "sahacore.layer_g.ope",
+  "validation_test": "baseline gate passes before policy deploy",
+  "evidence_provenance": "Safe policy evaluation",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "logs",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "propensities",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "rewards",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "G-006"
+  ]
+ },
+ {
+  "source_row": 69,
+  "eq_id": "H-001",
+  "layer_module": "Layer H",
+  "formula_or_rule": "A_safe(x)={a∈A: all hard VETO rules pass}; VETO runs before ranking",
+  "inputs_verbatim": "user context; meds; labs; action catalog",
+  "outputs": "eligible actions",
+  "units": "set",
+  "cadence": "per decision",
+  "parameter_registry_ref": "P1 Drug Interactions; VETO Canonical 339",
+  "python_module_function": "sahacore.layer_h.veto",
+  "validation_test": "warfarin/VitK blocked",
+  "evidence_provenance": "Safety first",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "user context",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "meds",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "labs",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "action catalog",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "H-001/H-006",
+   "H-001"
+  ]
+ },
+ {
+  "source_row": 70,
+  "eq_id": "H-002",
+  "layer_module": "Layer H",
+  "formula_or_rule": "BenefitLCB=μ_B-z_Bσ_B; RiskUCB=μ_R+z_Rσ_R",
+  "inputs_verbatim": "F/G packets",
+  "outputs": "conservative benefit/risk bounds",
+  "units": "outcome units",
+  "cadence": "per decision",
+  "parameter_registry_ref": "U-Ledger; G/F packets",
+  "python_module_function": "sahacore.layer_h.bounds",
+  "validation_test": "risk bound increases with σ",
+  "evidence_provenance": "Conservative decision rule",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "F",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "G packets",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "H-002"
+  ]
+ },
+ {
+  "source_row": 71,
+  "eq_id": "H-003",
+  "layer_module": "Layer H",
+  "formula_or_rule": "U_phys=tr(J_a P_E J_aᵀ); Score=BenefitLCB-λ_rRiskUCB-λ_uU_phys-λ_bBurden + eligible_policy_bonus",
+  "inputs_verbatim": "E posterior; benefit/risk; burden",
+  "outputs": "action score",
+  "units": "utility",
+  "cadence": "per decision",
+  "parameter_registry_ref": "Layer H params",
+  "python_module_function": "sahacore.layer_h.score_action",
+  "validation_test": "∂Score/∂U_phys≤0",
+  "evidence_provenance": "Phys uncertainty penalty fix",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E posterior",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "benefit",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "risk",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "burden",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "H-003"
+  ]
+ },
+ {
+  "source_row": 72,
+  "eq_id": "H-004",
+  "layer_module": "Layer H",
+  "formula_or_rule": "Policy exploration bonus applies only to low-risk behavioral delivery actions, not supplements/physiology actions",
+  "inputs_verbatim": "action class; policy covariance",
+  "outputs": "policy bonus",
+  "units": "utility",
+  "cadence": "per decision",
+  "parameter_registry_ref": "Action_Space",
+  "python_module_function": "sahacore.layer_h.policy_bonus",
+  "validation_test": "no bonus for high-risk action",
+  "evidence_provenance": "Conservative bandit",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "action class",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "policy covariance",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "H-004"
+  ]
+ },
+ {
+  "source_row": 73,
+  "eq_id": "H-005",
+  "layer_module": "Layer H",
+  "formula_or_rule": "VOI(q)=E[decision improvement]+E[entropy reduction]-burden-delay cost",
+  "inputs_verbatim": "uncertainty; possible measurement q",
+  "outputs": "information action score",
+  "units": "utility",
+  "cadence": "per decision",
+  "parameter_registry_ref": "VoI catalog",
+  "python_module_function": "sahacore.layer_h.value_of_information",
+  "validation_test": "high uncertainty routes to info action",
+  "evidence_provenance": "VoI catalog",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "uncertainty",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "possible measurement q",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "H-005"
+  ]
+ },
+ {
+  "source_row": 74,
+  "eq_id": "H-006",
+  "layer_module": "Layer H",
+  "formula_or_rule": "Trusted baseline gate: deploy learned policy only if LCB(V_learned−V_baseline)≥-δ",
+  "inputs_verbatim": "OPE interval; baseline value",
+  "outputs": "policy deploy/hold",
+  "units": "utility",
+  "cadence": "offline/per release",
+  "parameter_registry_ref": "OPE registry",
+  "python_module_function": "sahacore.layer_h.baseline_gate",
+  "validation_test": "learned policy held when lower bound poor",
+  "evidence_provenance": "Conservative contextual bandit",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "OPE interval",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "baseline value",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "H-001/H-006",
+   "H-006"
+  ]
+ },
+ {
+  "source_row": 75,
+  "eq_id": "QSSA-001",
+  "layer_module": "QSSA",
+  "formula_or_rule": "ε=τ_fast/τ_slow; activate standard QSSA if ε<ε_max and residual ||g(z_f*,z_s,θ)||<r_max",
+  "inputs_verbatim": "timescales; algebraic residual",
+  "outputs": "QSSA validity status",
+  "units": "dimensionless",
+  "cadence": "per compute",
+  "parameter_registry_ref": "★ QSSA Validity & Output",
+  "python_module_function": "sahacore.qssa.validity_gate",
+  "validation_test": "fails when ε high",
+  "evidence_provenance": "QSSA validity gate",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "timescales",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "algebraic residual",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "QSSA-001"
+  ]
+ },
+ {
+  "source_row": 76,
+  "eq_id": "QSSA-002",
+  "layer_module": "QSSA",
+  "formula_or_rule": "J_ATP=Σ_complex Vmax_c S_c/(Km_c+S_c) * f_cofactor * f_activity",
+  "inputs_verbatim": "NADH; succinate; ubiquinol; cytochrome c; ADP; cofactors",
+  "outputs": "ATP flux surrogate",
+  "units": "relative flux",
+  "cadence": "per compute",
+  "parameter_registry_ref": "P1 QSSA ATP-GSH-NAD",
+  "python_module_function": "sahacore.qssa.atp_flux",
+  "validation_test": "bounded cofactors 0..1",
+  "evidence_provenance": "QSSA internal equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "NADH",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "succinate",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "ubiquinol",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "cytochrome c",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "ADP",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "cofactors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "QSSA-002"
+  ]
+ },
+ {
+  "source_row": 77,
+  "eq_id": "QSSA-003",
+  "layer_module": "QSSA",
+  "formula_or_rule": "f_ATP_supply=clip_or_sigmoid(normalize(J_ATP; posterior reference),0,1)",
+  "inputs_verbatim": "J_ATP; reference range",
+  "outputs": "ATP cofactor-capacity index",
+  "units": "0..1",
+  "cadence": "render/repair",
+  "parameter_registry_ref": "★ QSSA Validity & Output",
+  "python_module_function": "sahacore.qssa.atp_support",
+  "validation_test": "0≤f≤1",
+  "evidence_provenance": "bounded client semantics",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "J_ATP",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "reference range",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "QSSA-003"
+  ]
+ },
+ {
+  "source_row": 78,
+  "eq_id": "QSSA-004",
+  "layer_module": "QSSA",
+  "formula_or_rule": "GSH_support = Hill(cysteine)*Hill(glycine)*Hill(glutamate)*Hill(selenium)*Hill(riboflavin)*NADPH_support",
+  "inputs_verbatim": "precursors; cofactors",
+  "outputs": "glutathione redox-support index",
+  "units": "0..1",
+  "cadence": "per compute",
+  "parameter_registry_ref": "P1 QSSA ATP-GSH-NAD",
+  "python_module_function": "sahacore.qssa.gsh_support",
+  "validation_test": "0≤f≤1",
+  "evidence_provenance": "QSSA internal equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "precursors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "cofactors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "QSSA-004"
+  ]
+ },
+ {
+  "source_row": 79,
+  "eq_id": "QSSA-005",
+  "layer_module": "QSSA",
+  "formula_or_rule": "NAD_balance = synthesis(NAMPT,NMNAT,niacin,tryptophan) - consumption(SIRT,PARP,CD38); f_NAD=bounded support",
+  "inputs_verbatim": "precursors; inflammation; age; repair load",
+  "outputs": "NAD support index",
+  "units": "0..1",
+  "cadence": "per compute",
+  "parameter_registry_ref": "P1 QSSA ATP-GSH-NAD",
+  "python_module_function": "sahacore.qssa.nad_support",
+  "validation_test": "0≤f≤1",
+  "evidence_provenance": "QSSA internal equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "precursors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "inflammation",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "age",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "repair load",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "QSSA-005"
+  ]
+ },
+ {
+  "source_row": 80,
+  "eq_id": "QSSA-006",
+  "layer_module": "One-carbon",
+  "formula_or_rule": "dHcy/dt=Met_flux + SAM_turnover - MS_remethylation(B12,5MTHF) - BHMT_remethylation(betaine) - CBS_transsulfuration(B6)",
+  "inputs_verbatim": "methionine; B12; folate; choline; B6",
+  "outputs": "homocysteine state/flux",
+  "units": "µM/time",
+  "cadence": "per compute/nightly",
+  "parameter_registry_ref": "P1 One-Carbon ODE; Map · One-Carbon Cycle",
+  "python_module_function": "sahacore.qssa.one_carbon_ode",
+  "validation_test": "Hcy decreases with adequate B12/folate/B6",
+  "evidence_provenance": "One-carbon ODE",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "methionine",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "B12",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "folate",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "choline",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "B6",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "QSSA-006"
+  ]
+ },
+ {
+  "source_row": 81,
+  "eq_id": "QSSA-007",
+  "layer_module": "QSSA/C repair",
+  "formula_or_rule": "Vmax_repair_eff = Vmax_base * f_ATP^α * f_NAD^β * f_GSH^γ * exp(-γ_scar S_k)",
+  "inputs_verbatim": "QSSA supports; scar state",
+  "outputs": "repair capacity modifier",
+  "units": "dimensionless",
+  "cadence": "per tick/day",
+  "parameter_registry_ref": "P1 DualHill MM Repair; M-C6 Integration",
+  "python_module_function": "sahacore.qssa.repair_modifier",
+  "validation_test": "repair reduced by scar and low cofactors",
+  "evidence_provenance": "QSSA coupling",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "QSSA supports",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "scar state",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "QSSA-007"
+  ]
+ },
+ {
+  "source_row": 82,
+  "eq_id": "M-001",
+  "layer_module": "Layer M",
+  "formula_or_rule": "dS_k/dt = alpha_scar,k * over_k(t) * (1 - S_k)  -  beta_autophagy,k * S_k     [over_k = max(0,(Z_total,k - theta_elastic,k)/theta_elastic,k)]  —  BOUNDED BY CONSTRUCTION: S* = a*over/(a*over + b) lies in [0,1) for every input.",
+  "inputs_verbatim": "E posterior Z_total; scar params",
+  "outputs": "scar state S_k",
+  "units": "0..1",
+  "cadence": "nightly/weekly",
+  "parameter_registry_ref": "M-EQ LayerM Equations",
+  "python_module_function": "sahacore.layer_m.scar_step",
+  "validation_test": "S remains 0..1",
+  "evidence_provenance": "Layer M equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E posterior Z_total",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "scar params",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "M-001"
+  ]
+ },
+ {
+  "source_row": 83,
+  "eq_id": "M-002",
+  "layer_module": "Layer M",
+  "formula_or_rule": "Vmax_eff,k(t+1)=Vmax_base,k exp(-γ_scar,k S_k(t+1))",
+  "inputs_verbatim": "scar state S_k",
+  "outputs": "next-step repair capacity",
+  "units": "dimensionless",
+  "cadence": "next interval",
+  "parameter_registry_ref": "M-C6 Integration",
+  "python_module_function": "sahacore.layer_m.repair_overlay",
+  "validation_test": "M affects C_{t+1} not same step",
+  "evidence_provenance": "Layer M handoff lock",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "scar state S_k",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "M-002"
+  ]
+ },
+ {
+  "source_row": 84,
+  "eq_id": "M-003",
+  "layer_module": "Layer M",
+  "formula_or_rule": "λ_D(t)=μ_base+(λ_max−μ_base)·tanh( Σ_{t_i<t} δ_i·exp(−ν_D(t−t_i)) / (λ_max−μ_base) ), λ_max=5·μ_base — BUILD_LOCKED (runtime bounded form).   n = Σδ/ν is a FIT-TIME sanity guard on the underlying LINEAR exponential kernel only. It is NOT a stationarity theorem for this nonlinear tanh-transformed process — do not cite it as one, and do not evaluate it at runtime.  [v39n F-CL/SOL]",
+  "inputs_verbatim": "lapse/disruption events",
+  "outputs": "relapse intensity",
+  "units": "1/time",
+  "cadence": "event/nightly",
+  "parameter_registry_ref": "M-EQ LayerM Equations",
+  "python_module_function": "sahacore.layer_m.hawkes_relapse",
+  "validation_test": "λ≥0 and decays to μ",
+  "evidence_provenance": "Hawkes relapse",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "lapse",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "disruption events",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "M-003"
+  ]
+ },
+ {
+  "source_row": 85,
+  "eq_id": "M-004",
+  "layer_module": "Layer M",
+  "formula_or_rule": "dW/dt=ρ_w SleepQual(1-W)-τ_w StressIdx W-Σ c_nudge",
+  "inputs_verbatim": "sleep; stress; nudges",
+  "outputs": "willpower/reserve W",
+  "units": "0..1",
+  "cadence": "nightly",
+  "parameter_registry_ref": "M-EQ LayerM Equations",
+  "python_module_function": "sahacore.layer_m.reserve_step",
+  "validation_test": "0≤W≤1",
+  "evidence_provenance": "Layer M equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "sleep",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "stress",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "nudges",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "M-004"
+  ]
+ },
+ {
+  "source_row": 86,
+  "eq_id": "SIG-001",
+  "layer_module": "Signature Snowball",
+  "formula_or_rule": "Level-2 area A_ij(t+Δ)=A_ij(t)+0.5(x_i Δx_j-x_j Δx_i); Chen update for concatenation",
+  "inputs_verbatim": "ordered channel stream",
+  "outputs": "path-order features / Lévy areas",
+  "units": "channel_i×channel_j",
+  "cadence": "per event/day",
+  "parameter_registry_ref": "M-SIG Signature Snowball",
+  "python_module_function": "sahacore.signature.level2_update",
+  "validation_test": "shuffle/Chen identity tests",
+  "evidence_provenance": "Signature path",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "ordered channel stream",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "SIG-001"
+  ]
+ },
+ {
+  "source_row": 87,
+  "eq_id": "SIG-002",
+  "layer_module": "Signature Snowball",
+  "formula_or_rule": "Signature store has raw rolling buffer + compact feature vector; compact vector feeds W/F/H, raw buffer retained for audit",
+  "inputs_verbatim": "events; channels",
+  "outputs": "raw and compact stores",
+  "units": "mixed",
+  "cadence": "per event/nightly",
+  "parameter_registry_ref": "M-SUB SubTraj DualStore",
+  "python_module_function": "sahacore.signature.dual_store",
+  "validation_test": "raw and compact store agree on recompute",
+  "evidence_provenance": "DualStore",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "events",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "channels",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "SIG-002"
+  ]
+ },
+ {
+  "source_row": 88,
+  "eq_id": "W-001",
+  "layer_module": "Layer W",
+  "formula_or_rule": "pattern_risk=σ(β0+βᵀ features + β_sigᵀ signature + β_M M_state); emits warn/suppress/cooldown state",
+  "inputs_verbatim": "M/Sig/E features",
+  "outputs": "warning probability and pattern flags",
+  "units": "0..1",
+  "cadence": "near-real-time/nightly",
+  "parameter_registry_ref": "M-W LayerW Equations",
+  "python_module_function": "sahacore.layer_w.pattern_risk",
+  "validation_test": "cooldown prevents repeat spam",
+  "evidence_provenance": "Layer W equations",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "M",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Sig",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "E features",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "W-001"
+  ]
+ },
+ {
+  "source_row": 89,
+  "eq_id": "W-002",
+  "layer_module": "Layer W",
+  "formula_or_rule": "self-calibration updates thresholds only from verified outcomes; display weights are not adaptively changed",
+  "inputs_verbatim": "pattern outcomes; user feedback",
+  "outputs": "threshold version",
+  "units": "mixed",
+  "cadence": "weekly",
+  "parameter_registry_ref": "M-WPAT Patterns Alarms",
+  "python_module_function": "sahacore.layer_w.calibrate_thresholds",
+  "validation_test": "threshold version changes logged",
+  "evidence_provenance": "Layer W calibration",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "pattern outcomes",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "user feedback",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "W-002"
+  ]
+ },
+ {
+  "source_row": 90,
+  "eq_id": "UI-001",
+  "layer_module": "UI Projection",
+  "formula_or_rule": "z=G(x_HF) emits 12 cluster levels + 12 momentum as readout; 219 remains canonical source",
+  "inputs_verbatim": "E posterior 219",
+  "outputs": "24-state projection",
+  "units": "mixed",
+  "cadence": "render/nightly",
+  "parameter_registry_ref": "★ UI Projection Contract",
+  "python_module_function": "sahacore.projection.projection_24",
+  "validation_test": "24 keys present",
+  "evidence_provenance": "Projection, not replacement",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E posterior 219",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "UI-001"
+  ]
+ },
+ {
+  "source_row": 91,
+  "eq_id": "UI-002",
+  "layer_module": "UI Projection",
+  "formula_or_rule": "UI_133=[composite, C1..C12, momentum1..12, nutrient_adequacy1..81, SYS1..SYS12, HM1..HM12, CELL3]; legacy O1..O12 organ keys may be accepted only through the explicit SYS_n≡O_n migration alias.",
+  "inputs_verbatim": "E posterior; TVMCD; QSSA; Atlas maps",
+  "outputs": "Tier-1/2/3 payload",
+  "units": "mixed",
+  "cadence": "render",
+  "parameter_registry_ref": "★ UI Projection Contract",
+  "python_module_function": "sahacore.projection.ui_133",
+  "validation_test": "133 emitted scalars",
+  "evidence_provenance": "UI contract",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "E posterior",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "TVMCD",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Atlas maps",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "UI-002"
+  ]
+ },
+ {
+  "source_row": 92,
+  "eq_id": "TVMCD-D01",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*sp_t(Glc-140)·sp_t(Glc-180)/t*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_AGE; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d01_step",
+  "validation_test": "D01 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D01"
+  ]
+ },
+ {
+  "source_row": 93,
+  "eq_id": "TVMCD-D02",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*(1-GSH_support)*(1-NRF2)*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_oxDNA; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d02_step",
+  "validation_test": "D02 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D02"
+  ]
+ },
+ {
+  "source_row": 94,
+  "eq_id": "TVMCD-D03",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*sp_t(CRP-1)·sp_t(CRP-3)/t*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_inflam; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d03_step",
+  "validation_test": "D03 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D03"
+  ]
+ },
+ {
+  "source_row": 95,
+  "eq_id": "TVMCD-D04",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*(1+k_ox*ROS)*division_rate - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_telomere; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d04_step",
+  "validation_test": "D04 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D04"
+  ]
+ },
+ {
+  "source_row": 96,
+  "eq_id": "TVMCD-D05",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*age*(1-diet_quality) - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_epi; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d05_step",
+  "validation_test": "D05 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D05"
+  ]
+ },
+ {
+  "source_row": 97,
+  "eq_id": "TVMCD-D06",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*sp_t(Glc-100)·sp_t(Glc-126)/t*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_IR; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d06_step",
+  "validation_test": "D06 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D06"
+  ]
+ },
+ {
+  "source_row": 98,
+  "eq_id": "TVMCD-D07",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*sp_t(LDL-100)·sp_t(LDL-130)/t*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_athero; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d07_step",
+  "validation_test": "D07 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D07"
+  ]
+ },
+ {
+  "source_row": 99,
+  "eq_id": "TVMCD-D08",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*max(0,liver_fat_pct-0.05)*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_hepatic; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d08_step",
+  "validation_test": "D08 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D08"
+  ]
+ },
+ {
+  "source_row": 100,
+  "eq_id": "TVMCD-D09",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*max(0,SBP-120)*H + k_uacr*UACR - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_nephron; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d09_step",
+  "validation_test": "D09 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D09"
+  ]
+ },
+ {
+  "source_row": 101,
+  "eq_id": "TVMCD-D10",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*(1-protein_adequacy)*(1-exercise_index) - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_sarcopenia; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d10_step",
+  "validation_test": "D10 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D10"
+  ]
+ },
+ {
+  "source_row": 102,
+  "eq_id": "TVMCD-D11",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*(1-Ca_adequacy)*(1-VitD_adequacy)*(1-weight_bearing) - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_bone; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d11_step",
+  "validation_test": "D11 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D11"
+  ]
+ },
+ {
+  "source_row": 103,
+  "eq_id": "TVMCD-D12",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*DualHill(ferritin;30,300,2,2)*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_iron; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d12_step",
+  "validation_test": "D12 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D12"
+  ]
+ },
+ {
+  "source_row": 104,
+  "eq_id": "TVMCD-D13",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*sp_t(Hcy-10)·sp_t(Hcy-15)/t*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_hcy; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d13_step",
+  "validation_test": "D13 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D13"
+  ]
+ },
+ {
+  "source_row": 105,
+  "eq_id": "TVMCD-D14",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*(1-fiber_adequacy)*(1-diversity_index) - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_microbiome; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d14_step",
+  "validation_test": "D14 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D14"
+  ]
+ },
+ {
+  "source_row": 106,
+  "eq_id": "TVMCD-D15",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "d(logZ)/dt=[k*max(0,30-25OHD)*H - Vmax*Z/(Km+Z)]/Z",
+  "inputs_verbatim": "nutrient/QSSA/activity/lab inputs per pathway",
+  "outputs": "logZ_vitD; mapped to C/O/HM",
+  "units": "log damage / time",
+  "cadence": "nightly or per biomarker",
+  "parameter_registry_ref": "TVMCD · 15 Pathways Build",
+  "python_module_function": "sahacore.tvmcd.d15_step",
+  "validation_test": "D15 synthetic threshold scenario",
+  "evidence_provenance": "P1 TVMCD Pathways; cluster physiology",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "nutrient",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "QSSA",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "activity",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "lab inputs per pathway",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "TVMCD-D15"
+  ]
+ },
+ {
+  "source_row": 139,
+  "eq_id": "KIMI3 v32.10.7 ADDITIVE EQUATION ROWS — no original rows removed",
+  "layer_module": null,
+  "formula_or_rule": null,
+  "inputs_verbatim": null,
+  "outputs": null,
+  "units": null,
+  "cadence": null,
+  "parameter_registry_ref": null,
+  "python_module_function": null,
+  "validation_test": null,
+  "evidence_provenance": null,
+  "production_status": null,
+  "input_tokens": [],
+  "covers_fk_eq_ids": []
+ },
+ {
+  "source_row": 140,
+  "eq_id": "K3-FIX-01",
+  "layer_module": "Layer M",
+  "formula_or_rule": "dS/dt=α over(1−S)−βS",
+  "inputs_verbatim": "S,Z,α,β,θ",
+  "outputs": "bounded S",
+  "units": "1/day",
+  "cadence": "each M step",
+  "parameter_registry_ref": "M-PARAM Registry",
+  "python_module_function": "sahacore.layer_m.update_scar_bounded",
+  "validation_test": "assert 0≤S<1",
+  "evidence_provenance": "Kimi3 P0 fix",
+  "production_status": "IMPLEMENT",
+  "input_tokens": [
+   {
+    "token": "S",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Z",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "α",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "alpha (UKF) (layer E)",
+     "alpha (UCB) (layer H)"
+    ]
+   },
+   {
+    "token": "β",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "beta (UKF) (layer E)",
+     "beta_jk (layer F)"
+    ]
+   },
+   {
+    "token": "θ",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "K3-FIX-01"
+  ]
+ },
+ {
+  "source_row": 141,
+  "eq_id": "K3-FIX-02",
+  "layer_module": "TVMCD",
+  "formula_or_rule": "gate=k spτ(x−a) spτ(x−b)/τ",
+  "inputs_verbatim": "x,a,b,k,τ",
+  "outputs": "smooth gate",
+  "units": "varies",
+  "cadence": "TVMCD cadence",
+  "parameter_registry_ref": "P1 TVMCD Pathways",
+  "python_module_function": "sahacore.tvmcd.smooth_dual_gate",
+  "validation_test": "C1 smooth/nonzero band",
+  "evidence_provenance": "Kimi3 P0 fix",
+  "production_status": "IMPLEMENT",
+  "input_tokens": [
+   {
+    "token": "x",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "a",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "b",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "k",
+    "kind": "AMBIGUOUS",
+    "registry_symbol": null,
+    "candidates": [
+     "K_ij",
+     "K (folds)"
+    ]
+   },
+   {
+    "token": "τ",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "K3-FIX-02"
+  ]
+ },
+ {
+  "source_row": 142,
+  "eq_id": "K3-FIX-03",
+  "layer_module": "Layer C",
+  "formula_or_rule": "Z+=ρZ+g(u_hi+u_lo+u_sed)",
+  "inputs_verbatim": "Z,ρ,g,u",
+  "outputs": "Z",
+  "units": "AU",
+  "cadence": "engine dt",
+  "parameter_registry_ref": "P1 Core Equations",
+  "python_module_function": "sahacore.layer_c.zoh_damage_with_sedentary",
+  "validation_test": "dt consistency",
+  "evidence_provenance": "Kimi3 P0 fix",
+  "production_status": "IMPLEMENT",
+  "input_tokens": [
+   {
+    "token": "Z",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "ρ",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "rho (layer H)"
+    ]
+   },
+   {
+    "token": "g",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "u",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "K3-FIX-03"
+  ]
+ },
+ {
+  "source_row": 143,
+  "eq_id": "K3-FIX-04",
+  "layer_module": "Layer M",
+  "formula_or_rule": "λ=μ+(λmax−μ)tanh(sum/(λmax−μ))",
+  "inputs_verbatim": "events,μ,δ,ν",
+  "outputs": "bounded λ",
+  "units": "intensity",
+  "cadence": "event update",
+  "parameter_registry_ref": "M-PARAM Registry",
+  "python_module_function": "sahacore.layer_m.hawkes_bounded",
+  "validation_test": "λ≤λmax",
+  "evidence_provenance": "Kimi3 P0 fix",
+  "production_status": "IMPLEMENT",
+  "input_tokens": [
+   {
+    "token": "events",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "μ",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "δ",
+    "kind": "OTHER_LAYER",
+    "registry_symbol": null,
+    "candidates": [
+     "delta_ij (layer A)"
+    ]
+   },
+   {
+    "token": "ν",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "K3-FIX-04"
+  ]
+ },
+ {
+  "source_row": 144,
+  "eq_id": "K3-FIX-05",
+  "layer_module": "Safety",
+  "formula_or_rule": "UL_eff=UL_base clip(Πg,0.5,1.5); floor 0.4 if g≤0.6",
+  "inputs_verbatim": "UL,g factors",
+  "outputs": "UL_eff(i,u) = UL_base(i) · clip( PRODUCT_j g_j , 0.5 , 1.5 )   [each g_j in [0.5,1.5]; if any g_j <= 0.6 the floor becomes 0.4 with a clinician-deferral flag]  COMPOUNDING CLAMP: each factor was bounded individually but their product was not — 0.8 x 0.6 x 0.8 = 0.384, below the intended floor.",
+  "units": "same as UL",
+  "cadence": "H/VETO",
+  "parameter_registry_ref": "VETO / SafetyMargin",
+  "python_module_function": "sahacore.safety.compounded_ul_clamp",
+  "validation_test": "clamp examples",
+  "evidence_provenance": "Kimi3 P0 fix",
+  "production_status": "IMPLEMENT",
+  "input_tokens": [
+   {
+    "token": "UL",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "g factors",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "K3-FIX-05"
+  ]
+ },
+ {
+  "source_row": 145,
+  "eq_id": "K3-N1",
+  "layer_module": "B7",
+  "formula_or_rule": "Bergman G/X/I minimal model",
+  "inputs_verbatim": "Ra,CGM,params",
+  "outputs": "G,X,I,S_I",
+  "units": "mg/dL,etc",
+  "cadence": "CGM cadence",
+  "parameter_registry_ref": "P1 Glucose B7",
+  "python_module_function": "sahacore.modules.glucose_minimal.step",
+  "validation_test": "CGM RMSE/NIS",
+  "evidence_provenance": "Kimi3 module",
+  "production_status": "GATED P1",
+  "input_tokens": [
+   {
+    "token": "Ra",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "CGM",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "params",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "K3-N1"
+  ]
+ },
+ {
+  "source_row": 146,
+  "eq_id": "K3-N4",
+  "layer_module": "B9",
+  "formula_or_rule": "Hall dynamic energy balance",
+  "inputs_verbatim": "EI,EE,weight",
+  "outputs": "F,L,BMR",
+  "units": "kg,kcal",
+  "cadence": "daily/weekly",
+  "parameter_registry_ref": "P1 Energy B9",
+  "python_module_function": "sahacore.modules.energy_balance.step",
+  "validation_test": "weight calibration",
+  "evidence_provenance": "Kimi3 module",
+  "production_status": "GATED P1",
+  "input_tokens": [
+   {
+    "token": "EI",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "EE",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "weight",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": [
+   "K3-N4"
+  ]
+ },
+ {
+  "source_row": 147,
+  "eq_id": "K3-U1",
+  "layer_module": "W",
+  "formula_or_rule": "CSD AR1/Var trends on innovations",
+  "inputs_verbatim": "innovations",
+  "outputs": "warning",
+  "units": "unitless",
+  "cadence": "daily",
+  "parameter_registry_ref": "W · CSD EarlyWarn",
+  "python_module_function": "sahacore.warning.csd_gate",
+  "validation_test": "synthetic transition",
+  "evidence_provenance": "Kimi3 upgrade",
+  "production_status": "IMPLEMENT",
+  "input_tokens": [
+   {
+    "token": "innovations",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": []
+ },
+ {
+  "source_row": 148,
+  "eq_id": "K3-U4",
+  "layer_module": "VoI",
+  "formula_or_rule": "EIG=0.5·logdet(I+HPHᵀR⁻¹)−λcost  [v39l F-CP]",
+  "inputs_verbatim": "P,H,R,cost",
+  "outputs": "next lab",
+  "units": "nats-cost",
+  "cadence": "nightly",
+  "parameter_registry_ref": "VoI · Lab EIG",
+  "python_module_function": "sahacore.voi.lab_eig",
+  "validation_test": "entropy reduction",
+  "evidence_provenance": "Kimi3 upgrade",
+  "production_status": "IMPLEMENT",
+  "input_tokens": [
+   {
+    "token": "P",
+    "kind": "AMBIGUOUS",
+    "registry_symbol": null,
+    "candidates": [
+     "p",
+     "p(M_m)"
+    ]
+   },
+   {
+    "token": "H",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "R",
+    "kind": "SYMBOL",
+    "registry_symbol": "R"
+   },
+   {
+    "token": "cost",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": []
+ },
+ {
+  "source_row": 149,
+  "eq_id": "REPLAY-001",
+  "layer_module": "Replay orchestrator",
+  "formula_or_rule": "effective_at = specimen_at for lab observations, else adapter event time; knowledge_at = ingested_at",
+  "inputs_verbatim": "raw event; adapter contract",
+  "outputs": "bitemporal event packet",
+  "units": "UTC timestamps",
+  "cadence": "ingest/replay",
+  "parameter_registry_ref": "Replay Contract",
+  "python_module_function": "sahacore.replay.resolve_times",
+  "validation_test": "lab uses specimen time; knowledge time never precedes ingest",
+  "evidence_provenance": "v37.1 ruling",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "raw event",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "adapter contract",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": []
+ },
+ {
+  "source_row": 150,
+  "eq_id": "REPLAY-002",
+  "layer_module": "Replay orchestrator",
+  "formula_or_rule": "restore checkpoint before effective_at; replay A/B/C/E→M→signature→W→F/projections/H; supersede derived descendants",
+  "inputs_verbatim": "checkpoint; immutable event stream",
+  "outputs": "new active lineage and replay receipt",
+  "units": "version IDs",
+  "cadence": "late event",
+  "parameter_registry_ref": "Replay Contract",
+  "python_module_function": "sahacore.replay.run",
+  "validation_test": "no stale active child; S_k lineage matches E posterior",
+  "evidence_provenance": "v37.1 ruling",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "checkpoint",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "immutable event stream",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": []
+ },
+ {
+  "source_row": 151,
+  "eq_id": "HIST-001",
+  "layer_module": "Delivery history",
+  "formula_or_rule": "served_action_event and served_warning_event are immutable system-time facts; replay may create counterfactual analytical decisions but may not rewrite what was served",
+  "inputs_verbatim": "delivery payload; parent versions",
+  "outputs": "append-only served event",
+  "units": "n/a",
+  "cadence": "on delivery",
+  "parameter_registry_ref": "IO · Lineage DataMap",
+  "python_module_function": "sahacore.history.append_served_event",
+  "validation_test": "replay leaves payload hash and served_at unchanged",
+  "evidence_provenance": "audit truth invariant",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "delivery payload",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "parent versions",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": []
+ },
+ {
+  "source_row": 152,
+  "eq_id": "SCHEMA-001",
+  "layer_module": "State objects",
+  "formula_or_rule": "exposure_state and posterior_state are separate objects with distinct dimensions, owners, parent IDs, versions and lineage hashes",
+  "inputs_verbatim": "Layer B exposure; Layer E posterior",
+  "outputs": "ExposureState162; Posterior219",
+  "units": "mixed",
+  "cadence": "all inference",
+  "parameter_registry_ref": "IO · Lineage DataMap",
+  "python_module_function": "sahacore.schemas.validate_state_objects",
+  "validation_test": "objects cannot deserialize into each other's schema",
+  "evidence_provenance": "v37.1 schema ruling",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "Layer B exposure",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "Layer E posterior",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": []
+ },
+ {
+  "source_row": 153,
+  "eq_id": "RUNTIME-001",
+  "layer_module": "Runtime shape",
+  "formula_or_rule": "all production users on model_shape_version=S2 allocate all 219 slots at onboarding; deployment migration M1–M7 may be staged, but one inference version may not mix vector shapes",
+  "inputs_verbatim": "model registry; migration state",
+  "outputs": "shape-locked runtime",
+  "units": "n=219",
+  "cadence": "onboarding/deploy",
+  "parameter_registry_ref": "★ State Vector v33 (219); E · Estimation Build; 00_ENGINEER_START",
+  "python_module_function": "sahacore.state.assert_shape",
+  "validation_test": "active vector always 219; legacy user migrates atomically before inference",
+  "evidence_provenance": "v37.1 runtime ruling",
+  "production_status": "BUILD_LOCKED",
+  "input_tokens": [
+   {
+    "token": "model registry",
+    "kind": "PROSE",
+    "registry_symbol": null
+   },
+   {
+    "token": "migration state",
+    "kind": "PROSE",
+    "registry_symbol": null
+   }
+  ],
+  "covers_fk_eq_ids": []
+ }
+]
