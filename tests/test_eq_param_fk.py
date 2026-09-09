@@ -87,21 +87,25 @@ def test_an_authority_glosss_semicolons_do_not_split_it(fk):
 
 # --- the acceptance test ---------------------------------------------------
 
-def test_no_missing_fk_is_exactly_these_eight(fk):
+def test_no_missing_fk_is_exactly_these_six(fk):
     """Build step 2's acceptance test. Pinned by (equation, key) so a change
     says which FK moved, not merely that the count did.
 
     Every entry is a real hole in the workbook rather than unfinished work
     here, and all are documented in docs/parameter-gaps.md.
 
-    THE COUNT GREW FROM FOUR TO EIGHT WHEN THE SAFETY REGISTRIES LOADED, and
-    that is the number becoming more truthful rather than the build
-    regressing. H-001/H-006 declares 'VETO Canonical 339' and 'Action_Space'
-    authoritative for its keys. While neither was imported, its keys were
-    NOT_LOADED -- unfinished importing, not a missing FK, exactly as
-    test_a_missing_fk_is_only_claimed_when_every_authority_is_loaded
-    requires. Both are now loaded, so the four keys neither table carries are
-    reported for what they are.
+    THE COUNT HAS MOVED IN BOTH DIRECTIONS, and both moves were the number
+    getting more truthful rather than the build changing quality.
+
+    It went 4 -> 8 when 'VETO Canonical 339' and 'Action_Space' loaded:
+    H-001/H-006 names those two authoritative, so while they were unimported
+    its keys were NOT_LOADED. Loaded, four of them turned out to be carried
+    by neither.
+
+    It went 8 -> 6 when '★ Param Registry +20' loaded: K3-FIX-01's alpha_scar
+    and beta_autophagy had been reported MISSING_FK on the strength of having
+    read three sheets and not found them. They were in a fourth, which
+    '01_IMPORT_MANIFEST' listed at order 21 and the import had not reached.
     """
     assert set(_by_status(fk, "MISSING_FK")) == {
         # Layer B's two-compartment ODE consumes a total clearance and an
@@ -110,11 +114,13 @@ def test_no_missing_fk_is_exactly_these_eight(fk):
         # different quantities. There is no symbol for either of these.
         ("B-002/B-003", "CL"),
         ("B-002/B-003", "Q"),
-        # M1 consumes alpha_scar and beta_autophagy separately. M-PARAM
-        # Registry ships max_alpha_beta_ratio and bound_gamma_r -- the RATIO
-        # and its guard -- never the two rates on their own.
-        ("K3-FIX-01", "alpha_scar"),
-        ("K3-FIX-01", "beta_autophagy"),
+        # K3-FIX-01's alpha_scar and beta_autophagy WERE here, and are not
+        # any more. They were never absent from the workbook: they are in
+        # '★ Param Registry +20' (0.001-0.01 and 1e-4-1e-3 per day), a sheet
+        # '01_IMPORT_MANIFEST' lists at order 21 that this build had not yet
+        # reached. They report RESOLVED_ELSEWHERE now, because M-PARAM
+        # Registry -- the authority the row actually names -- still does not
+        # carry them. The correction is in docs/parameter-gaps.md.
         # Layer H's conservative-decision objective. Its risk and uncertainty
         # penalties resolve (#132 lambda_r, #131 lambda_u), but the budget
         # penalty, the two bound z-scores and the baseline offset are in
@@ -205,15 +211,40 @@ def test_the_two_false_resolutions_a_global_alias_table_produced_stay_fixed(fk):
       Km in the QSSA row resolved to #15 K_m,i, the absorption Michaelis
       constant in mg. QSSA's Km is an enzyme constant in micromolar.
 
-    Both must now report NOT_LOADED -- their real authorities (K3 Fixes,
-    QSSA · Internal Canonical) have not been imported.
+    Neither may resolve to those parameters. QSSA's Km still reports
+    NOT_LOADED: its authority, 'QSSA · Internal Canonical', is not imported.
+
+    K3-FIX-04's delta_i now RESOLVES -- and this is the case worth reading
+    carefully, because on its face it looks like the defect returning. It is
+    the opposite. '★ Param Registry +20' carries `δ_i`, "Hawkes jump",
+    0.3/event, in intensity units, listed between mu_base and nu_D: the
+    Hawkes decay this row was always about. The false resolution pointed at a
+    Layer A absorption coefficient in a completely different quantity. So the
+    assertion here is not "delta_i does not resolve" but the stronger and
+    more durable "delta_i resolves to the Hawkes parameter and never to
+    delta_ij".
     """
     hawkes = next(r for r in fk if r["eq_id"] == "K3-FIX-04")
     assert hawkes["backend_object"] == "hawkes_params"
-    assert hawkes["key_resolution"]["delta_i"]["status"] == "NOT_LOADED"
+    delta = hawkes["key_resolution"]["delta_i"]
+    assert delta["status"] == "RESOLVED_ELSEWHERE"
+    assert delta["resolved_in"] == "param_registry_ext20:δ_i"
+    assert "delta_ij" not in delta["resolved_in"]
 
     qssa = next(r for r in fk if r["eq_id"].startswith("QSSA-001"))
     assert qssa["key_resolution"]["Km"]["status"] == "NOT_LOADED"
+
+
+def test_the_hawkes_row_resolves_entirely_into_the_extension_registry(fk):
+    """K3-FIX-04's three Hawkes parameters were all reported NOT_LOADED until
+    '★ Param Registry +20' was imported. All three are in it, spelled in
+    Greek, and match by transliteration alone -- no alias is declared for
+    them, because an alias restating a rule already applied is a place for a
+    mistake to hide."""
+    hawkes = next(r for r in fk if r["eq_id"] == "K3-FIX-04")["key_resolution"]
+    assert hawkes["mu_base"]["resolved_in"] == "param_registry_ext20:μ_base"
+    assert hawkes["nu_D"]["resolved_in"] == "param_registry_ext20:ν_D"
+    assert hawkes["delta_i"]["resolved_in"] == "param_registry_ext20:δ_i"
 
 
 def test_ids_and_model_references_are_classified_not_reported_as_missing(fk):
@@ -252,3 +283,40 @@ def test_the_veto_authority_name_resolves_to_the_registry_not_the_stub_sheet():
 
     assert LOADED_REGISTRIES["VETO Canonical 339"] == "engine_internal.veto_drug_nutrient"
     assert LOADED_REGISTRIES["Action_Space"] == "engine_internal.action_space"
+
+
+def test_the_extension_registrys_aliases_are_scoped_and_reasoned(params):
+    """EXT20_ALIASES follows the same discipline as ALIASES: every entry
+    names the equation rows it applies to and why the spellings differ, and
+    its target must exist in the extension registry.
+
+    It holds only two entries, and deliberately so. mu_base/μ_base,
+    delta_i/δ_i and nu_D/ν_D match by transliteration alone; listing them
+    would restate a rule already applied, which is where a wrong pairing
+    hides."""
+    import json as _json
+    from sahacore.data.build_eq_param_fk import EXT20_ALIASES, translit
+
+    ext = {r["symbol"] for r in _json.loads(
+        (DATA_DIR / "param_registry_ext20.json").read_text(encoding="utf-8"))
+        if r["symbol"]}
+    for key, (target, scope, reason) in EXT20_ALIASES.items():
+        assert target in ext, f"alias {key!r} -> {target!r} is not in the extension"
+        assert scope, f"alias {key!r} is unscoped"
+        assert len(reason) > 20, f"alias {key!r} has no reason recorded"
+        assert translit(key) != translit(target), (
+            f"{key!r} matches {target!r} by transliteration alone -- it does "
+            "not need an alias")
+
+
+def test_a_key_never_resolves_into_the_extension_against_a_row_that_owns_it(fk):
+    """The extension is only ever RESOLVED_ELSEWHERE, never RESOLVED. No FK
+    row names '★ Param Registry +20' as its authority -- the sheet postdates
+    the FK sheet -- so a RESOLVED status pointing at it would mean the
+    resolver had stopped distinguishing "found where this row said" from
+    "found somewhere"."""
+    for r in fk:
+        for key, v in r["key_resolution"].items():
+            if v["resolved_in"] and v["resolved_in"].startswith("param_registry_ext20:"):
+                assert v["status"] == "RESOLVED_ELSEWHERE", (
+                    f"{r['eq_id']}.{key} claims {v['status']} against the extension")

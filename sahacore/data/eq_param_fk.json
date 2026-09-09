@@ -2091,12 +2091,12 @@
   "validation_rule": "bounded scar invariant",
   "key_resolution": {
    "alpha_scar": {
-    "status": "MISSING_FK",
-    "resolved_in": null
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "param_registry_ext20:α_scar,k"
    },
    "beta_autophagy": {
-    "status": "MISSING_FK",
-    "resolved_in": null
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "param_registry_ext20:β_autophagy,k"
    },
    "theta_elastic": {
     "status": "RESOLVED",
@@ -2206,16 +2206,16 @@
     "resolved_in": "parameter_registry:lambda_max"
    },
    "mu_base": {
-    "status": "NOT_LOADED",
-    "resolved_in": null
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "param_registry_ext20:μ_base"
    },
    "delta_i": {
-    "status": "NOT_LOADED",
-    "resolved_in": null
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "param_registry_ext20:δ_i"
    },
    "nu_D": {
-    "status": "NOT_LOADED",
-    "resolved_in": null
+    "status": "RESOLVED_ELSEWHERE",
+    "resolved_in": "param_registry_ext20:ν_D"
    }
   }
  },

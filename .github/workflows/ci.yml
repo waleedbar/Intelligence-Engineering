@@ -65,6 +65,7 @@ jobs:
           python -m sahacore.data.load_veto_registry
           python -m sahacore.data.load_action_space
           python -m sahacore.data.load_runtime_invariants
+          python -m sahacore.data.load_param_registry_ext20
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -120,7 +121,7 @@ jobs:
               assert f == 126, f'expected 126 FK rows, got {f}'
               cur.execute('SELECT count(*) FROM engine_internal.missing_fk')
               mf = cur.fetchone()[0]
-              assert mf == 8, f'expected 8 missing FKs, got {mf}'
+              assert mf == 6, f'expected 6 missing FKs, got {mf}'
               # VETO-01, the Replay Contract's release gate: '339 rows and 339
               # unique canonical IDs; source IDs retained'. The retained source
               # ids are 319 distinct values across those 339 rows -- that gap is
@@ -144,7 +145,11 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 16, f'expected 16 versioned registries, got {versioned}'
+              assert versioned == 17, f'expected 17 versioned registries, got {versioned}'
+              # Both parameter registries: 192 numbered + 20 unnumbered.
+              cur.execute('SELECT count(*) FROM engine_internal.parameter_all')
+              pa = cur.fetchone()[0]
+              assert pa == 212, f'expected 212 parameters in total, got {pa}'
               # The canonical invariants and their fail-closed gates.
               cur.execute('SELECT count(*), count(gate), count(enforced_by) FROM engine_internal.runtime_invariant')
               inv, gated, enforced = cur.fetchone()
@@ -165,7 +170,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 8 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 6 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

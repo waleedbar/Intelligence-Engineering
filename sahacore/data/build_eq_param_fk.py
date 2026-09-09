@@ -119,6 +119,39 @@ LOADED_REGISTRIES = {
 }
 
 
+# '★ Param Registry +20' writes Greek letters where the FK sheet spells them
+# out. Transliteration only, and only for comparison -- no symbol is renamed.
+_GREEK = {
+    "λ": "lambda", "γ": "gamma", "κ": "kappa", "τ": "tau", "θ": "theta",
+    "α": "alpha", "β": "beta", "μ": "mu", "σ": "sigma", "ρ": "rho",
+    "δ": "delta", "ε": "epsilon", "η": "eta", "ω": "omega", "ν": "nu",
+    "Ω": "Omega", "ξ": "xi", "φ": "phi", "ψ": "psi",
+}
+
+
+def translit(text: str) -> str:
+    for greek, latin in _GREEK.items():
+        text = text.replace(greek, latin)
+    return text
+
+
+# FK key -> (symbol in '★ Param Registry +20', the equation rows it is valid
+# for, why the two spellings differ). Scoped exactly as ALIASES is, and for
+# the same reason.
+#
+# Only entries whose difference is more than the Greek alphabet belong here.
+# `mu_base`/`μ_base`, `delta_i`/`δ_i` and `nu_D`/`ν_D` match after
+# transliteration alone and are deliberately NOT listed: an alias that
+# restates a rule already applied is a place for a mistake to hide.
+EXT20_ALIASES = {
+    "alpha_scar": ("α_scar,k", {"K3-FIX-01"},
+                   "Greek alpha spelled out, and the sheet carries the "
+                   "per-cluster subscript k that the FK key omits"),
+    "beta_autophagy": ("β_autophagy,k", {"K3-FIX-01"},
+                       "Greek beta spelled out; same per-cluster subscript"),
+}
+
+
 def _split_authorities(cell: str | None) -> list[str]:
     """The authority cell lists one or more sheets separated by ';', often
     with a parenthetical gloss ('★ Damage Registry — Canonical (108 weighted
@@ -203,7 +236,8 @@ REGISTRY_KEY_ALIASES = {
 
 def resolve_key(key: str, registry_symbols: set[str],
                 loaded: list[str], columns: dict[str, set[str]],
-                all_loaded: bool = True, eq_id: str = "") -> tuple[str, str | None]:
+                all_loaded: bool = True, eq_id: str = "",
+                ext20_symbols: set[str] | None = None) -> tuple[str, str | None]:
     """Classify one FK key against its row's own authoritative registries.
 
     Returns (status, where). Statuses:
@@ -253,6 +287,23 @@ def resolve_key(key: str, registry_symbols: set[str],
     if key in ALIASES and eq_id in ALIASES[key][1] and ALIASES[key][0] in registry_symbols:
         return "RESOLVED_ELSEWHERE", f"parameter_registry:{ALIASES[key][0]}"
 
+    # '★ Param Registry +20' is the second parameter registry. No FK row names
+    # it as its authority -- it postdates the FK sheet -- so anything found
+    # here is RESOLVED_ELSEWHERE by the same rule that governs the base
+    # registry: the parameter is defined, just not in the sheet this row
+    # points at. That is a parameter_gaps question, not a missing_fk one.
+    ext20 = ext20_symbols or set()
+    if ext20:
+        by_translit = {translit(s): s for s in ext20}
+        if key in ext20:
+            return "RESOLVED_ELSEWHERE", f"param_registry_ext20:{key}"
+        if translit(key) in by_translit:
+            return "RESOLVED_ELSEWHERE", f"param_registry_ext20:{by_translit[translit(key)]}"
+        if key in EXT20_ALIASES and eq_id in EXT20_ALIASES[key][1]:
+            target = EXT20_ALIASES[key][0]
+            if target in ext20:
+                return "RESOLVED_ELSEWHERE", f"param_registry_ext20:{target}"
+
     # A key can only be called MISSING when EVERY registry its row declares
     # authoritative has actually been imported. If one of them is still
     # unloaded, the honest answer is that we have not looked yet -- accusing
@@ -292,13 +343,17 @@ def main() -> None:
             (here / "action_space_127.json").read_text(encoding="utf-8"))["actions"][0]),
     }
 
+    ext20 = {r["symbol"] for r in json.loads(
+        (here / "param_registry_ext20.json").read_text(encoding="utf-8"))
+        if r["symbol"]}
+
     for row in rows:
         row["key_resolution"] = {
             key: {"status": status, "resolved_in": where}
             for key in row["consumes_keys"]
             for status, where in [resolve_key(key, symbols, row["loaded_registries"],
                                               columns, row["all_authorities_loaded"],
-                                              row["eq_id"])]
+                                              row["eq_id"], ext20)]
         }
 
     OUT.write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

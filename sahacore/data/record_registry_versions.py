@@ -68,6 +68,8 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("action_space_127.json", "phases", "Action_Space"),
     "engine_internal.runtime_invariant":
         ("runtime_invariants.json", None, "00_ENGINEER_START"),
+    "engine_internal.parameter_registry_ext20":
+        ("param_registry_ext20.json", None, "★ Param Registry +20"),
 }
 
 

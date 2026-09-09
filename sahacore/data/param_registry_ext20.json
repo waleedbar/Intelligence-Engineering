@@ -1,0 +1,162 @@
+[
+ {
+  "source_row": 4,
+  "parameter": "Scarring rate",
+  "symbol": "α_scar,k",
+  "unit": "1/day",
+  "default_or_range": "0.001–0.01",
+  "calibration_source": "Allostatic-load literature; per-cluster"
+ },
+ {
+  "source_row": 5,
+  "parameter": "Elastic threshold",
+  "symbol": "θ_elastic,k",
+  "unit": "AU",
+  "default_or_range": "40–70",
+  "calibration_source": "Clinical guidelines (HbA1c, eGFR…)"
+ },
+ {
+  "source_row": 6,
+  "parameter": "Autophagy clearance",
+  "symbol": "β_autophagy,k",
+  "unit": "1/day",
+  "default_or_range": "1e-4–1e-3",
+  "calibration_source": "Half-life 2–5 yr"
+ },
+ {
+  "source_row": 7,
+  "parameter": "Repair suppression",
+  "symbol": "γ_scar,k",
+  "unit": "dimensionless",
+  "default_or_range": "0.4–1.6",
+  "calibration_source": "Repair-decline studies"
+ },
+ {
+  "source_row": 8,
+  "parameter": "Hawkes baseline",
+  "symbol": "μ_base",
+  "unit": "intensity",
+  "default_or_range": "0.05",
+  "calibration_source": "Event-log baseline"
+ },
+ {
+  "source_row": 9,
+  "parameter": "Hawkes reversion",
+  "symbol": "κ_D",
+  "unit": "1/day",
+  "default_or_range": "0.1",
+  "calibration_source": "Half-life ~7 d"
+ },
+ {
+  "source_row": 10,
+  "parameter": "Hawkes jump",
+  "symbol": "δ_i",
+  "unit": "intensity",
+  "default_or_range": "0.3/event",
+  "calibration_source": "Initial estimate"
+ },
+ {
+  "source_row": 11,
+  "parameter": "Hawkes decay",
+  "symbol": "ν_D",
+  "unit": "1/day",
+  "default_or_range": "0.15",
+  "calibration_source": "Half-life ~4.6 d"
+ },
+ {
+  "source_row": 12,
+  "parameter": "Willpower recovery",
+  "symbol": "ρ_w",
+  "unit": "1/day",
+  "default_or_range": "0.1",
+  "calibration_source": "Recovery half-life ~7 d"
+ },
+ {
+  "source_row": 13,
+  "parameter": "Willpower depletion",
+  "symbol": "τ_w",
+  "unit": "1/day",
+  "default_or_range": "0.2",
+  "calibration_source": "Stress-driven decay"
+ },
+ {
+  "source_row": 14,
+  "parameter": "Nudge cost",
+  "symbol": "c_nudge",
+  "unit": "willpower",
+  "default_or_range": "0.005/action",
+  "calibration_source": "Initial estimate"
+ },
+ {
+  "source_row": 15,
+  "parameter": "Friction penalty",
+  "symbol": "Ω",
+  "unit": "dimensionless",
+  "default_or_range": "1.0",
+  "calibration_source": "Bandit tuning"
+ },
+ {
+  "source_row": 16,
+  "parameter": "Action friction",
+  "symbol": "F_a",
+  "unit": "[0,1]",
+  "default_or_range": "per action",
+  "calibration_source": "Pre-defined table"
+ },
+ {
+  "source_row": 17,
+  "parameter": "Risk threshold (init)",
+  "symbol": "θ_risk",
+  "unit": "probability",
+  "default_or_range": "0.70",
+  "calibration_source": "Population default; personalised online"
+ },
+ {
+  "source_row": 18,
+  "parameter": "Threshold learning rate",
+  "symbol": "η_θ",
+  "unit": "dimensionless",
+  "default_or_range": "0.01",
+  "calibration_source": "Online update"
+ },
+ {
+  "source_row": 19,
+  "parameter": "Warning cool-down",
+  "symbol": null,
+  "unit": "hours",
+  "default_or_range": "24",
+  "calibration_source": "Fixed"
+ },
+ {
+  "source_row": 20,
+  "parameter": "Max warnings/week",
+  "symbol": null,
+  "unit": "integer",
+  "default_or_range": "3",
+  "calibration_source": "Fixed"
+ },
+ {
+  "source_row": 21,
+  "parameter": "F1 suppress threshold",
+  "symbol": null,
+  "unit": "dimensionless",
+  "default_or_range": "0.25",
+  "calibration_source": "Fixed"
+ },
+ {
+  "source_row": 22,
+  "parameter": "Warning weights",
+  "symbol": "w0…w5",
+  "unit": "dimensionless",
+  "default_or_range": "per-pattern",
+  "calibration_source": "Population logistic → online ridge (Sherman-Morrison)"
+ },
+ {
+  "source_row": 23,
+  "parameter": "Levy window",
+  "symbol": null,
+  "unit": "days",
+  "default_or_range": "rolling",
+  "calibration_source": "Pilot-calibrated ≥1,000 user-months"
+ }
+]

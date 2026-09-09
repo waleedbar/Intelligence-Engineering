@@ -464,3 +464,61 @@ Adding to the earlier requests:
 
 * `lambda_b`, `z_B`, `z_R` and `baseline_delta` for H1/H6 — or confirmation
   that they live in a sheet not yet named as authoritative for that row
+
+## 2026-09-09: a correction — six of them were never missing
+
+`★ Param Registry +20` loaded, and six parameters this document reported as
+absent from the workbook turned out to be in it.
+
+| Reported here as | Actually in `★ Param Registry +20` as | Value |
+|---|---|---|
+| `alpha_scar` — MISSING_FK on K3-FIX-01 | `α_scar,k` Scarring rate | 0.001–0.01 /day |
+| `beta_autophagy` — MISSING_FK on K3-FIX-01 | `β_autophagy,k` Autophagy clearance | 1e-4–1e-3 /day |
+| `δ` — OTHER_LAYER on K3-FIX-04 | `δ_i` Hawkes jump | 0.3/event |
+| `μ` — "to ask for" | `μ_base` Hawkes baseline | 0.05 |
+| `ν` — "to ask for" | `ν_D` Hawkes decay | 0.15 |
+| (not previously listed) | `κ_D` Hawkes reversion | 0.1 |
+
+`missing_fk` fell from 8 to 6. Layer M's rate parameters and the whole Hawkes
+row now resolve.
+
+### What went wrong in the reasoning
+
+The claim made here was **"the workbook does not contain it."** The evidence
+supported only **"the sheets this build has imported do not contain it."**
+Those are different statements, and the second is the only one that was ever
+checkable while the import was unfinished.
+
+`01_IMPORT_MANIFEST` lists `★ Param Registry +20` at order 21 with import
+status YES and backend Yes. It was in the plan the whole time. This build had
+imported 13 of the manifest's 124 backend sheets when the "18 missing
+parameters" list was written.
+
+A regex sweep of the sheets still unimported finds candidate locations for
+**seventeen of the eighteen**:
+
+* `F_base` — GLP-1 and Bariatric Onboarding Contracts, `Module · Bariatric (priors)`
+* `T50`, `kappa`, `epsilon_base`, `lambda_b`, `alpha_scar`, `beta_autophagy` — `★ Equation Backbone`
+* `a_k`/`b_k`, `ρ`/`g` — `P1 DataMap`
+* `f_unbound` — `O·O1 Anthropometrics`, `O·Engine Connections`, `P1 Core Equations`
+* `lam_rep` — `O · Onboarding Canonical`, `09 Glossary & Symbols`
+* `R_min` — `Alert Architecture`
+* `z_B`/`z_R` — `P2 Validation Protocol`
+* `CL`, `Q` — `GLP-1 Onboarding Contract`, `K3 · Mechanistic Modules`
+
+A regex hit is not a value — `F_base` in an onboarding contract may be a
+modifier rule rather than a per-nutrient table. But it is enough to make the
+"missing" list unsafe to send to anyone until the manifest is finished.
+
+### The rule this build now follows
+
+**Nothing is reported missing from the workbook until every sheet
+`01_IMPORT_MANIFEST` marks `import=YES, backend=Yes` has been imported.**
+Until then the honest status is NOT_LOADED, which the FK resolver already
+distinguishes from MISSING_FK and which
+`test_a_missing_fk_is_only_claimed_when_every_authority_is_loaded` already
+enforces per row. The failure here was in this document, which made a claim
+the resolver itself never made.
+
+The sections above are left as written, with this correction appended rather
+than folded in, so the reasoning error stays visible.
