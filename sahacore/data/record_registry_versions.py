@@ -84,6 +84,18 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("datamap.json", "onboarding_fields", "P1 DataMap section B"),
     "engine_internal.core_equation":
         ("core_equations.json", None, "P1 Core Equations"),
+    "engine_internal.state_admission_constant":
+        ("state_admission.json", "gate_constants", "03_STATE_ADMISSION_GATES"),
+    "engine_internal.state_admission_candidate":
+        ("state_admission.json", "candidates", "03_STATE_ADMISSION_GATES"),
+    "engine_internal.state_admission_rule":
+        ("state_admission.json", "admission_rules", "03_STATE_ADMISSION_GATES"),
+    "engine_internal.behavior_sidecar_constant":
+        ("state_admission.json", "sidecar_constants", "04_BEHAVIOR_SIDECAR"),
+    "engine_internal.behavior_sidecar_routing":
+        ("state_admission.json", "routing", "04_BEHAVIOR_SIDECAR"),
+    "engine_internal.behavior_sidecar_feature":
+        ("state_admission.json", "derived_features", "04_BEHAVIOR_SIDECAR"),
 }
 
 

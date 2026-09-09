@@ -1,0 +1,454 @@
+{
+ "gate_constants": [
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 5,
+   "constant": "baseline_state_n",
+   "value": "219",
+   "formula_or_source": "★ State Vector v33 (219)",
+   "engineering_meaning": "Do not expand x_t for behavioral categories.",
+   "owner": "State engine"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 6,
+   "constant": "baseline_cov_cells",
+   "value": "47961",
+   "formula_or_source": "47961",
+   "engineering_meaning": "Full covariance/storage size if modeled monolithically.",
+   "owner": "Estimator"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 7,
+   "constant": "baseline_nonlinear_n",
+   "value": "55",
+   "formula_or_source": "★ Rao-Blackwellization",
+   "engineering_meaning": "Current nonlinear block size.",
+   "owner": "Estimator"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 8,
+   "constant": "baseline_sigma_branches",
+   "value": "111",
+   "formula_or_source": "111",
+   "engineering_meaning": "Production RB-SR-UKF nonlinear sigma branches.",
+   "owner": "Estimator"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 9,
+   "constant": "lifestyle_state_slots",
+   "value": "24",
+   "formula_or_source": "187:210",
+   "engineering_meaning": "Already fully allocated; no spare lifestyle states.",
+   "owner": "State engine"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 10,
+   "constant": "production_rule",
+   "value": "Sidecar first / scoped controller",
+   "formula_or_source": "This table governs zero-state behavioral routing only. A physiological candidate must pass the ten-gate contract in ★ v39v State Admission Audit; State Δ=0 here is not a universal admission criterion.",
+   "engineering_meaning": "Protects stability and replay.",
+   "owner": "Architecture"
+  }
+ ],
+ "candidates": [
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 13,
+   "candidate": "50 activity IDs as states",
+   "target_representation": "STATE_CANDIDATE",
+   "necessity": "Low",
+   "sidecar_adequate": "Yes",
+   "identifiable_observable": "Poor individually",
+   "init_burden": "High",
+   "replay": "Harder",
+   "latency": "High",
+   "held_out_evidence": "None"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 14,
+   "candidate": "MET-min + activity event ledger",
+   "target_representation": "CORE_INPUT",
+   "necessity": "High",
+   "sidecar_adequate": "N/A",
+   "identifiable_observable": "Directly observed",
+   "init_burden": "None",
+   "replay": "Excellent",
+   "latency": "Tiny",
+   "held_out_evidence": "Supported"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 15,
+   "candidate": "Sleep/Sed/LPA/MVPA 24h composition",
+   "target_representation": "DERIVED_FEATURE",
+   "necessity": "High",
+   "sidecar_adequate": "Yes",
+   "identifiable_observable": "Direct/derived",
+   "init_burden": "None",
+   "replay": "Excellent",
+   "latency": "Tiny",
+   "held_out_evidence": "Good rationale"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 16,
+   "candidate": "Aerobic/resistance/impact modality loads",
+   "target_representation": "SIDECAR_SHADOW",
+   "necessity": "Medium-high",
+   "sidecar_adequate": "Yes",
+   "identifiable_observable": "Direct from activity classification",
+   "init_burden": "None",
+   "replay": "Excellent",
+   "latency": "Tiny",
+   "held_out_evidence": "Needs local calibration"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 17,
+   "candidate": "Extra sleep regularity state",
+   "target_representation": "STATE_CANDIDATE",
+   "necessity": "Low",
+   "sidecar_adequate": "Yes",
+   "identifiable_observable": "Derived",
+   "init_burden": "Extra",
+   "replay": "Good",
+   "latency": "Small",
+   "held_out_evidence": "Not needed"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 18,
+   "candidate": "Sleep regularity feature",
+   "target_representation": "DERIVED_FEATURE",
+   "necessity": "High",
+   "sidecar_adequate": "N/A",
+   "identifiable_observable": "Directly derived",
+   "init_burden": "None",
+   "replay": "Excellent",
+   "latency": "Tiny",
+   "held_out_evidence": "Supported"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 19,
+   "candidate": "Four stress states",
+   "target_representation": "STATE_CANDIDATE",
+   "necessity": "Low",
+   "sidecar_adequate": "Yes",
+   "identifiable_observable": "Categories are observed",
+   "init_burden": "Extra",
+   "replay": "Good",
+   "latency": "Small",
+   "held_out_evidence": "No"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 20,
+   "candidate": "stress_smooth + variability",
+   "target_representation": "EXISTING_STATE",
+   "necessity": "Already present",
+   "sidecar_adequate": "—",
+   "identifiable_observable": "Good",
+   "init_burden": "Already budgeted",
+   "replay": "Good",
+   "latency": "Existing",
+   "held_out_evidence": "Yes"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 21,
+   "candidate": "Four mood states",
+   "target_representation": "STATE_CANDIDATE",
+   "necessity": "Low",
+   "sidecar_adequate": "Yes",
+   "identifiable_observable": "Directly observed",
+   "init_burden": "Extra",
+   "replay": "Good",
+   "latency": "Small",
+   "held_out_evidence": "No physiology evidence"
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 22,
+   "candidate": "mood_valence + variability",
+   "target_representation": "EXISTING_STATE",
+   "necessity": "Already present",
+   "sidecar_adequate": "—",
+   "identifiable_observable": "Direct/derived",
+   "init_burden": "Already budgeted",
+   "replay": "Good",
+   "latency": "Existing",
+   "held_out_evidence": "Suitable"
+  }
+ ],
+ "admission_rules": [
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 26,
+   "rule": "No state expansion admitted",
+   "formula_or_implementation": "True",
+   "current_result": "PASS",
+   "notes": "PASS means all accepted/kept behavioral additions add zero states."
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 27,
+   "rule": "No nonlinear branch expansion admitted",
+   "formula_or_implementation": "True",
+   "current_result": "PASS",
+   "notes": "PASS preserves 111 RB-SR-UKF sigma branches."
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 28,
+   "rule": "All state-candidate expansions rejected",
+   "formula_or_implementation": "True",
+   "current_result": "PASS",
+   "notes": "PASS means the controller rejects activity/sleep/stress/mood categorical states."
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 29,
+   "rule": "Accepted behavioral information path",
+   "formula_or_implementation": "raw events → feature/context store → u_t/y_t/F-G-H predictors → x_t remains R^219",
+   "current_result": "KEEP 219",
+   "notes": "State vector is unchanged; richer measurements remain available."
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 30,
+   "rule": "Candidate M1 definition",
+   "formula_or_implementation": "M1 = M0 + behavioral sidecar features",
+   "current_result": "NO ALTERATION TO x_t",
+   "notes": "Use 05_HELDOUT_ADMISSION for measured uplift."
+  },
+  {
+   "source_sheet": "03_STATE_ADMISSION_GATES",
+   "source_row": 31,
+   "rule": "Latent-state promotion rule",
+   "formula_or_implementation": "Only consider if sidecar benefit is inferior to new-state benefit by a meaningful margin and all nine gates PASS.",
+   "current_result": "BLOCKED UNTIL EVIDENCE",
+   "notes": "This is intentionally conservative."
+  }
+ ],
+ "sidecar_constants": [
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 5,
+   "constant": "epsilon_minutes",
+   "value": "0.1",
+   "formula_or_note": "Avoid log(0) in ilr coordinates.",
+   "purpose": "Compositional transform"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 6,
+   "constant": "day_minutes",
+   "value": "1440",
+   "formula_or_note": "24h composition denominator.",
+   "purpose": "Sleep/Sed/LPA/MVPA closure"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 7,
+   "constant": "state_delta",
+   "value": "0",
+   "formula_or_note": "Sidecar never changes x_t.",
+   "purpose": "Preserve 219-state posterior"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 8,
+   "constant": "nonlinear_delta",
+   "value": "0",
+   "formula_or_note": "No new sigma branches.",
+   "purpose": "Preserve 111 branches"
+  }
+ ],
+ "routing": [
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 5,
+   "domain": "Physical activity",
+   "existing_core_states": "MVPA_smooth, SED_smooth",
+   "sidecar_raw_feature": "activity_id, MET, minutes, modality flags, confidence",
+   "routing": "u_t + F/G/H predictor"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 6,
+   "domain": "Sleep",
+   "existing_core_states": "sleep_dur_smooth, sleep_qual_smooth; x_c/y_c",
+   "sidecar_raw_feature": "duration, efficiency, onset, wake, midpoint, regularity",
+   "routing": "y_t/derived + circadian adapter"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 7,
+   "domain": "Stress",
+   "existing_core_states": "stress_smooth, stress_variability",
+   "sidecar_raw_feature": "PSS10, EMA stress, qualified wearable proxies",
+   "routing": "y_t into existing states"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 8,
+   "domain": "Mood",
+   "existing_core_states": "mood_valence_smooth, mood_variability",
+   "sidecar_raw_feature": "4-state check-in + within-user z-score",
+   "routing": "sidecar + existing mood states"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 9,
+   "domain": "Activity timing",
+   "existing_core_states": "x_c, y_c",
+   "sidecar_raw_feature": "activity onset, sleep midpoint, light proxy",
+   "routing": "qualified observation/control"
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 10,
+   "domain": "Autonomic response",
+   "existing_core_states": "A_v",
+   "sidecar_raw_feature": "HRV/respiratory-quality if qualified",
+   "routing": "y_t into A_v"
+  }
+ ],
+ "derived_features": [
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 23,
+   "feature": "total_logged_minutes",
+   "value": "1440",
+   "formula_text": "=SUM(C14:C19)",
+   "routing_meaning": "Must equal 1440 for complete 24h day; otherwise quality flag."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 24,
+   "feature": "METmin_total",
+   "value": "2426.5",
+   "formula_text": "=C14*F14+C15*F15+C16*F16+C17*F17+C18*F18+C19*F19",
+   "routing_meaning": "Core activity load feature; u_t / F-G-H predictor."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 25,
+   "feature": "aerobic_METmin",
+   "value": "325",
+   "formula_text": "=C14*F14*J14+C15*F15*J15+C16*F16*J16+C17*F17*J17+C18*F18*J18+C19*F19*J19",
+   "routing_meaning": "Shadow C7/C9/C12 driver until local calibration."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 26,
+   "feature": "resistance_METmin",
+   "value": "270",
+   "formula_text": "=C14*F14*K14+C15*F15*K15+C16*F16*K16+C17*F17*K17+C18*F18*K18+C19*F19*K19",
+   "routing_meaning": "Shadow C9/C10 driver until calibrated."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 27,
+   "feature": "impact_METmin",
+   "value": "135",
+   "formula_text": "=C14*F14*L14+C15*F15*L15+C16*F16*L16+C17*F17*L17+C18*F18*L18+C19*F19*L19",
+   "routing_meaning": "Shadow C10 weight-bearing/impact driver."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 28,
+   "feature": "sleep_min",
+   "value": "450",
+   "formula_text": "=IF(G14=\"Sleep\",C14,0)+IF(G15=\"Sleep\",C15,0)+IF(G16=\"Sleep\",C16,0)+IF(G17=\"Sleep\",C17,0)+IF(G18=\"Sleep\",C18,0)+IF(G19=\"Sleep\",C19,0)",
+   "routing_meaning": "24h composition part 1."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 29,
+   "feature": "sedentary_min",
+   "value": "620",
+   "formula_text": "=IF(G14=\"Sedentary\",C14,0)+IF(G15=\"Sedentary\",C15,0)+IF(G16=\"Sedentary\",C16,0)+IF(G17=\"Sedentary\",C17,0)+IF(G18=\"Sedentary\",C18,0)+IF(G19=\"Sedentary\",C19,0)",
+   "routing_meaning": "24h composition part 2."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 30,
+   "feature": "lpa_min",
+   "value": "260",
+   "formula_text": "=IF(G14=\"Light\",C14,0)+IF(G15=\"Light\",C15,0)+IF(G16=\"Light\",C16,0)+IF(G17=\"Light\",C17,0)+IF(G18=\"Light\",C18,0)+IF(G19=\"Light\",C19,0)",
+   "routing_meaning": "24h composition part 3."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 31,
+   "feature": "mvpa_min",
+   "value": "110",
+   "formula_text": "=IF(G14=\"Moderate\",C14,0)+IF(G15=\"Moderate\",C15,0)+IF(G16=\"Moderate\",C16,0)+IF(G17=\"Moderate\",C17,0)+IF(G18=\"Moderate\",C18,0)+IF(G19=\"Moderate\",C19,0)+IF(G14=\"Vigorous\",C14,0)+IF(G15=\"Vigorous\",C15,0)+IF(G16=\"Vigorous\",C16,0)+IF(G17=\"Vigorous\",C17,0)+IF(G18=\"Vigorous\",C18,0)+IF(G19=\"Vigorous\",C19,0)",
+   "routing_meaning": "24h composition part 4."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 32,
+   "feature": "composition_sum",
+   "value": "1440",
+   "formula_text": "=B28+B29+B30+B31",
+   "routing_meaning": "Must equal day_minutes."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 33,
+   "feature": "composition_quality",
+   "value": "PASS",
+   "formula_text": "=IF(ABS(B32-$B$6)<=5,\"PASS\",\"REVIEW\")",
+   "routing_meaning": "Allows ±5 min wearable/log rounding."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 34,
+   "feature": "ilr_z1_sleep_vs_rest",
+   "value": "0.47252114842506554",
+   "formula_text": "=SQRT(3/4)*LN(MAX(B28,$B$5)/((MAX(B29,$B$5)*MAX(B30,$B$5)*MAX(B31,$B$5))^(1/3)))",
+   "routing_meaning": "Derived predictor; not a state."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 35,
+   "feature": "ilr_z2_sed_vs_active",
+   "value": "1.0607421267737567",
+   "formula_text": "=SQRT(2/3)*LN(MAX(B29,$B$5)/SQRT(MAX(B30,$B$5)*MAX(B31,$B$5)))",
+   "routing_meaning": "Derived predictor; not a state."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 36,
+   "feature": "ilr_z3_lpa_vs_mvpa",
+   "value": "0.6082541478245101",
+   "formula_text": "=SQRT(1/2)*LN(MAX(B30,$B$5)/MAX(B31,$B$5))",
+   "routing_meaning": "Derived predictor; not a state."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 37,
+   "feature": "state_delta_from_sidecar",
+   "value": "0",
+   "formula_text": "=$B$7",
+   "routing_meaning": "Must remain zero."
+  },
+  {
+   "source_sheet": "04_BEHAVIOR_SIDECAR",
+   "source_row": 38,
+   "feature": "nonlinear_delta_from_sidecar",
+   "value": "0",
+   "formula_text": "=$B$8",
+   "routing_meaning": "Must remain zero."
+  }
+ ]
+}
