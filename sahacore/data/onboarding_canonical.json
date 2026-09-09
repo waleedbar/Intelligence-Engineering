@@ -1,0 +1,235 @@
+{
+  "sheet": "O · Onboarding Canonical",
+  "steps": [
+    {
+      "step_id": "ONB-001",
+      "source_row": 3,
+      "authority_sheets": "O·O1 Anthropometrics",
+      "operational_equation": "BMI=weight_kg/height_m^2; WHtR=waist_cm/height_cm; BSA=sqrt(height_cm*weight_kg/3600); BMR=MifflinStJeor(age,sex,height,weight)",
+      "inputs": "O1 answers",
+      "outputs": "baseline anthropometrics; BMR; prior modifiers",
+      "parameter_refs": "O·O1 Anthropometrics",
+      "python_function": "sahacore.onboarding.anthropometrics",
+      "validation_qa": "unit tests for BMI/BMR",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-002",
+      "source_row": 4,
+      "authority_sheets": "O·O2 MVPA Prior; P1 Activities 50",
+      "operational_equation": "MET_min_week = Σ_bouts MET_a * minutes_a; PA_benefit = 100*(1-exp(-MET_min_week/K_PA))",
+      "inputs": "O2 activity frequency/duration; wearable history",
+      "outputs": "activity prior; MVPA control prior",
+      "parameter_refs": "O·O2 MVPA Prior; P1 Activities 50",
+      "python_function": "sahacore.onboarding.mvpa_prior",
+      "validation_qa": "range 0..100; monotone MET-min",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-003",
+      "source_row": 5,
+      "authority_sheets": "O·O3 Sleep Deficit",
+      "operational_equation": "sleep_deficit_h=max(0,target_sleep_h-sleep_h); SDS=sleep_deficit_h*quality_penalty; k_inflam_mod=1+β_sleep*SDS",
+      "inputs": "sleep hours; sleep quality; consistency",
+      "outputs": "sleep deficit score; modifiers to C/M/W",
+      "parameter_refs": "O·O3 Sleep Deficit",
+      "python_function": "sahacore.onboarding.sleep_deficit",
+      "validation_qa": "deficit zero when sleep>=target",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-004",
+      "source_row": 6,
+      "authority_sheets": "O·O4 Stress Index",
+      "operational_equation": "stress_idx=PSS10_score/40; γ_cort=1+β_cort*stress_idx; λ_repair_mod=max(λ_min,1-β_repair*stress_idx)",
+      "inputs": "PSS-10 answers",
+      "outputs": "stress modifier; repair modifier",
+      "parameter_refs": "O·O4 Stress Index",
+      "python_function": "sahacore.onboarding.stress_index",
+      "validation_qa": "PSS score 0..40 maps 0..1",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-005",
+      "source_row": 7,
+      "authority_sheets": "O·O5 Substance Exposure",
+      "operational_equation": "λ_smoke=1+β_pack_years*pack_years; λ_alcohol=1+β_alcohol*drinks_week; k_ox=λ_smoke*λ_alcohol",
+      "inputs": "smoking status; pack-years; alcohol drinks/week",
+      "outputs": "oxidative and hepatic risk modifiers",
+      "parameter_refs": "O·O5 Substance Exposure",
+      "python_function": "sahacore.onboarding.substance_exposure",
+      "validation_qa": "nonnegative multipliers",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-006",
+      "source_row": 8,
+      "authority_sheets": "O·O6 Family History",
+      "operational_equation": "FH_risk_k = log(OR_k)*I[first_degree_history]; P0 inflation applies to relevant state covariances",
+      "inputs": "family history flags",
+      "outputs": "prior mean shift; covariance inflation",
+      "parameter_refs": "O·O6 Family History",
+      "python_function": "sahacore.onboarding.family_history",
+      "validation_qa": "positive FH inflates P0 only for mapped clusters",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-007",
+      "source_row": 9,
+      "authority_sheets": "O·O7 Diet Pattern Priors",
+      "operational_equation": "C_i(0)=Σ_pattern π_p * μ_{i,p}; σ_i^2(0)=σ_prior^2/(1+n_logs/K_log)",
+      "inputs": "diet pattern selection; early food logs",
+      "outputs": "nutrient prior mean/variance",
+      "parameter_refs": "O·O7 Diet Pattern Priors",
+      "python_function": "sahacore.onboarding.diet_priors",
+      "validation_qa": "logs dominate as n_logs increases",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-008",
+      "source_row": 10,
+      "authority_sheets": "O·O8 Condition Modifiers",
+      "operational_equation": "η_k ← η_k * condition_multiplier_{condition,k}; thresholds θ may be shifted only by validated condition rule",
+      "inputs": "diagnosed conditions",
+      "outputs": "condition-adjusted sensitivities/thresholds",
+      "parameter_refs": "O·O8 Condition Modifiers",
+      "python_function": "sahacore.onboarding.condition_mods",
+      "validation_qa": "known conditions update mapped clusters",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-009",
+      "source_row": 11,
+      "authority_sheets": "O·O9 Drug-Nutrient Mods; P1 Drug Interactions",
+      "operational_equation": "F_abs_i ← F_abs_i * drug_abs_modifier; action veto applies before recommendation if drug_rule severity=hard",
+      "inputs": "medications; supplements",
+      "outputs": "PK modifiers; VETO flags",
+      "parameter_refs": "O·O9 Drug-Nutrient Mods; P1 Drug Interactions",
+      "python_function": "sahacore.onboarding.drug_nutrient_mods",
+      "validation_qa": "warfarin/VitK hard veto fires",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-010",
+      "source_row": 12,
+      "authority_sheets": "O·O10 Goal Priority Wts",
+      "operational_equation": "π_goal,k = base_weight_k * selected_goal_multiplier; normalize Σ_k π=1 for display only",
+      "inputs": "selected goals",
+      "outputs": "goal display/ranking weights",
+      "parameter_refs": "O·O10 Goal Priority Wts",
+      "python_function": "sahacore.onboarding.goal_weights",
+      "validation_qa": "normalization; no physiology overwrite",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-011",
+      "source_row": 13,
+      "authority_sheets": "O·O11 Damage State Init",
+      "operational_equation": "ξ_k(t0)=ln(0.1 + composite_risk_k);  Z_k(t0)=exp(ξ_k(t0)) ≥ 0;  composite_risk_k=Σ_j w_{kj} feature_j with clipping  [v39l F-CB]",
+      "inputs": "anthropometrics; conditions; FH; labs; diet; substances",
+      "outputs": "initial Z_hi/Z_lo and M scar priors",
+      "parameter_refs": "O·O11 Damage State Init",
+      "python_function": "sahacore.onboarding.damage_warm_start",
+      "validation_qa": "all Z finite and nonnegative after transform",
+      "blocked_by": "The canonical 15->12 pathway-to-cluster bridge. Named as a required step by 'O·O11 Damage State Init', 'O·O12-O14 State Init', 'O·Engine Connections', '★ Build Map — concept to code' and 'M-MAP Integration'. 'P1 Cluster Map 15-12' is titled as that bridge but holds a 12-organ x 13-pathway matrix -- its own v35.9.3 banner says the rows are ORGAN SYSTEMS keyed SYS1-SYS12 and 'must never be referenced by a bare C-code'. No sheet in the workbook carries twelve cluster ids and fifteen pathway ids together."
+    },
+    {
+      "step_id": "ONB-012",
+      "source_row": 14,
+      "authority_sheets": "O·O12-O14 State Init; P1 Variables 219",
+      "operational_equation": "x0=[C_fast(81)@1–81, C_slow(81)@82–162, Z_hi(12)@163–174, Z_lo(12)@175–186, lifestyle(24)@187–210, N1 G/X/I@211–213, N2 V@214, N3 x_c/y_c@215–216, N4 F/L@217–218, N5 A_v@219] with semantic class and uncertainty for every canonical slot",
+      "inputs": "nutrient priors; warm-start; lifestyle answers",
+      "outputs": "219-state mean vector",
+      "parameter_refs": "O·O12-O14 State Init; P1 Variables 219",
+      "python_function": "sahacore.onboarding.state_init_219",
+      "validation_qa": "length(x0)=219; no null locked states",
+      "blocked_by": "The canonical 15->12 pathway-to-cluster bridge. Named as a required step by 'O·O11 Damage State Init', 'O·O12-O14 State Init', 'O·Engine Connections', '★ Build Map — concept to code' and 'M-MAP Integration'. 'P1 Cluster Map 15-12' is titled as that bridge but holds a 12-organ x 13-pathway matrix -- its own v35.9.3 banner says the rows are ORGAN SYSTEMS keyed SYS1-SYS12 and 'must never be referenced by a bare C-code'. No sheet in the workbook carries twelve cluster ids and fifteen pathway ids together."
+    },
+    {
+      "step_id": "ONB-013",
+      "source_row": 15,
+      "authority_sheets": "O·O12-O14 State Init; ★ State Classification 4-Way",
+      "operational_equation": "P0=diag(σ_i^2); inflate by family history, missing anchors and measurement staleness; never collapse unobserved states",
+      "inputs": "priors; anchor availability",
+      "outputs": "219×219 covariance factor",
+      "parameter_refs": "O·O12-O14 State Init; ★ State Classification 4-Way",
+      "python_function": "sahacore.onboarding.covariance_init",
+      "validation_qa": "PSD; prior-dominated states wider than anchored",
+      "blocked_by": null
+    },
+    {
+      "step_id": "ONB-014",
+      "source_row": 16,
+      "authority_sheets": "O·Engine Connections",
+      "operational_equation": "u_t=[dose_1..81, MVPA, sleep, stress, hydration, med/supp events, context flags] with event provenance",
+      "inputs": "food logs; activity; sleep; stress; meds",
+      "outputs": "control vector for Layer A/B/C/E",
+      "parameter_refs": "O·Engine Connections",
+      "python_function": "sahacore.onboarding.control_input",
+      "validation_qa": "controls are not treated as measurements",
+      "blocked_by": null
+    }
+  ],
+  "declared_blocks": [
+    {
+      "sheet_name": "C_fast",
+      "registry_block": "C_fast",
+      "first_index": 1,
+      "last_index": 81
+    },
+    {
+      "sheet_name": "C_slow",
+      "registry_block": "C_slow",
+      "first_index": 82,
+      "last_index": 162
+    },
+    {
+      "sheet_name": "Z_hi",
+      "registry_block": "xi_hi",
+      "first_index": 163,
+      "last_index": 174
+    },
+    {
+      "sheet_name": "Z_lo",
+      "registry_block": "xi_lo",
+      "first_index": 175,
+      "last_index": 186
+    },
+    {
+      "sheet_name": "lifestyle",
+      "registry_block": "lifestyle",
+      "first_index": 187,
+      "last_index": 210
+    },
+    {
+      "sheet_name": "N1",
+      "registry_block": "N1",
+      "first_index": 211,
+      "last_index": 213
+    },
+    {
+      "sheet_name": "N2",
+      "registry_block": "N2",
+      "first_index": 214,
+      "last_index": 214
+    },
+    {
+      "sheet_name": "N3",
+      "registry_block": "N3",
+      "first_index": 215,
+      "last_index": 216
+    },
+    {
+      "sheet_name": "N4",
+      "registry_block": "N4",
+      "first_index": 217,
+      "last_index": 218
+    },
+    {
+      "sheet_name": "N5",
+      "registry_block": "N5",
+      "first_index": 219,
+      "last_index": 219
+    }
+  ]
+}

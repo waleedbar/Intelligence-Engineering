@@ -987,3 +987,88 @@ The sheet marks them *"required BEFORE code starts"*. They are loaded into
 inventing product policy. Decision 5 — the bandit's reward proxy — carries
 the sheet's own note calling it *"the single biggest decision"*, stated twice:
 once in the table and once as an inline warning on item 2.
+
+## 2026-09-09: Layer 0 is 12/14 buildable — the 15→12 bridge is not in the workbook
+
+`O · Onboarding Canonical` (manifest 128) is `★ Build Guide Python` step 3
+written out: fourteen steps, ONB-001..ONB-014, each with its equation, I/O,
+parameter refs, QA, and the `sahacore.onboarding.*` function to write.
+
+**Twelve can be written today. Two cannot**, and the reason is a missing
+crosswalk rather than missing effort.
+
+### The gap, precisely
+
+`O·O11 Damage State Init` produces **fifteen** pathway warm-start values,
+`ξ_path,p(t0) = ln(0.1 + composite_risk_p)` for p = 1..15. Every one of its
+fifteen rows ends with the same instruction:
+
+> `15→12 bridge → ξ_hi/ξ_lo; no direct x_hat slot`
+
+and its header repeats it: *"Map the 15 pathway warm-start values through the
+canonical 15→12 bridge, then initialize ξ_hi[163:174] and ξ_lo[175:186]"*.
+
+The slots ONB-012 fills at 163–186 are **twelve clusters**. Between fifteen
+pathways and twelve clusters sits a bridge that **five sheets name**:
+
+| sheet | wording |
+|---|---|
+| `O·O11 Damage State Init` | "through the canonical 15→12 bridge" |
+| `O·O12-O14 State Init` | "O11 + P1 Cluster Map 15-12" |
+| `O·Engine Connections` r42 | "15 pathway ξ_path warm-start values → canonical 15→12 bridge" |
+| `★ Build Map — concept to code` | "pass through the canonical 15→12 bridge before ξ_hi/ξ_lo initialization" |
+| `M-MAP Integration` | "uses the existing 15->12 cluster map" |
+
+### `P1 Cluster Map 15-12` is not that bridge
+
+It is titled *"PHASE 1: 15 TVMCD Pathways mapped to 12 Clusters"* and its
+first column header reads `Cluster`. Its contents are neither:
+
+- **rows are `O1: Cardiovascular` … `O12: Reproductive`** — organ systems.
+  Its own v35.9.3 banner says so: *"rows on this sheet describe ORGAN SYSTEMS
+  and are keyed SYS1–SYS12 … They must never be referenced by a bare C-code —
+  C1–C12 belong to physiological processes."*
+- **columns are D1..D13** — thirteen pathways, not fifteen.
+- its 48 non-zero weights are **already in this build**, loaded from
+  `REG · Organ×Pathway Long` as `engine_internal.organ_pathway_weight`, which
+  is what that data actually is.
+
+### The search that establishes the absence
+
+Not "I did not find it" — every sheet was scanned. A pathway→cluster bridge
+must carry twelve cluster ids and fifteen pathway ids in one place:
+
+```
+sheets with ≥10 cluster ids AND ≥10 pathway ids:  0
+sheets with  ≥6 cluster ids AND  ≥6 pathway ids:  7
+```
+
+and all seven of those are equation sheets where `C1..C8` are **Layer C
+equation numbers**, not clusters — a third meaning of `C<n>` in this workbook,
+alongside process clusters and the SYS/O organ collision already reported.
+
+### What is corroborated, and worth as much
+
+- **ONB-012's slot layout matches `state_vector_219.json` exactly**, block for
+  block, across all 219 slots — two sheets imported days apart agreeing on the
+  engine's own state.
+- **`Z1..Z15` in `O·O11` are `D1..D15` elsewhere** — all fifteen names line up
+  one for one (`Z1`/`D1` Glycation/AGE … `Z15`/`D15` VitD Insufficiency). The
+  two namespaces are one set under two spellings.
+- **The damage slots hold ξ, not Z.** The canonical sheet writes them `Z_hi`/
+  `Z_lo`; the registry names them `xi_hi`/`xi_lo`, unit `log(AU)`. Battery
+  test **C3** (BLOCKING, *"Damage positivity (log-coordinates)"*, criterion
+  `Z(t) = exp(ξ) − ε ≥ 0`) is what rests on the distinction — writing Z into a
+  ξ slot passes a length check and breaks positivity everywhere downstream.
+  Pinned in `tests/test_onboarding_canonical.py`.
+
+### For Dr. Ali
+
+> Where is the canonical 15→12 pathway-to-cluster bridge? `P1 Cluster Map
+> 15-12` is named as it in five places but holds a 12-organ × 13-pathway
+> matrix, and its own banner says its rows are organ systems. Without it
+> ONB-011's fifteen warm-start values cannot reach the twelve ξ slots, and
+> Layer 0 stops at 12 of 14 modules.
+
+Note this is **not** the same as the O1–O12 namespace question reported
+earlier — that one is about naming. This one is a missing artefact.

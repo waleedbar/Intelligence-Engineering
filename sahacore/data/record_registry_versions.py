@@ -125,6 +125,10 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("scoped_builds.json", "prerequisites", "★ Scoped Builds — LTMLE Bandit"),
     "engine_internal.founder_decision":
         ("scoped_builds.json", "open_decisions", "★ Scoped Builds — LTMLE Bandit"),
+    "engine_internal.onboarding_step":
+        ("onboarding_canonical.json", "steps", "O · Onboarding Canonical"),
+    "engine_internal.onboarding_state_block":
+        ("onboarding_canonical.json", "declared_blocks", "O · Onboarding Canonical"),
 }
 
 
