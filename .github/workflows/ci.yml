@@ -67,6 +67,7 @@ jobs:
           python -m sahacore.data.load_runtime_invariants
           python -m sahacore.data.load_param_registry_ext20
           python -m sahacore.data.load_nutrient_classes
+          python -m sahacore.data.load_supplement_registry
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -146,7 +147,11 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 19, f'expected 19 versioned registries, got {versioned}'
+              assert versioned == 20, f'expected 20 versioned registries, got {versioned}'
+              # The NULL-CAP rule: four supplements modelled at zero effect.
+              cur.execute('SELECT count(*) FROM engine_internal.supplement_null_capped')
+              nc = cur.fetchone()[0]
+              assert nc == 4, f'expected 4 null-capped supplements, got {nc}'
               # All 81 nutrients carry the kinetic constraint that governs them.
               cur.execute('SELECT count(*) FROM engine_internal.nutrient_kinetics')
               nk = cur.fetchone()[0]

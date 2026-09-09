@@ -1,0 +1,154 @@
+[
+ {
+  "source_row": 8,
+  "supplement": "CoQ10 (ubiquinone / ubiquinol)",
+  "maps_to_canonical": "NO — supplement only",
+  "effect_cap": "NULL CAP",
+  "evidence_position": "Trials in the general population do not support a wellness benefit. The supportive heart-failure trial evidence is in a DISEASE population and cannot be carried into a general-wellness product.",
+  "cluster_effect_permitted": "No direct cluster weight. May feed internal QSSA cofactor support only where an explicit QSSA equation consumes CoQ10; safety/VETO always applies.",
+  "mapping_kind": "NO",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 9,
+  "supplement": "Vitamin D",
+  "maps_to_canonical": "YES → vit_d_iu",
+  "effect_cap": "NULL CAP (cardiovascular / cancer)",
+  "evidence_position": "Large randomised trials were null for these endpoints. Repletion of a deficient state remains meaningful; a benefit claim beyond repletion does not.",
+  "cluster_effect_permitted": "Adequacy only, not outcome benefit.",
+  "mapping_kind": "YES",
+  "maps_to_nutrients": [
+   "vit_d_iu"
+  ],
+  "is_complete": true
+ },
+ {
+  "source_row": 10,
+  "supplement": "EPA + DHA",
+  "maps_to_canonical": "YES → omega3_epa_g / omega3_dha_g",
+  "effect_cap": "NULL CAP (combined form)",
+  "evidence_position": "Combined EPA+DHA trials were null. High-dose EPA-only evidence is disputed on placebo grounds and is not carried.",
+  "cluster_effect_permitted": "Adequacy and membrane incorporation only.",
+  "mapping_kind": "YES",
+  "maps_to_nutrients": [
+   "omega3_epa_g",
+   "omega3_dha_g"
+  ],
+  "is_complete": true
+ },
+ {
+  "source_row": 11,
+  "supplement": "Multivitamin",
+  "maps_to_canonical": "YES → several",
+  "effect_cap": "Adequacy only",
+  "evidence_position": "Fills gaps; no outcome claim.",
+  "cluster_effect_permitted": "Adequacy contribution only.",
+  "mapping_kind": "YES",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 12,
+  "supplement": "Magnesium",
+  "maps_to_canonical": "YES → magnesium_mg",
+  "effect_cap": "Adequacy + repletion",
+  "evidence_position": "Common shortfall; repletion is defensible. Serum magnesium is insensitive, so adequacy is intake-anchored.",
+  "cluster_effect_permitted": "Permitted where the canonical nutrient carries weight.",
+  "mapping_kind": "YES",
+  "maps_to_nutrients": [
+   "magnesium_mg"
+  ],
+  "is_complete": true
+ },
+ {
+  "source_row": 13,
+  "supplement": "Creatine",
+  "maps_to_canonical": "NO — supplement only",
+  "effect_cap": "Bounded, evidence-tiered",
+  "evidence_position": "One of the better-supported supplements for muscle performance. No damage-cluster weight without a specific evidence review.",
+  "cluster_effect_permitted": "None by default.",
+  "mapping_kind": "NO",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 14,
+  "supplement": "Collagen peptides",
+  "maps_to_canonical": "Partial → glycine, proline",
+  "effect_cap": "Precursor only",
+  "evidence_position": "Modelled only as an amino-acid contribution. No independent connective-tissue claim.",
+  "cluster_effect_permitted": "Via its amino acids only.",
+  "mapping_kind": "PARTIAL",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 15,
+  "supplement": "Probiotics",
+  "maps_to_canonical": "NO — supplement only",
+  "effect_cap": "Strain-specific, default NULL",
+  "evidence_position": "Effects are strain-specific and do not generalise. No generic probiotic effect is modelled.",
+  "cluster_effect_permitted": "None by default.",
+  "mapping_kind": "NO",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 16,
+  "supplement": "N-acetylcysteine (NAC)",
+  "maps_to_canonical": "NO — supplement only",
+  "effect_cap": "Cysteine precursor",
+  "evidence_position": "Relevant to the glutathione pathway as a cysteine source — which is why oral glutathione itself is NOT modelled as effective.",
+  "cluster_effect_permitted": "QSSA glutathione support only, gated.",
+  "mapping_kind": "NO",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 17,
+  "supplement": "Curcumin",
+  "maps_to_canonical": "NO — supplement only",
+  "effect_cap": "NULL CAP",
+  "evidence_position": "Bioavailability is poor and the clinical evidence is inconsistent.",
+  "cluster_effect_permitted": "None.",
+  "mapping_kind": "NO",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 18,
+  "supplement": "Melatonin",
+  "maps_to_canonical": "NO — supplement only",
+  "effect_cap": "Circadian only",
+  "evidence_position": "Modelled through circadian timing, not as a nutrient.",
+  "cluster_effect_permitted": "Feeds the circadian sidecar, not a damage cluster.",
+  "mapping_kind": "NO",
+  "maps_to_nutrients": [],
+  "is_complete": true
+ },
+ {
+  "source_row": 19,
+  "supplement": "Iron",
+  "maps_to_canonical": "YES → iron_mg",
+  "effect_cap": "Adequacy + repletion, VETO-gated",
+  "evidence_position": "Repletion is meaningful in deficiency; supplementation without deficiency carries risk and is already covered by the safety rules.",
+  "cluster_effect_permitted": "Permitted, subject to VETO.",
+  "mapping_kind": "YES",
+  "maps_to_nutrients": [
+   "iron_mg"
+  ],
+  "is_complete": true
+ },
+ {
+  "source_row": 20,
+  "supplement": "Betaine (trimethylglycine / TMG)",
+  "maps_to_canonical": null,
+  "effect_cap": null,
+  "evidence_position": null,
+  "cluster_effect_permitted": null,
+  "mapping_kind": null,
+  "maps_to_nutrients": [],
+  "is_complete": false
+ }
+]

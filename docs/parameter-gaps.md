@@ -522,3 +522,18 @@ the resolver itself never made.
 
 The sections above are left as written, with this correction appended rather
 than folded in, so the reasoning error stays visible.
+
+## Incomplete rows found while importing, for the workbook's author
+
+Not parameter gaps — rows the source sheets leave unfinished. Each is loaded
+as-is and reported by a view, rather than dropped or filled in.
+
+| Sheet | Row | What is missing | View |
+|---|---|---|---|
+| `★ Supplement Registry` | 20, Betaine (trimethylglycine / TMG) | effect cap, evidence position, cluster permission — the name is the only cell filled | `engine_internal.supplement_incomplete` |
+
+Betaine matters a little more than a blank row usually would: it is a
+methyl-donor with a canonical nutrient counterpart (`betaine_mg` is not in the
+81, but choline is, and the two are metabolically coupled), and the registry's
+whole purpose is to stop a supplement inheriting a dietary weight it has not
+earned. Without a cap, Betaine has no stated position at all.

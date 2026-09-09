@@ -39,6 +39,7 @@ CONFINED_REGISTRIES = [
     "parameter_registry_ext20",
     "nutrient_class",
     "nutrient_class_assignment",
+    "supplement_registry",
     "eq_param_fk",
     "eq_build_rows",
     "eq_build_row_inputs",
