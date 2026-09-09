@@ -60,6 +60,7 @@ CONFINED_REGISTRIES = [
     # a consumer role that could read the action space could enumerate every
     # arm the engine will ever consider.
     "veto_drug_nutrient",
+    "veto_message",
     "action_space",
     "action_space_info",
     "action_space_phase",

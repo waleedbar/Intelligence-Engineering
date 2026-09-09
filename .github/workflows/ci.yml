@@ -62,6 +62,7 @@ jobs:
           python -m sahacore.data.load_parameter_registry
           python -m sahacore.data.load_eq_param_fk
           python -m sahacore.data.load_eq_build_rows
+          python -m sahacore.data.load_veto_messages
           python -m sahacore.data.load_veto_registry
           python -m sahacore.data.load_action_space
           python -m sahacore.data.load_runtime_invariants
@@ -151,7 +152,16 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 30, f'expected 30 versioned registries, got {versioned}'
+              assert versioned == 31, f'expected 31 versioned registries, got {versioned}'
+              # The 24 message templates the VETO rules render, now a real FK.
+              cur.execute('SELECT count(*) FROM engine_internal.veto_rule_message')
+              vm = cur.fetchone()[0]
+              assert vm == 339, f'expected all 339 rules to render a message, got {vm}'
+              # One CRITICAL template refers the reader to nobody. A finding,
+              # reported in docs/parameter-gaps.md, not a tolerance.
+              cur.execute('SELECT count(*) FROM engine_internal.critical_message_without_referral')
+              cw = cur.fetchone()[0]
+              assert cw == 1, f'expected exactly 1 referral-less CRITICAL template, got {cw}'
               # The state vector may not grow: four candidates refused.
               cur.execute('SELECT count(*) FROM engine_internal.refused_state_candidates')
               rc = cur.fetchone()[0]

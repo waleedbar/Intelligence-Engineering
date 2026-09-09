@@ -1,0 +1,218 @@
+[
+ {
+  "source_row": 6,
+  "message_id": "MSG-CRITICAL-AVOID",
+  "severity": "CRITICAL",
+  "action": "AVOID",
+  "title": "Left out for now",
+  "body_template": "Safety first — we've left {nutrient} out of your suggestions, since it doesn't pair well with {medication}. This is general wellness guidance — your prescriber can advise on what's right for you.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 7,
+  "message_id": "MSG-CRITICAL-MONITOR",
+  "severity": "CRITICAL",
+  "action": "MONITOR",
+  "title": "We're watching this",
+  "body_template": "Safety first — because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 8,
+  "message_id": "MSG-CRITICAL-NOTE",
+  "severity": "CRITICAL",
+  "action": "NOTE",
+  "title": "Good to know",
+  "body_template": "Safety first — {nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 9,
+  "message_id": "MSG-CRITICAL-PAUSE",
+  "severity": "CRITICAL",
+  "action": "PAUSE",
+  "title": "Adjusted for your medication",
+  "body_template": "Safety first — we've paused the {nutrient} suggestion in your plan, because it can interact with {medication}. Please check with your prescriber or pharmacist before changing your {nutrient} intake.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 10,
+  "message_id": "MSG-CRITICAL-SEPARATE",
+  "severity": "CRITICAL",
+  "action": "SEPARATE",
+  "title": "Timing tip",
+  "body_template": "Safety first — it helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 11,
+  "message_id": "MSG-CRITICAL-STABLE",
+  "severity": "CRITICAL",
+  "action": "STABLE",
+  "title": "Keep it steady",
+  "body_template": "Safety first — with {medication}, keeping your {nutrient} intake steady day to day helps things stay consistent — aim for a similar amount rather than big swings.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 12,
+  "message_id": "MSG-CRITICAL-SUPPORT",
+  "severity": "CRITICAL",
+  "action": "SUPPORT",
+  "title": "Food-first support",
+  "body_template": "Safety first — {medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 13,
+  "message_id": "MSG-HIGH-AVOID",
+  "severity": "HIGH",
+  "action": "AVOID",
+  "title": "Left out for now",
+  "body_template": "We've left {nutrient} out of your suggestions, since it doesn't pair well with {medication}. This is general wellness guidance — your prescriber can advise on what's right for you.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 14,
+  "message_id": "MSG-HIGH-MONITOR",
+  "severity": "HIGH",
+  "action": "MONITOR",
+  "title": "We're watching this",
+  "body_template": "Because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 15,
+  "message_id": "MSG-HIGH-NOTE",
+  "severity": "HIGH",
+  "action": "NOTE",
+  "title": "Good to know",
+  "body_template": "{nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 16,
+  "message_id": "MSG-HIGH-PAUSE",
+  "severity": "HIGH",
+  "action": "PAUSE",
+  "title": "Adjusted for your medication",
+  "body_template": "We've paused the {nutrient} suggestion in your plan, because it can interact with {medication}. Please check with your prescriber or pharmacist before changing your {nutrient} intake.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 17,
+  "message_id": "MSG-HIGH-SEPARATE",
+  "severity": "HIGH",
+  "action": "SEPARATE",
+  "title": "Timing tip",
+  "body_template": "It helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 18,
+  "message_id": "MSG-HIGH-SUPPORT",
+  "severity": "HIGH",
+  "action": "SUPPORT",
+  "title": "Food-first support",
+  "body_template": "{medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 19,
+  "message_id": "MSG-MODERATE-AVOID",
+  "severity": "MODERATE",
+  "action": "AVOID",
+  "title": "Left out for now",
+  "body_template": "A gentle heads-up. we've left {nutrient} out of your suggestions, since it doesn't pair well with {medication}. This is general wellness guidance — your prescriber can advise on what's right for you.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 20,
+  "message_id": "MSG-MODERATE-MONITOR",
+  "severity": "MODERATE",
+  "action": "MONITOR",
+  "title": "We're watching this",
+  "body_template": "A gentle heads-up. because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 21,
+  "message_id": "MSG-MODERATE-NOTE",
+  "severity": "MODERATE",
+  "action": "NOTE",
+  "title": "Good to know",
+  "body_template": "A gentle heads-up. {nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 22,
+  "message_id": "MSG-MODERATE-PAUSE",
+  "severity": "MODERATE",
+  "action": "PAUSE",
+  "title": "Adjusted for your medication",
+  "body_template": "A gentle heads-up. we've paused the {nutrient} suggestion in your plan, because it can interact with {medication}. Please check with your prescriber or pharmacist before changing your {nutrient} intake.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 23,
+  "message_id": "MSG-MODERATE-SEPARATE",
+  "severity": "MODERATE",
+  "action": "SEPARATE",
+  "title": "Timing tip",
+  "body_template": "A gentle heads-up. it helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 24,
+  "message_id": "MSG-MODERATE-STABLE",
+  "severity": "MODERATE",
+  "action": "STABLE",
+  "title": "Keep it steady",
+  "body_template": "A gentle heads-up. with {medication}, keeping your {nutrient} intake steady day to day helps things stay consistent — aim for a similar amount rather than big swings.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 25,
+  "message_id": "MSG-MODERATE-SUPPORT",
+  "severity": "MODERATE",
+  "action": "SUPPORT",
+  "title": "Food-first support",
+  "body_template": "A gentle heads-up. {medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 26,
+  "message_id": "MSG-LOW-MONITOR",
+  "severity": "LOW",
+  "action": "MONITOR",
+  "title": "We're watching this",
+  "body_template": "Just so you know — because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
+  "cta": "Discuss with your prescriber"
+ },
+ {
+  "source_row": 27,
+  "message_id": "MSG-LOW-NOTE",
+  "severity": "LOW",
+  "action": "NOTE",
+  "title": "Good to know",
+  "body_template": "Just so you know — {nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 28,
+  "message_id": "MSG-LOW-SEPARATE",
+  "severity": "LOW",
+  "action": "SEPARATE",
+  "title": "Timing tip",
+  "body_template": "Just so you know — it helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
+  "cta": "Learn more"
+ },
+ {
+  "source_row": 29,
+  "message_id": "MSG-LOW-SUPPORT",
+  "severity": "LOW",
+  "action": "SUPPORT",
+  "title": "Food-first support",
+  "body_template": "Just so you know — {medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
+  "cta": "Learn more"
+ }
+]

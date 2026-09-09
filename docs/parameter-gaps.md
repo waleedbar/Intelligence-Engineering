@@ -610,3 +610,36 @@ being chosen.
 the action space and E restates the equation backbone's inputs and outputs,
 both of which are loaded from their own sheets; a second copy is a second
 thing to keep in agreement. C is integration metadata with no consumer yet.
+
+## 2026-09-09: a CRITICAL message that refers the reader to nobody
+
+Found by loading `MERGE·VETO FDA Messages` and joining it to the 339-rule
+library, which had been carrying a `message_id` pointing at nothing.
+
+**`MSG-CRITICAL-STABLE`**, in full:
+
+> Safety first — with {medication}, keeping your {nutrient} intake steady day
+> to day helps things stay consistent — aim for a similar amount rather than
+> big swings.
+
+CTA: *Learn more*. No prescriber. No pharmacist. The other six CRITICAL
+templates all hand off to one.
+
+Two rules render it, both CRITICAL:
+
+| Rule | Drug | Nutrient | The rule's own `action` column |
+|---|---|---|---|
+| VETO-DN-0265 | Insulin (any) | Carbohydrate intake | STABLE PATTERN — **discuss with prescriber** |
+| VETO-DN-0267 | Sulfonylureas | Carbohydrate intake | STABLE PATTERN — **discuss with prescriber** |
+
+So the rule mandates a referral and the template that renders it drops one —
+on the two interactions where a carbohydrate swing is a hypoglycaemia risk.
+
+This build does not rewrite it. Regulated wording is not an engineering
+decision. It is loaded as written, reported by
+`engine_internal.critical_message_without_referral`, asserted in CI to be
+exactly one row, and pinned by name in the extractor so a second such
+template stops the build.
+
+**For Dr. Ali:** should `MSG-CRITICAL-STABLE` carry the prescriber referral
+its two rules already specify?

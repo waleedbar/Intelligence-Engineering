@@ -58,6 +58,8 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("eq_param_fk.json", None, "PARAM · Eq Param FK"),
     "engine_internal.eq_build_rows":
         ("eq_build_rows.json", None, "EQ · Canonical Build Rows"),
+    "engine_internal.veto_message":
+        ("veto_messages.json", None, "MERGE·VETO FDA Messages"),
     "engine_internal.veto_drug_nutrient":
         ("veto_drug_nutrient_339.json", None, "MERGE·VETO Drug-Nutrient 339"),
     "engine_internal.action_space":
