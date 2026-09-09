@@ -70,6 +70,7 @@ jobs:
           python -m sahacore.data.load_supplement_registry
           python -m sahacore.data.load_equation_backbone
           python -m sahacore.data.load_datamap
+          python -m sahacore.data.load_core_equations
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -149,7 +150,11 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 23, f'expected 23 versioned registries, got {versioned}'
+              assert versioned == 24, f'expected 24 versioned registries, got {versioned}'
+              # The corrections already applied to 19 of the 51 equations.
+              cur.execute('SELECT count(*) FROM engine_internal.equation_corrections')
+              ec = cur.fetchone()[0]
+              assert ec == 19, f'expected 19 recorded corrections, got {ec}'
               # The DataMap's stored-vs-computed split, and the step-3 input contract.
               cur.execute("SELECT count(*) FROM engine_internal.datamap_computed")
               dc = cur.fetchone()[0]
