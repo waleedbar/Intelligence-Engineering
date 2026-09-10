@@ -1072,3 +1072,86 @@ alongside process clusters and the SYS/O organ collision already reported.
 
 Note this is **not** the same as the O1–O12 namespace question reported
 earlier — that one is about naming. This one is a missing artefact.
+
+## 2026-09-10: ONB-001 is implemented — and BSA is specified where it is not defined
+
+`O·O1 Anthropometrics` (manifest 71) is the authority for the first of Layer
+0's fourteen modules, and the first sheet in this build whose contents are
+**executed** rather than checked. Ten equations, twelve sourced parameters,
+and `sahacore/onboarding/anthropometrics.py` implementing them.
+
+### BSA is declared by two sheets and defined by neither authority
+
+`O · Onboarding Canonical` and `EQ · Canonical Build Rows` both give ONB-001
+as including, in identical words:
+
+> `BSA=sqrt(height_cm*weight_kg/3600)`
+
+and `P1 DataMap` row 109 says height is *"Used for BMI, BSA calculations"*.
+
+`O·O1 Anthropometrics` — which both of those rows name as the authority —
+has equations **O1.1 through O1.10 and no BSA**. Nor does any other O1
+equation consume BSA: `V_f` and `V_s` scale on body weight, not surface area.
+A workbook-wide search for `BSA` returns exactly those three mentions and
+nothing else.
+
+So ONB-001 is specified to produce a quantity that **nothing in the workbook
+reads**. Implemented anyway — the formula is Mosteller's and is given
+explicitly and identically in two places, so there is nothing to guess — and
+recorded in `engine_internal.onboarding_declared_elsewhere` with
+`absent_from_authority_sheet = true` and `consumed_by = {}`.
+
+**For Dr. Ali:** is BSA meant to be consumed by a later layer, or is it a
+leftover from an earlier version of ONB-001?
+
+### The values are stored as text, again
+
+Every value in O1's PARAMETERS table is stored in the workbook as a **string**
+— `'15'`, not `15`. This is the same defect that once loaded 73 of 192 rows
+into the parameter registry and passed silently. The extractor converts and
+refuses anything that will not parse, so a value cannot reach a physiological
+calculation as a string.
+
+### What is a parameter and what is part of the equation
+
+The package's standing rule is that no physiological constant is written into
+a `.py`. Applying it needed a distinction the sheet itself draws:
+
+- **In the PARAMETERS table** — `V_ref`, `V_s_ref`, the allometric exponents,
+  `k_IR`, the WHtR cutoff, the four waist thresholds, the neck threshold, the
+  BMI cutoff. Each has a **cited source** (IDF/WHO harmonized 2009, Ashwell
+  et al. 2012, West et al. 1997, Anderson & Holford 2008, STOP-Bang). All
+  twelve are read from the registry.
+- **Written into the formulas** — the 70 kg allometric reference, Mifflin-St
+  Jeor's `10 / 6.25 / 5 / +5 / −161`, the `0.3` in O1.7, the `0.1` and `25`
+  in O1.8, O1.9's `0.45 / 0.30 / 0.20 / 0.05`, Mosteller's `3600`. Changing
+  one of these is changing the equation, not retuning a parameter, so they
+  are transcribed with it.
+
+A test enforces the first half by reading the module's AST and requiring each
+of the twelve keys to be dereferenced off a parameter object. It deliberately
+does **not** scan for numeric literals: the module has many that belong there,
+and a check that could not tell the two kinds apart would be either wrong or
+ignored.
+
+### Two cautions kept because they change what a number means
+
+The sheet says of `V_ref = 15 L`:
+
+> GENERIC PRIOR ONLY, not a universal physiological plasma volume
+
+and of `V_s_ref = 30 L`:
+
+> GENERIC PRIOR ONLY (see V_ref note). Use per-nutrient V_s,i where
+> characterised.
+
+Both functions therefore take an optional reference so a caller with a
+characterised nutrient can supply it, and the extractor refuses to write if
+that wording ever leaves the sheet.
+
+### And one place the sheet corroborates itself
+
+O1.7's declared range is `1.0-8.5`. `CRP_mult = 1 + 0.3·max(BMI−25, 0)`
+reaches exactly **8.5** at BMI = 50 — which is the top of O1.3's own declared
+BMI range of `15-50`. The two ranges were derived together rather than
+written independently, and that is pinned.

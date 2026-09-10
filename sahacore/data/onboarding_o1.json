@@ -1,0 +1,231 @@
+{
+  "sheet": "O·O1 Anthropometrics",
+  "equations": [
+    {
+      "equation_id": "O1.1",
+      "source_row": 10,
+      "name": "Fast compartment volume",
+      "formula": "V_f = V_ref * (BW/70)^0.75",
+      "variables": "V_ref=15L — GENERIC PRIOR ONLY, not a universal physiological plasma volume. Apparent volume is compound-specific: use per-nutrient V_f,i where characterised (see 098). BW=body weight (kg).  [v39l F-AX]",
+      "units": "Liters",
+      "value_range": "5-25 L"
+    },
+    {
+      "equation_id": "O1.2",
+      "source_row": 11,
+      "name": "Slow compartment volume",
+      "formula": "V_s = V_s_ref * (BW/70)^0.85",
+      "variables": "V_s_ref=30L — GENERIC PRIOR ONLY (see V_ref note). Use per-nutrient V_s,i where characterised. BW=body weight (kg).  [v39l F-AX]",
+      "units": "Liters",
+      "value_range": "15-50 L"
+    },
+    {
+      "equation_id": "O1.3",
+      "source_row": 12,
+      "name": "Body Mass Index",
+      "formula": "BMI = BW / (height_m)^2",
+      "variables": "BW=weight (kg), height_m=height (m)",
+      "units": "kg/m2",
+      "value_range": "15-50"
+    },
+    {
+      "equation_id": "O1.4",
+      "source_row": 13,
+      "name": "Waist-to-Height Ratio",
+      "formula": "WHtR = waist_cm / height_cm",
+      "variables": "waist_cm=waist circumference, height_cm=height",
+      "units": "dimensionless",
+      "value_range": "0.3-0.8"
+    },
+    {
+      "equation_id": "O1.5",
+      "source_row": 14,
+      "name": "Insulin Resistance sigmoid",
+      "formula": "kappa_IR = 1 / (1 + exp(-k_IR*(WHtR - 0.5)))",
+      "variables": "k_IR=5 (sigmoid slope), WHtR from O1.4",
+      "units": "dimensionless",
+      "value_range": "0-1"
+    },
+    {
+      "equation_id": "O1.6",
+      "source_row": 15,
+      "name": "Basal Metabolic Rate (Mifflin-St Jeor)",
+      "formula": "BMR_male = 10*BW + 6.25*height_cm - 5*age + 5\nBMR_female = 10*BW + 6.25*height_cm - 5*age - 161  [v39l F-DM]",
+      "variables": "BW (kg), height_cm, age (years), sex",
+      "units": "kcal/day",
+      "value_range": "1000-2500"
+    },
+    {
+      "equation_id": "O1.7",
+      "source_row": 16,
+      "name": "CRP multiplier (obesity)",
+      "formula": "CRP_mult = 1 + 0.3 * max(BMI - 25, 0)",
+      "variables": "BMI from O1.3",
+      "units": "dimensionless",
+      "value_range": "1.0-8.5"
+    },
+    {
+      "equation_id": "O1.8",
+      "source_row": 17,
+      "name": "Unbound fraction",
+      "formula": "f_u = f_u_ref * (1 - 0.1 * max(BMI - 25, 0) / 25)",
+      "variables": "f_u_ref per nutrient, BMI from O1.3",
+      "units": "dimensionless",
+      "value_range": "0.01-1.0"
+    },
+    {
+      "equation_id": "O1.9",
+      "source_row": 18,
+      "name": "Central adiposity composite",
+      "formula": "mu_centadip = 0.45*e_waist + 0.30*e_WHtR + 0.20*e_BMI + 0.05*I(neck>40cm)",
+      "variables": "e_waist, e_WHtR, e_BMI: normalized [0,1] indices",
+      "units": "dimensionless",
+      "value_range": "0-1"
+    },
+    {
+      "equation_id": "O1.10",
+      "source_row": 19,
+      "name": "Waist exposure index",
+      "formula": "e_waist = min(1, max(0, (waist - threshold_lo) / (threshold_hi - threshold_lo)))",
+      "variables": "Male: threshold_lo=94cm, threshold_hi=102cm\nFemale: threshold_lo=80cm, threshold_hi=88cm",
+      "units": "dimensionless",
+      "value_range": "0-1"
+    }
+  ],
+  "parameters": [
+    {
+      "key": "v_ref_l",
+      "name": "V_ref",
+      "source_row": 25,
+      "value": 15,
+      "units": "L",
+      "source": "Standard PK literature",
+      "calibration": "Population mean",
+      "notes": "70kg reference adult"
+    },
+    {
+      "key": "v_s_ref_l",
+      "name": "V_s_ref",
+      "source_row": 26,
+      "value": 30,
+      "units": "L",
+      "source": "Standard PK literature",
+      "calibration": "Population mean",
+      "notes": "70kg reference adult"
+    },
+    {
+      "key": "k_ir",
+      "name": "k_IR (sigmoid slope)",
+      "source_row": 27,
+      "value": 5,
+      "units": "dimensionless",
+      "source": "Calibrated",
+      "calibration": "Logistic fit to HOMA-IR data",
+      "notes": "Steepness of IR transition"
+    },
+    {
+      "key": "whtr_cutoff",
+      "name": "WHtR cutoff",
+      "source_row": 28,
+      "value": 0.5,
+      "units": "dimensionless",
+      "source": "Ashwell et al. 2012",
+      "calibration": "Universal cutoff",
+      "notes": "Keep WHtR < 0.5"
+    },
+    {
+      "key": "allometric_exponent_v_f",
+      "name": "Allometric exponent (V_f)",
+      "source_row": 29,
+      "value": 0.75,
+      "units": "dimensionless",
+      "source": "West et al. 1997",
+      "calibration": "3/4 power law",
+      "notes": "Metabolic scaling"
+    },
+    {
+      "key": "allometric_exponent_v_s",
+      "name": "Allometric exponent (V_s)",
+      "source_row": 30,
+      "value": 0.85,
+      "units": "dimensionless",
+      "source": "Anderson & Holford 2008",
+      "calibration": "Tissue scaling",
+      "notes": "Between 3/4 and linear"
+    },
+    {
+      "key": "waist_threshold_male_low_cm",
+      "name": "Waist threshold (M) low",
+      "source_row": 31,
+      "value": 94,
+      "units": "cm",
+      "source": "IDF/WHO harmonized 2009",
+      "calibration": "Metabolic syndrome",
+      "notes": "Increased risk"
+    },
+    {
+      "key": "waist_threshold_male_high_cm",
+      "name": "Waist threshold (M) high",
+      "source_row": 32,
+      "value": 102,
+      "units": "cm",
+      "source": "IDF/WHO harmonized 2009",
+      "calibration": "Metabolic syndrome",
+      "notes": "Substantially increased"
+    },
+    {
+      "key": "waist_threshold_female_low_cm",
+      "name": "Waist threshold (F) low",
+      "source_row": 33,
+      "value": 80,
+      "units": "cm",
+      "source": "IDF/WHO harmonized 2009",
+      "calibration": "Metabolic syndrome",
+      "notes": "Increased risk"
+    },
+    {
+      "key": "waist_threshold_female_high_cm",
+      "name": "Waist threshold (F) high",
+      "source_row": 34,
+      "value": 88,
+      "units": "cm",
+      "source": "IDF/WHO harmonized 2009",
+      "calibration": "Metabolic syndrome",
+      "notes": "Substantially increased"
+    },
+    {
+      "key": "neck_threshold_cm",
+      "name": "Neck threshold (OSA)",
+      "source_row": 35,
+      "value": 40,
+      "units": "cm",
+      "source": "STOP-Bang screening",
+      "calibration": "Sleep apnea risk",
+      "notes": "Binary indicator"
+    },
+    {
+      "key": "bmi_obesity_threshold",
+      "name": "BMI obesity threshold",
+      "source_row": 36,
+      "value": 25,
+      "units": "kg/m2",
+      "source": "WHO classification",
+      "calibration": "Overweight cutoff",
+      "notes": "For CRP_mult and f_u"
+    }
+  ],
+  "declared_elsewhere": [
+    {
+      "equation_id": "ONB-001.BSA",
+      "name": "Body surface area (Mosteller)",
+      "formula": "BSA=sqrt(height_cm*weight_kg/3600)",
+      "units": "m2",
+      "declared_by": [
+        "O · Onboarding Canonical",
+        "EQ · Canonical Build Rows"
+      ],
+      "absent_from_authority_sheet": true,
+      "consumed_by": []
+    }
+  ]
+}

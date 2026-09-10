@@ -129,6 +129,10 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("onboarding_canonical.json", "steps", "O · Onboarding Canonical"),
     "engine_internal.onboarding_state_block":
         ("onboarding_canonical.json", "declared_blocks", "O · Onboarding Canonical"),
+    "engine_internal.onboarding_o1_equation":
+        ("onboarding_o1.json", "equations", "O·O1 Anthropometrics"),
+    "engine_internal.onboarding_o1_parameter":
+        ("onboarding_o1.json", "parameters", "O·O1 Anthropometrics"),
 }
 
 
