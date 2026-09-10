@@ -1,0 +1,359 @@
+{
+  "sheet": "TVMCD · 15 Pathways Build",
+  "pathways": [
+    {
+      "pathway_id": "D01",
+      "source_row": 3,
+      "biological_meaning": "TVMCD · 15 PATHWAYS.  ⚠ D14 (microbiome) and D15 (25-OH-D) are declared GLOBAL_MODIFIER_PENDING — they have NO organ consumer in sheets 139/159 and none may be invented. Fail closed: the absence is machine-visible and must be resolved by a versioned, cited weight mapping before either pathway can influence an organ score. Do not silently drop them.  [v39p SOL-D14]",
+      "state_variable": "logZ_AGE",
+      "ode": "d(logZ)/dt=[k*sp_t(Glc-140)·sp_t(Glc-180)/t*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "glucose exposure, added sugar, glycemic load, HbA1c/CGM if available",
+      "parameters": "k_age [1/day], Vmax [AU/day], Km [AU], H gate; thresholds 140/180 mg/dL",
+      "cluster_outputs": [
+        "C02",
+        "C12",
+        "C10"
+      ],
+      "cluster_outputs_verbatim": "C02,C12,C10",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D01"
+    },
+    {
+      "pathway_id": "D02",
+      "source_row": 4,
+      "biological_meaning": "Oxidative DNA / mtDNA",
+      "state_variable": "logZ_oxDNA",
+      "ode": "d(logZ)/dt=[k*(1-GSH_support)*(1-NRF2)*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "f_GSH, f_NAD, ROS/oxidative load, 8-OHdG/F2-isoprostane if available",
+      "parameters": "k_ox [1/day], Vmax/Km, f_ATP/f_NAD/f_GSH exponents",
+      "cluster_outputs": [
+        "C06",
+        "C05",
+        "C09"
+      ],
+      "cluster_outputs_verbatim": "C06,C05,C09",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D02"
+    },
+    {
+      "pathway_id": "D03",
+      "source_row": 5,
+      "biological_meaning": "Inflammation / NF-κB",
+      "state_variable": "logZ_inflam",
+      "ode": "d(logZ)/dt=[k*sp_t(CRP-1)·sp_t(CRP-3)/t*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "hs-CRP, IL-6, omega balance, sleep/stress, adiposity context",
+      "parameters": "k_crp [1/day], Vmax/Km, CRP thresholds 1/3 mg/L",
+      "cluster_outputs": [
+        "C05",
+        "C12",
+        "C08"
+      ],
+      "cluster_outputs_verbatim": "C05,C12,C08",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D03"
+    },
+    {
+      "pathway_id": "D04",
+      "source_row": 6,
+      "biological_meaning": "Telomere loss",
+      "state_variable": "logZ_telomere",
+      "ode": "d(logZ)/dt=[k*(1+k_ox*ROS)*division_rate - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "age, oxidative load, cell turnover proxy, smoking/substance exposure",
+      "parameters": "k_tel [1/day], division_rate, ROS multiplier, Vmax/Km",
+      "cluster_outputs": [
+        "C06",
+        "C09",
+        "C12"
+      ],
+      "cluster_outputs_verbatim": "C06,C09,C12",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D04"
+    },
+    {
+      "pathway_id": "D05",
+      "source_row": 7,
+      "biological_meaning": "Epigenetic drift",
+      "state_variable": "logZ_epi",
+      "ode": "d(logZ)/dt=[k*age*(1-diet_quality) - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "age, diet quality, methylation support, DNAm age if available",
+      "parameters": "k_epi [1/year], diet_quality coefficient, Vmax/Km",
+      "cluster_outputs": [
+        "C07",
+        "C06",
+        "C09"
+      ],
+      "cluster_outputs_verbatim": "C07,C06,C09",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D05"
+    },
+    {
+      "pathway_id": "D06",
+      "source_row": 8,
+      "biological_meaning": "Insulin resistance",
+      "state_variable": "logZ_IR",
+      "ode": "d(logZ)/dt=[k*sp_t(Glc-100)·sp_t(Glc-126)/t*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "glucose, insulin/HOMA-IR, activity, sleep, waist/BMI, CGM/HbA1c",
+      "parameters": "k_IR [1/day], Vmax/Km, glucose thresholds 100/126",
+      "cluster_outputs": [
+        "C02",
+        "C09",
+        "C12"
+      ],
+      "cluster_outputs_verbatim": "C02,C09,C12",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D06"
+    },
+    {
+      "pathway_id": "D07",
+      "source_row": 9,
+      "biological_meaning": "Atherosclerosis",
+      "state_variable": "logZ_athero",
+      "ode": "d(logZ)/dt=[k*sp_t(LDL-100)·sp_t(LDL-130)/t*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "LDL/ApoB, BP, inflammation, smoking, CAC/cIMT if available",
+      "parameters": "k_ldl [1/day], Vmax/Km, LDL thresholds 100/130",
+      "cluster_outputs": [
+        "C12",
+        "C05",
+        "C09"
+      ],
+      "cluster_outputs_verbatim": "C12,C05,C09",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D07"
+    },
+    {
+      "pathway_id": "D08",
+      "source_row": 10,
+      "biological_meaning": "Hepatic fibrosis",
+      "state_variable": "logZ_hepatic",
+      "ode": "d(logZ)/dt=[k*max(0,liver_fat_pct-0.05)*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "liver fat proxy, ALT/AST/GGT, alcohol, insulin resistance, FibroScan/FIB-4",
+      "parameters": "k_fat [1/day], Vmax/Km, fat threshold 5%",
+      "cluster_outputs": [
+        "C09",
+        "C05",
+        "C08"
+      ],
+      "cluster_outputs_verbatim": "C09,C05,C08",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D08"
+    },
+    {
+      "pathway_id": "D09",
+      "source_row": 11,
+      "biological_meaning": "Nephron loss",
+      "state_variable": "logZ_nephron",
+      "ode": "d(logZ)/dt=[k*max(0,SBP-120)*H + k_uacr*UACR - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "SBP, eGFR, UACR, sodium/potassium/hydration, medication context",
+      "parameters": "k_sbp [1/day], k_uacr, Vmax/Km, SBP threshold 120",
+      "cluster_outputs": [
+        "C04",
+        "C12"
+      ],
+      "cluster_outputs_verbatim": "C04,C12",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D09"
+    },
+    {
+      "pathway_id": "D10",
+      "source_row": 12,
+      "biological_meaning": "Sarcopenia",
+      "state_variable": "logZ_sarcopenia",
+      "ode": "d(logZ)/dt=[k*(1-protein_adequacy)*(1-exercise_index) - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "protein/leucine adequacy, resistance training, sleep, DEXA/lean mass/grip",
+      "parameters": "k_mps [1/day], Vmax/Km, protein/exercise thresholds",
+      "cluster_outputs": [
+        "C03",
+        "C10"
+      ],
+      "cluster_outputs_verbatim": "C03,C10",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D10"
+    },
+    {
+      "pathway_id": "D11",
+      "source_row": 13,
+      "biological_meaning": "Bone density loss",
+      "state_variable": "logZ_bone",
+      "ode": "d(logZ)/dt=[k*(1-Ca_adequacy)*(1-VitD_adequacy)*(1-weight_bearing) - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "calcium, vitamin D/K/Mg, weight-bearing activity, DEXA/CTX/P1NP",
+      "parameters": "k_bone [1/day], Vmax/Km, vitamin D/Ca/activity thresholds",
+      "cluster_outputs": [
+        "C10",
+        "C04"
+      ],
+      "cluster_outputs_verbatim": "C10,C04",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D11"
+    },
+    {
+      "pathway_id": "D12",
+      "source_row": 14,
+      "biological_meaning": "Iron dysregulation",
+      "state_variable": "logZ_iron",
+      "ode": "d(logZ)/dt=[k*DualHill(ferritin;30,300,2,2)*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "ferritin, TSAT, iron intake, inflammation context",
+      "parameters": "k_iron [1/day], Vmax/Km, DualHill ferritin 30/300",
+      "cluster_outputs": [
+        "C06",
+        "C03",
+        "C12"
+      ],
+      "cluster_outputs_verbatim": "C06,C03,C12",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D12"
+    },
+    {
+      "pathway_id": "D13",
+      "source_row": 15,
+      "biological_meaning": "Homocysteine vascular",
+      "state_variable": "logZ_hcy",
+      "ode": "d(logZ)/dt=[k*sp_t(Hcy-10)·sp_t(Hcy-15)/t*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "homocysteine, B12, folate, B6, choline/betaine, one-carbon ODE",
+      "parameters": "k_hcy [1/day], Vmax/Km, Hcy thresholds 10/15 µM",
+      "cluster_outputs": [
+        "C07",
+        "C12",
+        "C09"
+      ],
+      "cluster_outputs_verbatim": "C07,C12,C09",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D13"
+    },
+    {
+      "pathway_id": "D14",
+      "source_row": 16,
+      "biological_meaning": "Microbiome dysbiosis",
+      "state_variable": "logZ_microbiome",
+      "ode": "d(logZ)/dt=[k*(1-fiber_adequacy)*(1-diversity_index) - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "fiber/resistant starch, microbiome diversity, SCFA proxy, stool markers if available",
+      "parameters": "k_micro [1/day], Vmax/Km, fiber and diversity thresholds",
+      "cluster_outputs": [
+        "C08",
+        "C05",
+        "C07"
+      ],
+      "cluster_outputs_verbatim": "C08,C05,C07",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D14"
+    },
+    {
+      "pathway_id": "D15",
+      "source_row": 17,
+      "biological_meaning": "Vitamin D insufficiency / endocrine reserve",
+      "state_variable": "logZ_vitD",
+      "ode": "d(logZ)/dt=[k*max(0,30-25OHD)*H - Vmax*Z/(Km+Z)]/Z",
+      "inputs": "25-OH vitamin D, sun exposure, intake, BMI/adiposity, calcium/PTH",
+      "parameters": "k_vitD [1/day], Vmax/Km, 25OHD threshold 30 ng/mL",
+      "cluster_outputs": [
+        "C10",
+        "C05",
+        "C11"
+      ],
+      "cluster_outputs_verbatim": "C10,C05,C11",
+      "integration_cadence": "nightly; immediate when validated anchor arrives",
+      "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
+      "bounds": "Z>=ε in log form; output clipped to safe finite range",
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D15"
+    }
+  ],
+  "cluster_fed_by": {
+    "C01": [],
+    "C02": [
+      "D01",
+      "D06"
+    ],
+    "C03": [
+      "D10",
+      "D12"
+    ],
+    "C04": [
+      "D09",
+      "D11"
+    ],
+    "C05": [
+      "D02",
+      "D03",
+      "D07",
+      "D08",
+      "D14",
+      "D15"
+    ],
+    "C06": [
+      "D02",
+      "D04",
+      "D05",
+      "D12"
+    ],
+    "C07": [
+      "D05",
+      "D13",
+      "D14"
+    ],
+    "C08": [
+      "D03",
+      "D08",
+      "D14"
+    ],
+    "C09": [
+      "D02",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "D08",
+      "D13"
+    ],
+    "C10": [
+      "D01",
+      "D10",
+      "D11",
+      "D15"
+    ],
+    "C11": [
+      "D15"
+    ],
+    "C12": [
+      "D01",
+      "D03",
+      "D04",
+      "D06",
+      "D07",
+      "D09",
+      "D12",
+      "D13"
+    ]
+  },
+  "clusters_with_no_pathway": [
+    "C01"
+  ],
+  "weights_given": false,
+  "hi_lo_split_given": false
+}

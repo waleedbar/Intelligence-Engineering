@@ -131,7 +131,7 @@
       "parameter_refs": "O·O11 Damage State Init",
       "python_function": "sahacore.onboarding.damage_warm_start",
       "validation_qa": "all Z finite and nonnegative after transform",
-      "blocked_by": "The canonical 15->12 pathway-to-cluster bridge. Named as a required step by 'O·O11 Damage State Init', 'O·O12-O14 State Init', 'O·Engine Connections', '★ Build Map — concept to code' and 'M-MAP Integration'. 'P1 Cluster Map 15-12' is titled as that bridge but holds a 12-organ x 13-pathway matrix -- its own v35.9.3 banner says the rows are ORGAN SYSTEMS keyed SYS1-SYS12 and 'must never be referenced by a bare C-code'. No sheet in the workbook carries twelve cluster ids and fifteen pathway ids together."
+      "blocked_by": "The pathway-to-cluster map exists -- 'TVMCD · 15 Pathways Build' gives cluster outputs for all fifteen pathways -- but it is MEMBERSHIP, not a weighted map. Three things are still missing. (1) No weights: C12 is fed by eight pathways and C11 by one, and nothing states how several pathway values combine into one cluster value. (2) No pathway lists C01 Membrane Integrity as an output, so one of the twelve clusters would warm-start from nothing. (3) ONB-012 fills twenty-four slots, xi_hi[163:174] and xi_lo[175:186], and nothing says how fifteen values split into a high and a low side."
     },
     {
       "step_id": "ONB-012",
@@ -143,7 +143,7 @@
       "parameter_refs": "O·O12-O14 State Init; P1 Variables 219",
       "python_function": "sahacore.onboarding.state_init_219",
       "validation_qa": "length(x0)=219; no null locked states",
-      "blocked_by": "The canonical 15->12 pathway-to-cluster bridge. Named as a required step by 'O·O11 Damage State Init', 'O·O12-O14 State Init', 'O·Engine Connections', '★ Build Map — concept to code' and 'M-MAP Integration'. 'P1 Cluster Map 15-12' is titled as that bridge but holds a 12-organ x 13-pathway matrix -- its own v35.9.3 banner says the rows are ORGAN SYSTEMS keyed SYS1-SYS12 and 'must never be referenced by a bare C-code'. No sheet in the workbook carries twelve cluster ids and fifteen pathway ids together."
+      "blocked_by": "The pathway-to-cluster map exists -- 'TVMCD · 15 Pathways Build' gives cluster outputs for all fifteen pathways -- but it is MEMBERSHIP, not a weighted map. Three things are still missing. (1) No weights: C12 is fed by eight pathways and C11 by one, and nothing states how several pathway values combine into one cluster value. (2) No pathway lists C01 Membrane Integrity as an output, so one of the twelve clusters would warm-start from nothing. (3) ONB-012 fills twenty-four slots, xi_hi[163:174] and xi_lo[175:186], and nothing says how fifteen values split into a high and a low side."
     },
     {
       "step_id": "ONB-013",

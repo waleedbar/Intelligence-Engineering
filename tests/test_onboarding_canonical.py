@@ -125,32 +125,40 @@ def test_twelve_of_fourteen_steps_are_buildable(canonical):
     assert blocked == ["ONB-011", "ONB-012"]
 
 
-def test_the_two_blocked_steps_name_the_same_missing_bridge(canonical):
+def test_the_two_blocked_steps_name_the_same_three_gaps(canonical):
     """ONB-011 produces fifteen pathway warm-start values. ONB-012 fills
-    twelve cluster slots at 163-186. Between them sits a 15->12 bridge that
-    five sheets name and none contains.
+    twelve cluster slots at 163-186 and twelve more at 175-186.
 
-    'P1 Cluster Map 15-12' is titled as that bridge. It holds a 12-organ by
-    13-pathway matrix, and its own v35.9.3 banner says the rows are ORGAN
-    SYSTEMS keyed SYS1-SYS12 which 'must never be referenced by a bare
-    C-code'. Its 48 non-zero weights are already loaded, from
-    'REG · Organ×Pathway Long', as engine_internal.organ_pathway_weight.
+    A CORRECTION. This test used to assert that the map between them was not
+    in the workbook. It is: 'TVMCD · 15 Pathways Build' gives cluster outputs
+    for all fifteen pathways. The search that concluded otherwise matched
+    C1..C12 and D1..D15, and that sheet writes them zero-padded -- C02, D01 --
+    so it scored zero on both counts. See tests/test_tvmcd_pathways.py.
 
-    Documented in docs/parameter-gaps.md with the search that establishes it.
+    What the map gives is membership. Three things are still missing, and
+    they are what keeps these two steps blocked.
     """
     blocked = [s for s in canonical["steps"] if s["blocked_by"]]
     assert len(blocked) == 2
     reasons = {s["blocked_by"] for s in blocked}
     assert len(reasons) == 1
     reason = reasons.pop()
-    assert "15->12" in reason
-    assert "P1 Cluster Map 15-12" in reason
+
+    assert "TVMCD · 15 Pathways Build" in reason
+    assert "exists" in reason
+    for gap in ("No weights", "C01 Membrane", "high and a low side"):
+        assert gap in reason, gap
 
 
 def test_the_organ_map_that_is_not_the_bridge_is_already_loaded(canonical):
-    """What 'P1 Cluster Map 15-12' actually holds is in the build already,
-    under the name that describes it. 48 links over 13 pathways, 12 organs --
-    no D14, no D15, which is gate d14_d15_fail_closed agreeing with the data.
+    """'P1 Cluster Map 15-12' is titled as the bridge and is not it -- its
+    rows are organ systems, as its own v35.9.3 banner says. What it holds is
+    in the build already, under the name that describes it: 48 links over 13
+    pathways and 12 organs, no D14 or D15, which is gate d14_d15_fail_closed
+    agreeing with the data.
+
+    That much of the earlier finding stands. What did not stand was the
+    conclusion that no other sheet carried the map.
     """
     organs = json.loads(
         (DATA_DIR / "organ_registries.json").read_text(encoding="utf-8"))

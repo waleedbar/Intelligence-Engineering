@@ -31,11 +31,20 @@ FIFTEEN pathway values and says on every one of its fifteen rows:
 
     "15->12 bridge -> xi_hi/xi_lo; no direct x_hat slot"
 
-The slots ONB-012 fills at 163-186 are twelve CLUSTERS. Going from fifteen
-pathways to twelve clusters needs a bridge, which five separate places call
-"the canonical 15->12 bridge" -- and which is not in this workbook. See
-BLOCKED_BY below and docs/parameter-gaps.md for the search that establishes
-that.
+The slots ONB-012 fills at 163-186 are twelve CLUSTERS.
+
+A CORRECTION. An earlier version of this file said the map from fifteen
+pathways to twelve clusters was not in the workbook. It is:
+'TVMCD · 15 Pathways Build' has a "Cluster outputs" column giving two or
+three clusters for every one of the fifteen pathways. The search that
+concluded otherwise matched `C1..C12` and `D1..D15`, and that sheet writes
+them zero-padded -- `C02`, `D01` -- so it scored zero on both counts and was
+passed over. Re-run with padding allowed it is the only sheet of the 205 that
+carries ten or more of each.
+
+What the map gives is membership, not weights, and BLOCKED_BY below records
+the three things still missing. The two steps stay blocked; the reason is
+now specific rather than an absent artefact.
 
 The other twelve steps do not depend on it. That is what DEPENDS_ON_BRIDGE
 records, so the buildable set is a fact in the data rather than a judgement
@@ -88,14 +97,15 @@ DECLARED_BLOCKS: list[tuple[str, str, int, int]] = [
 # slots without it.
 DEPENDS_ON_BRIDGE = {"ONB-011", "ONB-012"}
 BLOCKED_BY = (
-    "The canonical 15->12 pathway-to-cluster bridge. Named as a required "
-    "step by 'O·O11 Damage State Init', 'O·O12-O14 State Init', "
-    "'O·Engine Connections', '★ Build Map — concept to code' and "
-    "'M-MAP Integration'. 'P1 Cluster Map 15-12' is titled as that bridge "
-    "but holds a 12-organ x 13-pathway matrix -- its own v35.9.3 banner "
-    "says the rows are ORGAN SYSTEMS keyed SYS1-SYS12 and 'must never be "
-    "referenced by a bare C-code'. No sheet in the workbook carries twelve "
-    "cluster ids and fifteen pathway ids together."
+    "The pathway-to-cluster map exists -- 'TVMCD · 15 Pathways Build' gives "
+    "cluster outputs for all fifteen pathways -- but it is MEMBERSHIP, not a "
+    "weighted map. Three things are still missing. (1) No weights: C12 is fed "
+    "by eight pathways and C11 by one, and nothing states how several pathway "
+    "values combine into one cluster value. (2) No pathway lists C01 Membrane "
+    "Integrity as an output, so one of the twelve clusters would warm-start "
+    "from nothing. (3) ONB-012 fills twenty-four slots, xi_hi[163:174] and "
+    "xi_lo[175:186], and nothing says how fifteen values split into a high "
+    "and a low side."
 )
 
 
@@ -214,7 +224,8 @@ def main() -> None:
     print(f"  {len(data['steps'])} steps, each naming a {PACKAGE} function")
     print(f"  219 slots verified against state_vector_219.json, block by block")
     print(f"  buildable now: {len(buildable)}  ({buildable[0]}..{buildable[-1]})")
-    print(f"  blocked:       {len(blocked)}  {blocked} -- no 15->12 bridge")
+    print(f"  blocked:       {len(blocked)}  {blocked} -- the pathway-to-"
+          "cluster map has no weights, no C01 and no hi/lo split")
 
 
 if __name__ == "__main__":

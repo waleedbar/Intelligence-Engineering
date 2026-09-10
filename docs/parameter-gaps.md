@@ -1325,3 +1325,77 @@ assumption before it was committed.
 > `rho_pop` (O2.5), `K_PA` (consolidated ONB-002), `CRP_ref` (O11 Z3). Each
 > appears exactly twice — on its own sheet and in the `P1 Onboarding` copy.
 > Where are their definitions?
+
+## 2026-09-10: CORRECTION — the 15→12 map exists. I reported it as missing.
+
+On 2026-09-09 this file said, under *"Layer 0 is 12/14 buildable — the 15→12
+bridge is not in the workbook"*, that the pathway-to-cluster map five sheets
+name does not exist. **That was wrong, and it was committed and pushed.**
+
+It is in **`TVMCD · 15 Pathways Build`** (manifest order 131), in a column
+called `Cluster outputs`, giving two or three clusters for every one of the
+fifteen pathways:
+
+```
+D01 → C02,C12,C10      D06 → C02,C09,C12      D11 → C10,C04
+D02 → C06,C05,C09      D07 → C12,C05,C09      D12 → C06,C03,C12
+D03 → C05,C12,C08      D08 → C09,C05,C08      D13 → C07,C12,C09
+D04 → C06,C09,C12      D09 → C04,C12          D14 → C08,C05,C07
+D05 → C07,C06,C09      D10 → C03,C10          D15 → C10,C05,C11
+```
+
+### How the search missed it — and it is subtler than it sounds
+
+The search matched `C1..C12` and `D1..D15` and required **ten or more
+distinct ids of each**. This sheet writes them zero-padded: `C02`, `D01`.
+
+But **not all of them are padded** — `C10`, `C11`, `C12` and `D10`–`D15` need
+no padding. So the sheet scored **3 cluster ids and 6 pathway ids**, and was
+passed over for being *under the threshold*, not for scoring nothing.
+
+That is the part worth remembering. A pattern that had returned **0** would
+have looked broken and invited a second look. One that returns **3** looks
+like a sheet that merely mentions a few clusters in passing. **A partial
+match is more dangerous than no match.**
+
+Re-run with padding allowed, it is the **only** sheet of the 205 carrying ten
+or more of each. So the earlier conclusion *"there is exactly one candidate"*
+was right; the identification was wrong.
+
+`tests/test_tvmcd_pathways.py` pins both patterns and both scores, so the
+lesson is executable rather than a note.
+
+### What the map gives — and what still blocks ONB-011/ONB-012
+
+It gives **membership**. It does not give:
+
+1. **Weights.** `C12` is fed by eight pathways, `C11` by one. Turning fifteen
+   pathway values into twelve cluster values needs a combination rule and the
+   sheet states none — so an unweighted mean would not be a neutral default,
+   it would be a chosen one.
+2. **C01.** No pathway lists `C01` Membrane Integrity as an output at all.
+   One of the twelve clusters would warm-start from nothing. Not zero-filled:
+   a zero is a claim.
+3. **The hi/lo split.** ONB-012 fills `ξ_hi[163:174]` **and** `ξ_lo[175:186]`
+   — twenty-four slots from fifteen values. Nothing says how.
+
+So ONB-011 and ONB-012 stay blocked, but the question changes from *"where is
+the bridge?"* to three specific and much more answerable ones.
+
+### And a reading that cuts the other way
+
+The sheet's `Initialization` column says: *"from O·O11 warm-start or zero with
+prior covariance for D03"*. Each pathway carries its **own** state
+(`logZ_inflam`, `logZ_AGE`, …) warm-started from O11. So `Cluster outputs`
+may describe a **runtime aggregation** of pathway states, not a warm-start
+remapping at all. Both readings fit what is written; the sheet does not
+settle it. That is now the first thing to ask.
+
+### For Dr. Ali — replacing the earlier question
+
+> `TVMCD · 15 Pathways Build` maps each pathway to two or three clusters.
+> (a) Is that the "canonical 15→12 bridge" ONB-011 means, or a runtime
+> aggregation — the Initialization column suggests O11 warm-starts the
+> *pathway* states directly? (b) What weights combine several pathways into
+> one cluster? (c) What feeds C01 Membrane Integrity, which no pathway lists?
+> (d) How do fifteen values split into ξ_hi and ξ_lo?
