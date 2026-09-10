@@ -1,0 +1,203 @@
+{
+  "sheet": "O·O5 Substance Exposure",
+  "equations": [
+    {
+      "equation_id": "O5.1",
+      "source_row": 10,
+      "name": "Tobacco exposure index",
+      "formula": "lambda_smoke = 1 + 0.02 * pack_years\nwhere: Never=0, Former(>1yr)=2, Former(<1yr)=5, Occasional=5, Daily=20",
+      "variables": "pack_years estimated from status + age",
+      "units": "dimensionless",
+      "value_range": "1.0-1.4+",
+      "engine_target": "Layer C: Z2 Oxidative DNA"
+    },
+    {
+      "equation_id": "O5.2",
+      "source_row": 11,
+      "name": "Alcohol exposure index",
+      "formula": "lambda_alcohol = 1 + 0.01 * units_week\nwhere: 0=0, 1-3=2, 4-7=5.5, 8+=10",
+      "variables": "units_week from Step 10 UI midpoints",
+      "units": "dimensionless",
+      "value_range": "1.0-1.1+",
+      "engine_target": "Layer C: Z8 Hepatic Fibrosis"
+    },
+    {
+      "equation_id": "O5.3",
+      "source_row": 12,
+      "name": "Oxidative rate constant",
+      "formula": "k_ox = lambda_smoke * lambda_alcohol",
+      "variables": "lambda_smoke (O5.1), lambda_alcohol (O5.2)",
+      "units": "dimensionless",
+      "value_range": "1.0-1.5+",
+      "engine_target": "Layer C: Z2 Oxidative DNA k_ox"
+    },
+    {
+      "equation_id": "O5.4",
+      "source_row": 13,
+      "name": "GSH depletion factor",
+      "formula": "GSH_depletion = 0.8 * chronic_alcohol\nwhere chronic_alcohol = I(drinks_wk >= 8)",
+      "variables": "drinks_wk from Step 10",
+      "units": "dimensionless",
+      "value_range": "0 or 0.8",
+      "engine_target": "Layer C: GSH QSSA modifier"
+    },
+    {
+      "equation_id": "O5.5",
+      "source_row": 14,
+      "name": "SSB exposure index",
+      "formula": "e_SSB = min(1, SSB_serv_day / 1.5)",
+      "variables": "SSB_serv_day from Step 3 (midpoint: 0/0.5/1.75/3)",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O11: Z1 Glycation"
+    },
+    {
+      "equation_id": "O5.6",
+      "source_row": 15,
+      "name": "Alcohol sex-specific index",
+      "formula": "Female: e_alcohol = min(1, max(0, (drinks_wk-7)/7))\nMale: e_alcohol = min(1, max(0, (drinks_wk-14)/14))",
+      "variables": "drinks_wk, sex from Step 1",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O11: Z8 Hepatic Fibrosis"
+    },
+    {
+      "equation_id": "O5.7",
+      "source_row": 16,
+      "name": "Tobacco ordinal index",
+      "formula": "tobacco_idx: Never=0, Former(>1yr)=0.15, Former(<1yr)=0.35, Occasional=0.5, Daily=1.0",
+      "variables": "smoke_status from Step 10",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O11: Z2, Z4, Z7"
+    }
+  ],
+  "encodings": [
+    {
+      "equation_id": "O5.1",
+      "encodes": "pack_years",
+      "option": "Never",
+      "value": 0,
+      "ordinal_position": 1
+    },
+    {
+      "equation_id": "O5.1",
+      "encodes": "pack_years",
+      "option": "Former(>1yr)",
+      "value": 2,
+      "ordinal_position": 2
+    },
+    {
+      "equation_id": "O5.1",
+      "encodes": "pack_years",
+      "option": "Former(<1yr)",
+      "value": 5,
+      "ordinal_position": 3
+    },
+    {
+      "equation_id": "O5.1",
+      "encodes": "pack_years",
+      "option": "Occasional",
+      "value": 5,
+      "ordinal_position": 4
+    },
+    {
+      "equation_id": "O5.1",
+      "encodes": "pack_years",
+      "option": "Daily",
+      "value": 20,
+      "ordinal_position": 5
+    },
+    {
+      "equation_id": "O5.2",
+      "encodes": "units_week",
+      "option": "0",
+      "value": 0,
+      "ordinal_position": 1
+    },
+    {
+      "equation_id": "O5.2",
+      "encodes": "units_week",
+      "option": "1-3",
+      "value": 2,
+      "ordinal_position": 2
+    },
+    {
+      "equation_id": "O5.2",
+      "encodes": "units_week",
+      "option": "4-7",
+      "value": 5.5,
+      "ordinal_position": 3
+    },
+    {
+      "equation_id": "O5.2",
+      "encodes": "units_week",
+      "option": "8+",
+      "value": 10,
+      "ordinal_position": 4
+    },
+    {
+      "equation_id": "O5.5",
+      "encodes": "SSB_serv_day",
+      "option": null,
+      "value": 0,
+      "ordinal_position": 1
+    },
+    {
+      "equation_id": "O5.5",
+      "encodes": "SSB_serv_day",
+      "option": null,
+      "value": 0.5,
+      "ordinal_position": 2
+    },
+    {
+      "equation_id": "O5.5",
+      "encodes": "SSB_serv_day",
+      "option": null,
+      "value": 1.75,
+      "ordinal_position": 3
+    },
+    {
+      "equation_id": "O5.5",
+      "encodes": "SSB_serv_day",
+      "option": null,
+      "value": 3,
+      "ordinal_position": 4
+    },
+    {
+      "equation_id": "O5.7",
+      "encodes": "tobacco_idx",
+      "option": "Never",
+      "value": 0,
+      "ordinal_position": 1
+    },
+    {
+      "equation_id": "O5.7",
+      "encodes": "tobacco_idx",
+      "option": "Former(>1yr)",
+      "value": 0.15,
+      "ordinal_position": 2
+    },
+    {
+      "equation_id": "O5.7",
+      "encodes": "tobacco_idx",
+      "option": "Former(<1yr)",
+      "value": 0.35,
+      "ordinal_position": 3
+    },
+    {
+      "equation_id": "O5.7",
+      "encodes": "tobacco_idx",
+      "option": "Occasional",
+      "value": 0.5,
+      "ordinal_position": 4
+    },
+    {
+      "equation_id": "O5.7",
+      "encodes": "tobacco_idx",
+      "option": "Daily",
+      "value": 1.0,
+      "ordinal_position": 5
+    }
+  ]
+}

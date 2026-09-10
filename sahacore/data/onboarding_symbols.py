@@ -18,7 +18,8 @@ Whatever is left over is a hole in the source.
 WHAT COUNTS AS RESOLVED
   a parameter      the sheet's PARAMETERS table supplies a value with a source
   another equation the symbol is some equation's left-hand side
-  a user input     the onboarding screen collects it (DECLARED_INPUTS)
+  a user input     'O·Step-by-Step Questions' says the interface collects it
+  a sheet spelling the O-sheet's own name for one of the above (SHEET_SPELLINGS)
 
 Everything else is unresolved, and an unresolved symbol is not a defect in
 this code -- it is a question for the workbook's author.
@@ -31,6 +32,7 @@ build_eq_param_fk.ALIASES, rather than inferred from resemblance.
 """
 import json
 import re
+from functools import lru_cache
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent
@@ -76,29 +78,75 @@ _COMPUTABLE = re.compile(r"[0-9]|[+\-*/^()]")
 # commas cuts "{4,5,7,8}" into pieces.
 _BOUND_INDEX = re.compile(r"\bfor\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?:=|\bin\b)")
 
+# A case guard opening a branch: O5.6's "Female: e_alcohol = ..." and
+# "Male: e_alcohol = ...". The guard names which branch applies; it is not a
+# quantity, and it must not stop the branch from defining its left-hand side.
+# Anchored and single-word so it cannot swallow O5.7's "tobacco_idx: Never=0",
+# which is an encoding rather than a guard -- that case is handled by passing
+# the encoded variable in as a definition.
+_CASE_GUARD = re.compile(r"^(Female|Male)\s*:\s*")
+
 
 def _states_a_value(right: str) -> bool:
     return bool(_COMPUTABLE.search(_WORD_HYPHEN.sub("", right)))
 
-# What the onboarding screens collect, read off the Variables columns of the
-# O-sheets and 'P1 DataMap' section B. Written by hand because "this is an
-# answer the user gives" is not something a parser can tell from a name.
-DECLARED_INPUTS = {
-    # O1, step 1
-    "BW", "height_m", "height_cm", "waist_cm", "waist", "age", "sex", "neck",
-    # O1.10's per-sex thresholds, given as values in the Variables column and
-    # held in the parameters table under their long names.
-    "threshold_lo", "threshold_hi",
-    # O2, step 2
-    "f_mod", "f_vig", "dur", "sitting_hrs",
-    # O2.5 abbreviates PA_benefit as PA in its own formula.
-    "PA",
-    # O3, step 9
-    "sleep_hrs", "h", "quality_rating", "quality", "consistency_score",
-    # O3.2 defines deficit_hrs in its own formula and O3.3/O3.4 read it; the
-    # analyser sees the definition on the second line of O3.2's cell, but
-    # 'deficit' is O3.4's own abbreviation for it.
-    "deficit",
+
+@lru_cache(maxsize=1)
+def ui_inputs() -> frozenset[str]:
+    """Every variable the interface collects, read from the UI contract.
+
+    THIS USED TO BE A HAND-WRITTEN SET, and it carried this comment: "written
+    by hand because 'this is an answer the user gives' is not something a
+    parser can tell from a name."
+
+    That was true only while 'O·Step-by-Step Questions' was unimported. The
+    sheet is manifest order 70 -- BEFORE all five O-sheets that consume it --
+    and its 'Maps To' column says exactly that, for all 62 inputs, in the
+    workbook's own words. Nine of the twenty-one hand-written entries were
+    simply this list, retyped.
+
+    What a hand-written set could never do is report an input the sheets
+    declare and the UI does not collect. This one can, and it found one --
+    see `sitting_hrs` in KNOWN_UNRESOLVED.
+    """
+    data = json.loads((DATA_DIR / "step_questions.json").read_text(encoding="utf-8"))
+    return frozenset(question["variable"] for question in data["questions"])
+
+
+# An O-sheet's own spelling for something already accounted for, and what it
+# stands for. Every entry is a BRIDGE DECLARED BY A PERSON, in the style of
+# build_eq_param_fk.ALIASES -- never inferred from resemblance, which is the
+# whole reason f_u_ref is still an open hole rather than quietly tied to
+# parameter #37.
+#
+# Nothing that merely LOOKS like a UI variable belongs here. `sitting_hrs`
+# resembles `standing_hrs` closely enough to be tempting and means something
+# different, so it is reported instead.
+SHEET_SPELLINGS = {
+    # Unit conversions and abbreviations O1 declares in its own Variables
+    # column: the UI collects centimetres, O1.1 works in metres.
+    "height_m": "height_cm converted to metres, declared in O1.1's variables",
+    "waist": "waist_cm, abbreviated by O1",
+    "neck": "neck_cm, abbreviated by O1",
+    # O1.10's per-sex thresholds are values in its Variables column and rows
+    # in the parameters table under longer names.
+    "threshold_lo": "O1.10's lower per-sex threshold, from the parameters table",
+    "threshold_hi": "O1.10's upper per-sex threshold, from the parameters table",
+    # Abbreviations for a value defined elsewhere on the same sheet.
+    "PA": "PA_benefit, abbreviated by O2.5 in its own formula",
+    "h": "sleep_hrs, abbreviated by O3.5",
+    "deficit": "deficit_hrs, abbreviated by O3.4",
+    # The UI calls these sleep_quality and sched_consistency; O3 renames both.
+    "quality_rating": "sleep_quality, renamed by O3.1",
+    "quality": "sleep_quality, abbreviated by O3.7",
+    "consistency_score": "sched_consistency, renamed by O3.6",
+    # The UI collects SSB_serv as a band; O5.5 works in servings per day.
+    "SSB_serv_day": "SSB_serv, converted to servings/day by O5.5's midpoints",
+    # O5's five smoking categories are a join of smoke_status and quit_time,
+    # and no sheet gives the rule -- the join itself is reported in
+    # docs/parameter-gaps.md. The symbol is accounted for; the rule is not.
+    "smoke_status": "collected by the UI, though O5's five categories are a "
+                    "join of it with quit_time that no sheet specifies",
 }
 
 SHEETS = {
@@ -106,6 +154,7 @@ SHEETS = {
     "O2": ("onboarding_o2.json", "O·O2 MVPA Prior"),
     "O3": ("onboarding_o3.json", "O·O3 Sleep Deficit"),
     "O4": ("onboarding_o4.json", "O·O4 Stress Index"),
+    "O5": ("onboarding_o5.json", "O·O5 Substance Exposure"),
 }
 
 # Symbols already reported, with what each one is missing. Anything the
@@ -123,6 +172,22 @@ KNOWN_UNRESOLVED = {
     "HR_Arem": "O2.4's hazard ratio 'from dose-response curve, Anchored at "
                "150-300 min/wk zone'. Described, never given.",
     "rho_pop": "O2.5's 'population mean repair'. In neither parameter registry.",
+    "sitting_hrs":
+        "O2.8 is eta_sed = I(sitting_hrs > 6) * 0.15 and its Variables cell "
+        "says 'sitting_hrs from Step 2 UI'. Step 2 does not collect it. It "
+        "asks 'Hours spent standing daily' (standing_hrs, options <1 hr / "
+        "2 hrs / 3 hrs / 5 hrs), which is a different quantity -- time not "
+        "spent standing is not time spent sitting. The symbol appears nowhere "
+        "in the workbook except O·O2 and its duplicate on 'P1 Onboarding'.\n"
+        "             Sitting time itself is real elsewhere in the engine: "
+        "state slot 185 is 'Kalman-smoothed sitting time' and 'P1 DataMap' "
+        "row 53 carries 'Sedentary time / Minutes of sitting/inactivity', fed "
+        "by device sedentary detection. So the quantity exists -- what is "
+        "missing is any way to get it AT ONBOARDING, before a device is "
+        "connected, which is exactly when O2.8 runs.\n"
+        "             Found only after 'O·Step-by-Step Questions' was "
+        "imported, because until then the analyser took O2.8's own word for "
+        "where its input came from.",
 }
 
 # Routings already reported, in the same spirit. Anything broken_routings
@@ -187,6 +252,14 @@ def formula_parts(formula: str, variables: str = "",
             for keyword in ("where", "else"):
                 if statement.lower().startswith(keyword + " "):
                     statement = statement[len(keyword) + 1:].strip()
+            # So does a case guard. O5.6 is written as two cases,
+            # "Female: e_alcohol = ..." and "Male: e_alcohol = ...", and the
+            # guard is a condition on which branch applies -- not a symbol
+            # anything supplies, and not something that stops e_alcohol being
+            # defined here.
+            guard = _CASE_GUARD.match(statement)
+            if guard:
+                statement = statement[guard.end():].strip()
             left, sep, right = statement.partition("=")
             yield statement, left.strip(), sep, right
 
@@ -247,22 +320,50 @@ def analyse() -> dict:
             # The sheet's parameter NAMES are prose ('k_IR (sigmoid slope)');
             # the symbol used in a formula is the part before any bracket.
             parameters.add(parameter["name"].split("(")[0].strip())
+        # AN ANSWER ENCODING IS A DEFINITION, AND ITS LABELS ARE DATA.
+        #
+        # 'O·O5 Substance Exposure' writes four of them -- "where: Never=0,
+        # Former(>1yr)=2, ..." for pack_years, and the same shape for
+        # units_week, tobacco_idx and the SSB midpoints. Read naively that is
+        # five assignments to five symbols called Never, Former, Daily and so
+        # on, while the quantity the table actually defines -- pack_years --
+        # never appears on a left-hand side at all and looks like a hole.
+        #
+        # Both halves are wrong in the same way, so both are fixed here: the
+        # option labels join the excluded set (they are answers, not
+        # quantities), and the encoded variable is credited to the equation
+        # that encodes it.
+        encoded: dict[str, set[str]] = {}
+        encoded_options: dict[str, set[str]] = {}
+        for encoding in data.get("encodings", []):
+            equation_id = encoding["equation_id"]
+            encoded.setdefault(equation_id, set()).add(encoding["encodes"])
+            if encoding.get("option"):
+                # Tokenised the same way a formula is, not split on spaces:
+                # 'Former(>1yr)' is one label and two identifiers, and it is
+                # the identifiers the tokeniser will go looking for.
+                encoded_options.setdefault(equation_id, set()).update(
+                    _IDENTIFIER.findall(encoding["option"]))
+
         for equation in data["equations"]:
+            equation_id = equation["equation_id"]
             options = {word
                        for option in equation.get("ordinal_scale", [])
                        for word in option["option"].split()}
+            options |= encoded_options.get(equation_id, set())
             defined, used = formula_parts(
                 equation["formula"], equation.get("variables") or "", options)
+            defined |= encoded.get(equation_id, set())
             equations.append({
-                "equation_id": equation["equation_id"],
+                "equation_id": equation_id,
                 "sheet": sheet,
                 "defines": sorted(defined),
-                "uses": sorted(used),
+                "uses": sorted(used - defined),
                 "engine_target": equation.get("engine_target") or "",
             })
 
     defined_anywhere = {name for e in equations for name in e["defines"]}
-    resolvable = defined_anywhere | parameters | DECLARED_INPUTS
+    resolvable = defined_anywhere | parameters | ui_inputs() | set(SHEET_SPELLINGS)
 
     for equation in equations:
         equation["unresolved"] = sorted(

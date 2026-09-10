@@ -36,16 +36,69 @@ def test_no_symbol_is_unresolved_that_has_not_been_reported(result):
         f"and have not been reported: {surprises}")
 
 
-def test_the_five_known_holes_are_still_holes(result):
+def test_the_six_known_holes_are_still_holes(result):
     """If one of these is defined later, this test fails and the entry comes
     out of KNOWN_UNRESOLVED -- so the list cannot quietly go stale."""
     assert set(result["unresolved"]) == {
-        "e_WHtR", "e_BMI", "f_u_ref", "HR_Arem", "rho_pop"}
+        "e_WHtR", "e_BMI", "f_u_ref", "HR_Arem", "rho_pop", "sitting_hrs"}
     assert result["unresolved"]["e_WHtR"] == ["O1.9"]
     assert result["unresolved"]["e_BMI"] == ["O1.9"]
     assert result["unresolved"]["f_u_ref"] == ["O1.8"]
     assert result["unresolved"]["HR_Arem"] == ["O2.4"]
     assert result["unresolved"]["rho_pop"] == ["O2.5"]
+    assert result["unresolved"]["sitting_hrs"] == ["O2.8"]
+
+
+def test_the_ui_contract_supplies_the_inputs_a_hand_written_set_used_to(result):
+    """THE PAYOFF OF IMPORTING MANIFEST ORDER 70.
+
+    DECLARED_INPUTS was a set written by hand, with a comment saying a parser
+    could not tell a user's answer from any other name. 'O·Step-by-Step
+    Questions' says exactly that for all 62 inputs, in a column called Maps
+    To, and nine of the twenty-one hand-written entries were that list
+    retyped.
+
+    What remains hand-written is only the bridges -- an O-sheet's own
+    spelling for something already accounted for -- and each carries its
+    reason. That distinction matters: `SSB_serv_day` is declared to be
+    `SSB_serv` per day by a person, and `f_u_ref` is NOT declared to be
+    parameter #37 despite the same kind of resemblance.
+    """
+    from sahacore.data.onboarding_symbols import SHEET_SPELLINGS, ui_inputs
+
+    collected = ui_inputs()
+    assert len(collected) == 62
+    for expected in ("BW", "age", "sex", "height_cm", "waist_cm", "sleep_hrs",
+                     "drinks_wk", "smoke_status", "quit_time", "SSB_serv"):
+        assert expected in collected, expected
+
+    # A bridge must not silently duplicate what the UI already names.
+    overlap = set(SHEET_SPELLINGS) & collected
+    assert overlap == {"smoke_status"}, overlap
+    for name, reason in SHEET_SPELLINGS.items():
+        assert reason, name
+
+
+def test_sitting_hrs_is_the_hole_only_the_ui_contract_could_find(result):
+    """O2.8 says "sitting_hrs from Step 2 UI" and Step 2 does not collect it
+    -- it asks how many hours the user SPENDS STANDING, which is a different
+    quantity.
+
+    It is not in SHEET_SPELLINGS, and the resemblance to `standing_hrs` is
+    exactly why: bridging two names because they look alike is the mistake
+    this repo refuses to make.
+
+    Sitting time is real elsewhere in the engine -- state slot 185, and 'P1
+    DataMap' row 53, fed by device sedentary detection. What is missing is a
+    way to get it AT ONBOARDING, which is when O2.8 runs.
+    """
+    from sahacore.data.onboarding_symbols import SHEET_SPELLINGS, ui_inputs
+
+    collected = ui_inputs()
+    assert "standing_hrs" in collected
+    assert "sitting_hrs" not in collected
+    assert "sitting_hrs" not in SHEET_SPELLINGS
+    assert result["unresolved"]["sitting_hrs"] == ["O2.8"]
 
 
 # --- the second mechanical check: routings that go nowhere -----------------
@@ -173,8 +226,9 @@ def test_every_built_onboarding_module_is_the_one_the_contract_names():
         except ModuleNotFoundError:
             missing.append(step["step_id"])
 
-    assert built == ["ONB-001", "ONB-002", "ONB-003", "ONB-004"], built
-    assert len(missing) == 10
+    assert built == ["ONB-001", "ONB-002", "ONB-003", "ONB-004",
+                     "ONB-005"], built
+    assert len(missing) == 9
     # The two that are blocked must be among the unbuilt, not quietly written.
     blocked = [s["step_id"] for s in contract["steps"] if s["blocked_by"]]
     assert set(blocked) <= set(missing)

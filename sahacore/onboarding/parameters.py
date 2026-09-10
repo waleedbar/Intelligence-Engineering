@@ -89,3 +89,50 @@ def load_o4_bands() -> tuple[dict, ...]:
     """
     data = json.loads((DATA_DIR / "onboarding_o4.json").read_text(encoding="utf-8"))
     return tuple(sorted(data["bands"], key=lambda band: band["score_min"]))
+
+
+@lru_cache(maxsize=1)
+def _o5_encodings() -> dict[str, dict[str, float]]:
+    data = json.loads((DATA_DIR / "onboarding_o5.json").read_text(encoding="utf-8"))
+    encodings: dict[str, dict[str, float]] = {}
+    for row in data["encodings"]:
+        if row["option"] is None:
+            continue
+        encodings.setdefault(row["encodes"], {})[row["option"]] = row["value"]
+    return encodings
+
+
+def load_o5_encoding(encodes: str) -> dict[str, float]:
+    """One of 'O·O5 Substance Exposure''s labelled answer encodings.
+
+    'pack_years' and 'tobacco_idx' turn the same smoking answer into two
+    different numbers on two different scales; 'units_week' turns Step 10's
+    alcohol band into its midpoint. What an answer is worth is the sheet's
+    judgement in all three cases, so all three are read.
+
+    O5.5's SSB midpoints are NOT here: they carry no labels and are keyed by
+    position instead -- see load_o5_ssb_midpoints.
+    """
+    encodings = _o5_encodings()
+    if encodes not in encodings:
+        raise KeyError(
+            f"{encodes!r} is not one of O5's labelled encodings "
+            f"({sorted(encodings)}).")
+    return encodings[encodes]
+
+
+@lru_cache(maxsize=1)
+def load_o5_ssb_midpoints() -> tuple[float, ...]:
+    """O5.5's SSB servings, in the order the sheet writes them.
+
+    A tuple rather than a mapping because the sheet gives four numbers and no
+    labels -- "(midpoint: 0/0.5/1.75/3)". Pairing them with Step 3's bands
+    would be this build deciding which number means which answer, and the
+    numbers do not match those bands' midpoints anyway. See
+    docs/parameter-gaps.md.
+    """
+    data = json.loads((DATA_DIR / "onboarding_o5.json").read_text(encoding="utf-8"))
+    rows = [row for row in data["encodings"]
+            if row["encodes"] == "SSB_serv_day"]
+    return tuple(row["value"]
+                 for row in sorted(rows, key=lambda r: r["ordinal_position"]))

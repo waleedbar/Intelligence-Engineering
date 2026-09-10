@@ -1819,3 +1819,127 @@ reason. Order 69 (`O·Overview`) is still unimported.
    branch is identically zero.
 4. **Does the Step 9 sleep slider go above 9 hours?** If not, O3.5's upper
    branch is dead code.
+
+---
+
+## 2026-09-10: ONB-005 — the first sheet checked against the UI, and a sixth hole
+
+`O·O5 Substance Exposure` (manifest 75) is the first O-sheet imported **after**
+its own UI contract. Every earlier O-module's inputs could only be checked
+against the same O-sheet that declared them, which is the sheet agreeing with
+itself. Four of the five findings below exist only because that is no longer
+true.
+
+### What corroborates
+
+**O5.2's alcohol midpoints are exact.** Step 10 offers `0 / 1-3 / 4-7 / 8+`
+and O5.2 encodes `0 / 2 / 5.5 / 10`. 2 and 5.5 are the true midpoints of
+`1-3` and `4-7`. This is the control for finding 1: the sheet demonstrably
+knows how to write a midpoint.
+
+**O5.3's ceiling matches its declared range.** `k_ox = λ_smoke · λ_alcohol`
+tops out at 1.4 × 1.1 = 1.54, against a declared "1.0-1.5+".
+
+### 1. O5.5's "midpoints" are not midpoints
+
+Already recorded under the UI-contract import; now checked in code. Step 3's
+bands are `0 / 1-2 / 3-4 / 5+`; O5.5 declares `0/0.5/1.75/3`; the true
+midpoints are `0/1.5/3.5`. A user answering "1–2 sugary drinks a day" scores
+`e_SSB = 0.333` instead of 1.0.
+
+### 2. The five tobacco categories are not what the UI collects
+
+O5.1 and O5.7 both map `Never / Former(>1yr) / Former(<1yr) / Occasional /
+Daily`. Step 10 asks two questions — `smoke_status` (Yes daily / Yes
+occasionally / No) and `quit_time` — and **neither offers "Former"**. The
+five must be a join, and no sheet gives the rule.
+
+### 3. O5.1 and O5.7 rank those five differently
+
+| category | `pack_years` (O5.1) | `tobacco_idx` (O5.7) |
+|---|---|---|
+| Never | 0 | 0 |
+| Former(>1yr) | 2 | 0.15 |
+| Former(<1yr) | **5** | **0.35** |
+| Occasional | **5** | **0.50** |
+| Daily | 20 | 1.00 |
+
+One answer, two indices, two orderings: `pack_years` ties a recent
+ex-smoker with an occasional smoker, `tobacco_idx` does not. They feed
+different Layer C targets, so both orderings are live.
+
+### 4. O5.6's male branch is unreachable
+
+`e_alcohol = min(1, max(0, (drinks_wk − T)/T))`, T = 7 female, 14 male. The
+UI asks about alcohol once, so `drinks_wk` cannot exceed `units_week`'s
+largest encoded value, **10**. A male therefore scores 0 on every answer the
+interface accepts; a female tops out at 0.43. Both are declared `0-1`.
+
+Implemented as written, with `drinks_wk` and `units_week` kept as **separate
+arguments** so the non-bridge stays visible rather than baked in.
+
+### 5. `sitting_hrs` — the hole only the UI contract could find
+
+O2.8 is `eta_sed = I(sitting_hrs > 6) · 0.15`, and its Variables cell says
+**"sitting_hrs from Step 2 UI"**. Step 2 does not collect it. It asks *"Hours
+spent standing daily"* (`standing_hrs`, options `<1 hr / 2 hrs / 3 hrs / 5
+hrs`) — a different quantity, since time not spent standing is not time spent
+sitting.
+
+Searched the whole workbook before concluding: `sitting_hrs` appears only on
+`O·O2` and its duplicate on `P1 Onboarding`.
+
+**But sitting time is real elsewhere in the engine** — state slot 185 is
+"Kalman-smoothed sitting time", and `P1 DataMap` row 53 carries "Sedentary
+time / Minutes of sitting/inactivity", fed by device sedentary detection
+(row 190). So the quantity exists. What is missing is any way to obtain it
+**at onboarding, before a device is connected** — which is exactly when O2.8
+runs.
+
+It is deliberately **not** bridged to `standing_hrs`. The resemblance is
+precisely the trap: that is the same move this build refuses for `f_u_ref`
+and parameter #37.
+
+This is the sixth entry in `KNOWN_UNRESOLVED`, and the first found by a check
+rather than by reading.
+
+## The hand-written set is gone
+
+`onboarding_symbols.DECLARED_INPUTS` carried this comment:
+
+> Written by hand because "this is an answer the user gives" is not something
+> a parser can tell from a name.
+
+It now reads all 62 inputs from `O·Step-by-Step Questions`. Nine of its
+twenty-one entries were that list retyped; the twelve that remain are
+**bridges**, each with its stated reason — `waist` is `waist_cm` abbreviated,
+`h` is `sleep_hrs` abbreviated, `SSB_serv_day` is `SSB_serv` per day. Every
+one is a bridge declared by a person, never inferred from resemblance.
+
+And the check can now do what a hand-written set never could: report an input
+the equations declare and the interface does not collect. It found one on its
+first run.
+
+### Nine detector gaps fixed, none by suppression
+
+Adding O5 reported nine new "undefined" symbols and **not one was a source
+hole** — all were the analyser failing to read the notation:
+
+| symbols | what was actually wrong |
+|---|---|
+| `Never`, `Former`, `Daily`, `Occasional` | answer *labels* read as quantities |
+| `pack_years`, `units_week`, `tobacco_idx`, `SSB_serv_day` | the variable an encoding table *defines* never appears on a left-hand side |
+| `Female`, `Male`, `e_alcohol` | O5.6's case guards `Female:` / `Male:` hid the definition behind them |
+
+Fixed by three rules, each true of the notation rather than convenient: an
+answer encoding **defines** the variable it encodes and its labels are data;
+a case guard prefixes a definition the way `where` does. The ninth,
+`drinks_wk`, was resolved by reading the UI contract.
+
+### For Dr. Ali — two new questions
+
+1. **Where does `sitting_hrs` come from at onboarding?** O2.8 needs it, Step
+   2 collects standing hours instead, and device data does not exist yet at
+   that moment.
+2. **Which tobacco ranking is right?** O5.1 ties a recent ex-smoker with an
+   occasional smoker; O5.7 does not.
