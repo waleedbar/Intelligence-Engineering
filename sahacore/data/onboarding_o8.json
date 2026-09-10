@@ -1,0 +1,231 @@
+{
+  "sheet": "O·O8 Condition Modifiers",
+  "scope": "Onboarding Step 5 → condition effects expressed as eta modifiers, threshold/DRI adjustments, or bounded absorption-odds offsets Δlogit_abs → Layers A/C",
+  "compatibility_rule": "COMPATIBILITY RULE: any legacy positive F_bio multiplier m is interpreted as an ODDS multiplier and converted to Δlogit_abs=ln(m). The production equation is F_abs=F_max·sigmoid(logit(F_base/F_max)+ΣΔlogit_abs); no direct multiplication may exceed [0,1].",
+  "conditions": [
+    {
+      "condition": "Type 2 Diabetes",
+      "source_row": 10,
+      "modifier_text": "eta_Z1 ×1.5; eta_Z6 ×2.0",
+      "modifiers": [
+        {
+          "z_pathway": "Z1",
+          "factor": 1.5
+        },
+        {
+          "z_pathway": "Z6",
+          "factor": 2.0
+        }
+      ],
+      "gate": null,
+      "bounded_absorption_effect": "None by diagnosis alone",
+      "target_adjustment": "Fiber/Mg targets individualized; chromium remains evidence-tiered",
+      "z_pathways_text": "Z1, Z6",
+      "z_pathways_declared": [
+        "Z1",
+        "Z6"
+      ],
+      "z_pathways_without_a_modifier": [],
+      "evidence_role": "Clinical context; not an absorption multiplier"
+    },
+    {
+      "condition": "Hypertension (HTN)",
+      "source_row": 11,
+      "modifier_text": "eta_Z7 ×1.3",
+      "modifiers": [
+        {
+          "z_pathway": "Z7",
+          "factor": 1.3
+        }
+      ],
+      "gate": null,
+      "bounded_absorption_effect": "None",
+      "target_adjustment": "Na/K targets individualized to intake, kidney function and medications",
+      "z_pathways_text": "Z7, Z9",
+      "z_pathways_declared": [
+        "Z7",
+        "Z9"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z9"
+      ],
+      "evidence_role": "Clinical context"
+    },
+    {
+      "condition": "CKD (Stage 3+)",
+      "source_row": 12,
+      "modifier_text": "eta_Z9 ×3.0",
+      "modifiers": [
+        {
+          "z_pathway": "Z9",
+          "factor": 3.0
+        }
+      ],
+      "gate": null,
+      "bounded_absorption_effect": "None by diagnosis alone",
+      "target_adjustment": "Protein, K, phosphorus, Na and fluid targets individualized",
+      "z_pathways_text": "Z9, Z14",
+      "z_pathways_declared": [
+        "Z9",
+        "Z14"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z14"
+      ],
+      "evidence_role": "Safety/target modifier; do not force K malabsorption"
+    },
+    {
+      "condition": "NAFLD/MASLD",
+      "source_row": 13,
+      "modifier_text": "eta_Z8 ×2.0",
+      "modifiers": [
+        {
+          "z_pathway": "Z8",
+          "factor": 2.0
+        }
+      ],
+      "gate": null,
+      "bounded_absorption_effect": "None",
+      "target_adjustment": "Reduce excess energy/fructose; increase fiber and activity where suitable",
+      "z_pathways_text": "Z8, Z13",
+      "z_pathways_declared": [
+        "Z8",
+        "Z13"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z13"
+      ],
+      "evidence_role": "Clinical context"
+    },
+    {
+      "condition": "Celiac disease",
+      "source_row": 14,
+      "modifier_text": "Use inflammation/repair modifier when active",
+      "modifiers": [],
+      "gate": "when active",
+      "bounded_absorption_effect": "Fe and Ca absorption odds may be reduced; calibrate from status/labs",
+      "target_adjustment": "Fe, Ca, VitD, B12 targets individualized",
+      "z_pathways_text": "Z5, Z11, Z12",
+      "z_pathways_declared": [
+        "Z5",
+        "Z11",
+        "Z12"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z5",
+        "Z11",
+        "Z12"
+      ],
+      "evidence_role": "Direct malabsorption mechanism; uncertainty widened"
+    },
+    {
+      "condition": "IBS",
+      "source_row": 15,
+      "modifier_text": "eta_Z3 ×1.2 only if symptoms support it",
+      "modifiers": [
+        {
+          "z_pathway": "Z3",
+          "factor": 1.2
+        }
+      ],
+      "gate": "only if symptoms support it",
+      "bounded_absorption_effect": "None",
+      "target_adjustment": "Diet pattern/fermentable substrate guidance individualized",
+      "z_pathways_text": "Z3, Z14",
+      "z_pathways_declared": [
+        "Z3",
+        "Z14"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z14"
+      ],
+      "evidence_role": "Symptom/context modifier"
+    },
+    {
+      "condition": "GERD/Acid reflux",
+      "source_row": 16,
+      "modifier_text": "None",
+      "modifiers": [],
+      "gate": null,
+      "bounded_absorption_effect": "Timing/gastric-emptying effects only when supported",
+      "target_adjustment": "Avoid individual triggers",
+      "z_pathways_text": "Z3",
+      "z_pathways_declared": [
+        "Z3"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z3"
+      ],
+      "evidence_role": "Timing, not global absorption extent"
+    },
+    {
+      "condition": "Cardiovascular context",
+      "source_row": 17,
+      "modifier_text": "eta_Z7 ×1.5 only when calibrated",
+      "modifiers": [
+        {
+          "z_pathway": "Z7",
+          "factor": 1.5
+        }
+      ],
+      "gate": "only when calibrated",
+      "bounded_absorption_effect": "None",
+      "target_adjustment": "Diet/activity goals individualized",
+      "z_pathways_text": "Z7, Z12",
+      "z_pathways_declared": [
+        "Z7",
+        "Z12"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z12"
+      ],
+      "evidence_role": "Risk-context modifier"
+    },
+    {
+      "condition": "Osteoporosis/osteopenia",
+      "source_row": 18,
+      "modifier_text": "eta_Z11 ×1.5 only when confirmed",
+      "modifiers": [
+        {
+          "z_pathway": "Z11",
+          "factor": 1.5
+        }
+      ],
+      "gate": "only when confirmed",
+      "bounded_absorption_effect": "None",
+      "target_adjustment": "Ca/VitD/protein/activity targets individualized",
+      "z_pathways_text": "Z11, Z15",
+      "z_pathways_declared": [
+        "Z11",
+        "Z15"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z15"
+      ],
+      "evidence_role": "Measured-condition modifier"
+    },
+    {
+      "condition": "Stroke history",
+      "source_row": 19,
+      "modifier_text": "eta_Z13 ×1.5 only when calibrated",
+      "modifiers": [
+        {
+          "z_pathway": "Z13",
+          "factor": 1.5
+        }
+      ],
+      "gate": "only when calibrated",
+      "bounded_absorption_effect": "None",
+      "target_adjustment": "B-vitamin/Hcy actions only when evidence and measurements support",
+      "z_pathways_text": "Z13, Z7",
+      "z_pathways_declared": [
+        "Z13",
+        "Z7"
+      ],
+      "z_pathways_without_a_modifier": [
+        "Z7"
+      ],
+      "evidence_role": "Clinical context"
+    }
+  ]
+}

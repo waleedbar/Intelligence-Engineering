@@ -2186,3 +2186,118 @@ and `B12` carry digits in their **names**. Same shape as the hyphen in
    offers it and the engine has no pattern for it.
 3. **What are Step 3's fruit and vegetable bands worth numerically?** O7.4
    divides their sum by 10 and nothing says what `1-2` means.
+
+---
+
+## 2026-09-10: ONB-008 — a safety rule worth more than the table it sits above
+
+`O·O8 Condition Modifiers` (manifest 78) is the only O-sheet with no numbered
+equations. It is one ten-row table plus a single sentence of prose, and the
+sentence is the important part.
+
+### The compatibility rule
+
+> **COMPATIBILITY RULE**: any legacy positive `F_bio` multiplier `m` is
+> interpreted as an **ODDS** multiplier and converted to
+> `Δlogit_abs = ln(m)`. The production equation is
+> `F_abs = F_max · sigmoid(logit(F_base/F_max) + Σ Δlogit_abs)`;
+> **no direct multiplication may exceed [0,1]**.
+
+An absorbed fraction is bounded and a multiplier is not. The whole rule in one
+comparison, from the tests:
+
+| | result |
+|---|---|
+| `F_base = 0.8`, multiplied by 1.5 directly | **1.2** — not a fraction of anything |
+| the same through log-odds, `F_max = 0.9` | **0.831** |
+| a multiplier of **1,000**, same inputs | 0.8989 — still under `F_max` |
+| no multipliers at all | `F_base` exactly |
+
+That last row is the identity a compatible rewrite has to satisfy: with no
+shifts the transformation must return what it was given, or it is a different
+model rather than a safe way to express the same one. And `F_max` is a real
+column in the 81-nutrient registry, so this composes with what is already
+imported rather than needing a number nobody has.
+
+Implemented verbatim in `sahacore/onboarding/condition_mods.py`, with
+`apply_multipliers` provided so the conversion cannot be skipped by someone
+who has legacy multipliers and reaches for the obvious thing.
+
+### Five gates, and a design that will not let you drop one
+
+The table does not say `eta_Z7 ×1.5`. It says:
+
+- `eta_Z3 ×1.2` **only if symptoms support it** (IBS)
+- `eta_Z7 ×1.5` **only when calibrated** (Cardiovascular context)
+- `eta_Z11 ×1.5` **only when confirmed** (Osteoporosis)
+- `eta_Z13 ×1.5` **only when calibrated** (Stroke history)
+- "Use inflammation/repair modifier **when active**" (Celiac — a gate with no
+  number behind it)
+
+A reader who took the factor and dropped the clause would apply a 50%
+damage-sensitivity increase the sheet explicitly withheld.
+
+So `eta_multiplier` takes `gate_satisfied` as a **keyword-only argument
+defaulting to False**, and raises `GateNotSatisfied` otherwise. The careless
+call — the one that just asks for the number — fails. What "calibrated" or
+"confirmed" actually *means* is defined nowhere in the workbook, so the
+decision cannot be made here; it can be made impossible to make by accident.
+
+The `Evidence role` column does the same work in the other direction, and is
+kept verbatim for the same reason: *"Safety/target modifier; do not force K
+malabsorption"*, *"Timing, not global absorption extent"*, *"Clinical
+context; not an absorption multiplier"*. Each is a warning against one
+specific misreading.
+
+### The finding: more than half the declared effects are unquantified
+
+The Z-pathways column declares **20** condition-to-pathway links. Only **9**
+carry a factor.
+
+| condition | declares | quantifies | left unstated |
+|---|---|---|---|
+| Type 2 Diabetes | Z1, Z6 | Z1 ×1.5, Z6 ×2.0 | — |
+| Hypertension | Z7, Z9 | Z7 ×1.3 | **Z9** |
+| CKD (Stage 3+) | Z9, Z14 | Z9 ×3.0 | **Z14** |
+| NAFLD/MASLD | Z8, Z13 | Z8 ×2.0 | **Z13** |
+| Celiac disease | Z5, Z11, Z12 | *none* | **Z5, Z11, Z12** |
+| IBS | Z3, Z14 | Z3 ×1.2 | **Z14** |
+| GERD/Acid reflux | Z3 | *none* | **Z3** |
+| Cardiovascular context | Z7, Z12 | Z7 ×1.5 | **Z12** |
+| Osteoporosis | Z11, Z15 | Z11 ×1.5 | **Z15** |
+| Stroke history | Z13, Z7 | Z13 ×1.5 | **Z7** |
+
+**Type 2 Diabetes is the only condition that quantifies everything it
+declares.**
+
+Those 11 links are stored with `factor` **NULL**, not 1.0, and
+`eta_multiplier` raises rather than returning 1.0 — because *"declared
+affected, effect unstated"* and *"no effect"* are different claims, and
+defaulting silently converts the first into the second.
+
+### The interface offers a condition with no row — again
+
+Step 5's gastrointestinal question names **"IBS, GERD, Celiac, UC, NAFLD"**.
+There is no **UC** row. Same shape as O7's Intermittent Fasting, one sheet
+later.
+
+And the condition set cannot be checked properly at all: of Step 5's five
+questions only **two** name any condition, one of those trails off with
+"etc.", so exactly **one** gives a checkable list. Three say only
+"Multi-select checkboxes".
+
+### Two counts I asserted and then computed
+
+I wrote "four modifiers are gated" — it is five rows, four of which gate a
+number. I wrote "one of five questions enumerates its options" — two name
+conditions, one completely. Both were corrected by computing before
+committing, which is the third time this pattern has shown up in this file.
+
+### For Dr. Ali — three questions
+
+1. **What do the eleven unquantified links do?** Celiac declares Z5, Z11 and
+   Z12 affected and gives a factor for none.
+2. **What establishes "calibrated" and "confirmed"?** Four modifiers are
+   withheld until then, and neither term is defined.
+3. **What happens when a user reports ulcerative colitis?** Step 5 offers it
+   and this sheet has no row for it.

@@ -165,6 +165,8 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("onboarding_o7.json", "equations", "O·O7 Diet Pattern Priors"),
     "engine_internal.onboarding_o7_pattern":
         ("onboarding_o7.json", "patterns", "O·O7 Diet Pattern Priors"),
+    "engine_internal.onboarding_o8_condition":
+        ("onboarding_o8.json", "conditions", "O·O8 Condition Modifiers"),
 }
 
 

@@ -160,6 +160,32 @@ def load_o7_patterns() -> tuple[dict, ...]:
 
 
 @lru_cache(maxsize=1)
+def _o8() -> dict:
+    return json.loads((DATA_DIR / "onboarding_o8.json").read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def load_o8_conditions() -> tuple[dict, ...]:
+    """The ten condition rows of 'O·O8 Condition Modifiers'.
+
+    Each keeps its GATE ("only when calibrated") and its evidence role ("do
+    not force K malabsorption") as separate fields, because both are
+    instructions about how the numbers may be used and dropping either would
+    change what the row licenses.
+    """
+    return tuple(_o8()["conditions"])
+
+
+@lru_cache(maxsize=1)
+def load_o8_compatibility_rule() -> str:
+    """The sheet's rule for turning a legacy F_bio multiplier into a bounded
+    absorbed fraction, verbatim. Implemented in
+    sahacore.onboarding.condition_mods.bounded_absorption.
+    """
+    return _o8()["compatibility_rule"]
+
+
+@lru_cache(maxsize=1)
 def _o6() -> dict:
     return json.loads((DATA_DIR / "onboarding_o6.json").read_text(encoding="utf-8"))
 
