@@ -46,6 +46,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "MERGE·VETO Drug-Nutrient 339"
 REFERENCE_ONLY_SHEET = "VETO Canonical 339"
 HEADER_ROW = 3
@@ -89,9 +91,7 @@ def _cell(ws, row: int, col: int) -> str | None:
 def extract(workbook_path: str) -> list[dict]:
     wb = openpyxl.load_workbook(workbook_path, data_only=True)
 
-    header = [_cell(wb[SHEET], HEADER_ROW, c) for c in range(1, len(COLUMNS) + 1)]
-    if header != COLUMNS:
-        raise SystemExit(f"{SHEET} header changed: expected {COLUMNS}, got {header}")
+    check_header(wb[SHEET], SHEET, HEADER_ROW, 1, COLUMNS)
 
     ws = wb[SHEET]
     rows = []

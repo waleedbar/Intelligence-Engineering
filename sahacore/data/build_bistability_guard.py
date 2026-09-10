@@ -62,6 +62,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "★ Scarring Bistability Guard"
 FIRST_COL = 2
 OUT = Path(__file__).parent / "bistability_guard.json"
@@ -122,25 +124,13 @@ def _text(value) -> str | None:
     return text or None
 
 
-def _check_header(ws, row: int, labels: list[str]) -> None:
-    """A column shift is the failure mode this file exists to make loud."""
-    for offset, expected in enumerate(labels):
-        found = _text(_cell(ws, row, offset))
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: header row {row} column {FIRST_COL + offset} reads "
-                f"{found!r}, expected {expected!r}. The sheet moved; fix the "
-                "offsets rather than the expectation."
-            )
-
-
 def extract(path: str) -> dict:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb[SHEET]
 
-    _check_header(ws, CAPS_HEADER_ROW, CAPS_LABELS)
-    _check_header(ws, RECEIPT_HEADER_ROW, RECEIPT_LABELS)
-    _check_header(ws, GUARD_HEADER_ROW, GUARD_LABELS)
+    check_header(ws, SHEET, CAPS_HEADER_ROW, FIRST_COL, CAPS_LABELS)
+    check_header(ws, SHEET, RECEIPT_HEADER_ROW, FIRST_COL, RECEIPT_LABELS)
+    check_header(ws, SHEET, GUARD_HEADER_ROW, FIRST_COL, GUARD_LABELS)
 
     caps = []
     for row in CAPS_ROWS:

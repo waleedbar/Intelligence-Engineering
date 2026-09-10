@@ -2167,7 +2167,15 @@
    "information_action": "Confirm meal identity and portion",
    "expected_information_gain": "Reduce food-ID/portion covariance",
    "user_burden": "Low",
-   "eligibility": "Recent uncertain meal"
+   "eligibility": "Recent uncertain meal",
+   "voi_score": "E[Δentropy]-burden",
+   "state_or_output_affected": "Nutrient inputs / Layer A",
+   "safety_veto": "None beyond privacy/UX",
+   "expiration": "2 h",
+   "policy_class": "Information only",
+   "exploration": "Positive VOI allowed",
+   "state_uncertainty": "No outcome intervention",
+   "evaluation": "Calibration study"
   },
   {
    "source_row": 203,
@@ -2175,7 +2183,15 @@
    "information_action": "Resolve duplicate or conflicting food log",
    "expected_information_gain": "Remove inconsistent intake event",
    "user_burden": "Low",
-   "eligibility": "Conflict detector active"
+   "eligibility": "Conflict detector active",
+   "voi_score": "E[Δentropy]-burden",
+   "state_or_output_affected": "Layer A event stream",
+   "safety_veto": "None",
+   "expiration": "24 h",
+   "policy_class": "Information only",
+   "exploration": "Positive VOI allowed",
+   "state_uncertainty": "No outcome intervention",
+   "evaluation": "Data-quality test"
   },
   {
    "source_row": 204,
@@ -2183,7 +2199,15 @@
    "information_action": "Reconnect or resync wearable",
    "expected_information_gain": "Restore missing activity/sleep measurements",
    "user_burden": "Low–moderate",
-   "eligibility": "Device stale or missing"
+   "eligibility": "Device stale or missing",
+   "voi_score": "E[Δentropy]-burden",
+   "state_or_output_affected": "Lifestyle states / measurement R",
+   "safety_veto": "Device permission/consent",
+   "expiration": "24 h",
+   "policy_class": "Information only",
+   "exploration": "Positive VOI allowed",
+   "state_uncertainty": "No outcome intervention",
+   "evaluation": "Device-specific validation"
   },
   {
    "source_row": 205,
@@ -2191,7 +2215,15 @@
    "information_action": "Brief mood/stress check-in",
    "expected_information_gain": "Disambiguate mood valence vs variability",
    "user_burden": "Low",
-   "eligibility": "Mood states prior/dark or abrupt change"
+   "eligibility": "Mood states prior/dark or abrupt change",
+   "voi_score": "E[Δentropy]-burden",
+   "state_or_output_affected": "States 209–210",
+   "safety_veto": "Burden/receptivity gate",
+   "expiration": "8 h",
+   "policy_class": "Information only",
+   "exploration": "Positive VOI allowed",
+   "state_uncertainty": "No outcome intervention",
+   "evaluation": "EMA reliability study"
   },
   {
    "source_row": 206,
@@ -2199,7 +2231,15 @@
    "information_action": "Confirm medication/supplement schedule",
    "expected_information_gain": "Improve VETO and adherence state",
    "user_burden": "Moderate",
-   "eligibility": "Schedule outdated/uncertain"
+   "eligibility": "Schedule outdated/uncertain",
+   "voi_score": "E[Δentropy]-burden",
+   "state_or_output_affected": "Safety set + adherence",
+   "safety_veto": "Never infer medication change",
+   "expiration": "7 d",
+   "policy_class": "Information only",
+   "exploration": "Positive VOI allowed",
+   "state_uncertainty": "No outcome intervention",
+   "evaluation": "Agreement/audit study"
   },
   {
    "source_row": 207,
@@ -2207,7 +2247,15 @@
    "information_action": "Enter or reconcile an existing lab result",
    "expected_information_gain": "Anchor a weakly observed state",
    "user_burden": "Moderate",
-   "eligibility": "Relevant lab exists and is not current in system"
+   "eligibility": "Relevant lab exists and is not current in system",
+   "voi_score": "E[Δentropy]-burden",
+   "state_or_output_affected": "Assay-specific observation model",
+   "safety_veto": "Assay/date/unit validation",
+   "expiration": "30 d",
+   "policy_class": "Information only",
+   "exploration": "Positive VOI allowed",
+   "state_uncertainty": "No outcome intervention",
+   "evaluation": "Assay-specific calibration"
   },
   {
    "source_row": 208,
@@ -2215,7 +2263,15 @@
    "information_action": "Suggest discussing an appropriate measurement with a qualified professional",
    "expected_information_gain": "Potential future anchor for a dark output",
    "user_burden": "High",
-   "eligibility": "Expected decision value exceeds burden and evidence threshold"
+   "eligibility": "Expected decision value exceeds burden and evidence threshold",
+   "voi_score": "E[decision gain]-burden",
+   "state_or_output_affected": "Only the named uncertain output",
+   "safety_veto": "No direct test ordering by the bandit",
+   "expiration": "Context-specific",
+   "policy_class": "Information only",
+   "exploration": "No automated experimentation",
+   "state_uncertainty": "No outcome intervention",
+   "evaluation": "Prospective utility study"
   }
  ],
  "phases": [
@@ -2225,7 +2281,10 @@
    "trigger_condition": "Onboarding complete + initial state vector x₀ initialized via Layer 0 (O1-O14)",
    "new_arms_activated": "22 arms activated immediately (12 core nutrients + 5 activity + 5 sleep)",
    "cumulative_arms": "22 / 127",
-   "active_categories": "Macronutrient adjustments (protein, carbs, fat); MVPA targets; sleep duration; hydration"
+   "active_categories": "Macronutrient adjustments (protein, carbs, fat); MVPA targets; sleep duration; hydration",
+   "sample_threshold": "No data threshold (cold start)",
+   "convergence_criterion": "P₀ from Layer 0 priors",
+   "safety_notes": "All 20 VETO rules already loaded; phased activation does NOT bypass safety gating"
   },
   {
    "source_row": 157,
@@ -2233,7 +2292,10 @@
    "trigger_condition": "≥7 days food logs AND ≥3 meal-CGM/biomarker pairs",
    "new_arms_activated": "+68 nutrient timing, micronutrient supplement, dietary pattern arms",
    "cumulative_arms": "90 / 127",
-   "active_categories": "Phase 0 + all individual vitamin/mineral targets; meal timing windows; supplement dosing"
+   "active_categories": "Phase 0 + all individual vitamin/mineral targets; meal timing windows; supplement dosing",
+   "sample_threshold": "≥7 days food entries logged",
+   "convergence_criterion": "trace(P) trending downward over 7-day window",
+   "safety_notes": "Drug-nutrient VETO rules cross-checked at each new arm activation"
   },
   {
    "source_row": 158,
@@ -2241,7 +2303,10 @@
    "trigger_condition": "≥30 days logs AND ≥1 lab panel received",
    "new_arms_activated": "+26 supplement timing + remaining activity arms",
    "cumulative_arms": "116 / 127",
-   "active_categories": "Phase 1 + supplement timing relative to meals/medications; activity intensity prescriptions"
+   "active_categories": "Phase 1 + supplement timing relative to meals/medications; activity intensity prescriptions",
+   "sample_threshold": "≥30 days continuous logging",
+   "convergence_criterion": "Lab data integrated into UKF (Layer D Eq D3)",
+   "safety_notes": "PPI-Mg, Metformin-B12, Warfarin-K interactions actively monitored"
   },
   {
    "source_row": 159,
@@ -2249,7 +2314,10 @@
    "trigger_condition": "≥90 days data AND UKF P-matrix converged: trace(P) < 2 × trace(P₀)",
    "new_arms_activated": "+10 sleep optimization, stress management, advanced behavioral arms",
    "cumulative_arms": "126 / 127 — full ACTIVATABLE set, NOT the full ontology. Action 127 (INCREASE Dietary Nitrate, nutrient 81) stays inactive pending VN-01…VN-07 clinical sign-off AND regeneration of the 127×140 action×rule gate. This is a deliberate safety hold, not an incomplete rollout. Do NOT write an acceptance test asserting 127 active arms at Phase 3, and do NOT activate arm 127 to make the count \"full\".  [v39o F-AY]",
-   "active_categories": "Phase 2 + circadian alignment, stress reduction protocols, behavioral nudge arms"
+   "active_categories": "Phase 2 + circadian alignment, stress reduction protocols, behavioral nudge arms",
+   "sample_threshold": "≥90 days continuous data",
+   "convergence_criterion": "trace(P) < 2 × trace(P₀) AND no divergence flags",
+   "safety_notes": "Full action space available; LinUCB confidence bounds tight enough for advanced recommendations"
   }
  ]
 }

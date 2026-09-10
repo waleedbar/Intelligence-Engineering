@@ -45,6 +45,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "★ Scoped Builds — LTMLE Bandit"
 FIRST_COL = 2
 OUT = Path(__file__).parent / "scoped_builds.json"
@@ -126,13 +128,7 @@ def extract(path: str) -> dict:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb[SHEET]
 
-    for offset, expected in enumerate(DECISION_LABELS):
-        found = _text(_cell(ws, DECISION_HEADER_ROW, offset))
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: decision header row {DECISION_HEADER_ROW} column "
-                f"{FIRST_COL + offset} reads {found!r}, expected {expected!r}.")
-
+    check_header(ws, SHEET, DECISION_HEADER_ROW, FIRST_COL, DECISION_LABELS)
     prerequisites = []
     for row in PREREQUISITE_ROWS:
         title = _text(_cell(ws, row, 0))

@@ -43,6 +43,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "P1 DataMap"
 FIRST_COL = 2
 OUT = Path(__file__).parent / "datamap.json"
@@ -83,12 +85,6 @@ def _cell(ws, row: int, col: int) -> str | None:
     return text or None
 
 
-def _check_header(ws, row: int, labels: list[str], what: str) -> None:
-    got = [_cell(ws, row, c) for c in range(FIRST_COL, FIRST_COL + len(labels))]
-    if got != labels:
-        raise SystemExit(f"{SHEET} {what} header changed: expected {labels}, got {got}")
-
-
 def _section(ws, first: int, last: int, columns: list[str],
              key_column: str) -> list[dict]:
     rows = []
@@ -107,8 +103,10 @@ def _section(ws, first: int, last: int, columns: list[str],
 
 def extract(workbook_path: str) -> dict:
     ws = openpyxl.load_workbook(workbook_path, data_only=True)[SHEET]
-    _check_header(ws, VARIABLE_HEADER_ROW, VARIABLE_LABELS, "variable")
-    _check_header(ws, ONBOARDING_HEADER_ROW, ONBOARDING_LABELS, "onboarding")
+    check_header(ws, f"{SHEET} (variable)", VARIABLE_HEADER_ROW, FIRST_COL,
+                 VARIABLE_LABELS)
+    check_header(ws, f"{SHEET} (onboarding)", ONBOARDING_HEADER_ROW, FIRST_COL,
+                 ONBOARDING_LABELS)
     return {
         "variables": _section(ws, VARIABLE_FIRST, VARIABLE_LAST,
                               VARIABLE_COLUMNS, "variable"),

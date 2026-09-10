@@ -11,7 +11,8 @@ from sahacore.db import get_connection
 DATA_FILE = Path(__file__).parent / "onboarding_o1.json"
 
 _EQUATION_COLUMNS = ["equation_id", "source_row", "name", "formula",
-                     "variables", "units", "value_range"]
+                     "variables", "units", "value_range",
+                     "engine_target"]
 _PARAMETER_COLUMNS = ["key", "name", "source_row", "value", "units", "source",
                       "calibration", "notes"]
 _ELSEWHERE_COLUMNS = ["equation_id", "name", "formula", "units", "declared_by",

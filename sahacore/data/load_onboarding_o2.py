@@ -11,8 +11,8 @@ from sahacore.db import get_connection
 DATA_DIR = Path(__file__).parent
 
 _EQUATION_COLUMNS = ["equation_id", "source_row", "name", "formula",
-                     "variables", "units", "value_range", "computable",
-                     "missing_symbol", "unresolved_note"]
+                     "variables", "units", "value_range", "engine_target",
+                     "computable", "missing_symbol", "unresolved_note"]
 _ENCODING_COLUMNS = ["field", "option", "source_row", "ui_selection",
                      "mapped_value", "numeric_value", "variable", "source"]
 _ACTIVITY_COLUMNS = ["activity_id", "number", "source_row", "name", "met",

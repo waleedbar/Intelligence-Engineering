@@ -13,7 +13,8 @@ DATA_FILE = Path(__file__).parent / "tvmcd_pathways_build.json"
 _PATHWAY_COLUMNS = ["pathway_id", "source_row", "biological_meaning",
                     "state_variable", "ode", "inputs", "parameters",
                     "integration_cadence", "numerical_method", "bounds",
-                    "initialization"]
+                    "initialization", "uncertainty_treatment",
+                    "validation_scenario"]
 _OUTPUT_COLUMNS = ["pathway_id", "cluster_id", "list_position"]
 
 

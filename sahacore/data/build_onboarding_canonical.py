@@ -56,6 +56,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "O · Onboarding Canonical"
 FIRST_COL = 1
 HEADER_ROW = 2
@@ -124,13 +126,7 @@ def extract(path: str) -> dict:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb[SHEET]
 
-    for offset, expected in enumerate(HEADER_LABELS):
-        found = _text(_cell(ws, HEADER_ROW, offset))
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: header row {HEADER_ROW} column {FIRST_COL + offset} "
-                f"reads {found!r}, expected {expected!r}. The sheet moved.")
-
+    check_header(ws, SHEET, HEADER_ROW, FIRST_COL, HEADER_LABELS)
     steps = []
     for row in DATA_ROWS:
         step_id = _text(_cell(ws, row, 0))

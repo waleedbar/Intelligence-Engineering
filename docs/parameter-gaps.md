@@ -1399,3 +1399,75 @@ settle it. That is now the first thing to ask.
 > *pathway* states directly? (b) What weights combine several pathways into
 > one cluster? (c) What feeds C01 Membrane Integrity, which no pathway lists?
 > (d) How do fifteen values split into ξ_hi and ξ_lo?
+
+## 2026-09-10: every extractor was reading part of its table
+
+Setting out to build ONB-003, the first thing `O·O3 Sleep Deficit` showed was
+a column called **Engine Target** — where each equation's output goes:
+*"Layer C: Z3 Inflammation rate"*, *"Layer B (B1): V_f"*. Then a check: does
+O1 have it too?
+
+It does. So does O2. **I had imported both without it.**
+
+### Why it was invisible
+
+Every extractor's header check verified the labels it was **given** and said
+nothing about the columns it was **not**. A sheet with seven columns and an
+extractor declaring six agree perfectly, and the seventh is lost in silence.
+
+An audit across all 25 extractors found five sheets losing **sixteen columns**:
+
+| sheet | columns dropped |
+|---|---|
+| `O·O1 Anthropometrics` | Engine Target |
+| `O·O2 MVPA Prior` | Engine Target |
+| `TVMCD · 15 Pathways Build` | Uncertainty treatment, Validation scenario |
+| `Action_Space` — info actions | VOI score, State/output affected, **Safety/VETO**, Expiration, Policy class, Exploration, State uncertainty, Evaluation |
+| `Action_Space` — rollout phases | **Sample Threshold**, **Convergence Criterion**, Safety Notes |
+
+None is decoration. `Engine Target` is the wiring from Layer 0 into the rest
+of the engine. `Safety/VETO` is a safety position on every information
+action. `Sample Threshold` and `Convergence Criterion` are what let a rollout
+phase advance — a rollout schedule without them is a list of names.
+
+The `TVMCD` one is the sharpest: **I wrote that extractor the same day**, with
+a `check()` that refuses empty columns and a docstring calling the sheet a
+*"complete server implementation table"* — while dropping two of its columns.
+
+### The fix
+
+`sahacore/data/sheet_header.py` — one `check_header` used by every extractor.
+It verifies the declared labels **and** that nothing follows them. All 25
+extractors now use it; four private copies and nine inline loops are gone.
+
+`tests/test_extractors_take_whole_tables.py` makes it non-optional: an
+extractor that declares a `HEADER_ROW` must import and call `check_header`,
+and may not keep a private header check. It reads source rather than the
+workbook, so it runs in CI, where the workbook is not.
+
+**Its honest limit,** written into the module: the scan stops at the first
+empty cell, because a table's columns are contiguous. A sheet that put a gap
+and then more columns of the *same* table would still slip through. Scanning
+a fixed distance instead was tried and reached into the wide numeric grids
+that sit further along the same row in `Live Verification Lab`.
+
+### `sql/035`, not an edit to `sql/032`
+
+`sahacore.migrate` records a migration by **filename**. Editing an applied
+one would change what a fresh build creates and leave every existing database
+silently short of the column. Migrations are append-only, so the recovered
+columns arrive by `ALTER TABLE` in a new file — which is also why the new
+`safety_veto IS NOT NULL` constraint is added `NOT VALID`.
+
+### What this says about the earlier misses
+
+This is the third search-shaped failure in two days, and they rhyme:
+
+1. `e_WHtR`, `e_BMI`, `f_u_ref` — read past because reading is not a search.
+2. The 15→12 map — missed because the pattern scored it **3**, not 0.
+3. Sixteen columns — missed because the check only looked where it was told.
+
+Each time the tool answered exactly the question asked and the question was
+too narrow. The fixes have the same shape too: make the check say what it
+*cannot* see (`onboarding_symbols`), or refuse to pass when something is
+present that was not declared (`sheet_header`).

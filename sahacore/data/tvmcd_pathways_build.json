@@ -18,7 +18,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D01"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D01",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D01: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D02",
@@ -37,7 +39,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D02"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D02",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D02: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D03",
@@ -56,7 +60,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D03"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D03",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D03: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D04",
@@ -75,7 +81,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D04"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D04",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D04: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D05",
@@ -94,7 +102,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D05"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D05",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D05: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D06",
@@ -113,7 +123,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D06"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D06",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D06: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D07",
@@ -132,7 +144,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D07"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D07",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D07: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D08",
@@ -151,7 +165,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D08"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D08",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D08: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D09",
@@ -169,7 +185,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D09"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D09",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D09: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D10",
@@ -187,7 +205,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D10"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D10",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D10: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D11",
@@ -205,7 +225,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D11"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D11",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D11: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D12",
@@ -224,7 +246,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D12"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D12",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D12: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D13",
@@ -243,7 +267,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D13"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D13",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D13: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D14",
@@ -262,7 +288,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D14"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D14",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D14: high/low synthetic scenario; anchor replays through E/F/H"
     },
     {
       "pathway_id": "D15",
@@ -281,7 +309,9 @@
       "integration_cadence": "nightly; immediate when validated anchor arrives",
       "numerical_method": "exact ZOH for first-order forcing; RK4/full ODE optional for stiff sidecars",
       "bounds": "Z>=ε in log form; output clipped to safe finite range",
-      "initialization": "from O·O11 warm-start or zero with prior covariance for D15"
+      "initialization": "from O·O11 warm-start or zero with prior covariance for D15",
+      "uncertainty_treatment": "E posterior samples propagated; model discrepancy stored in U-Ledger",
+      "validation_scenario": "D15: high/low synthetic scenario; anchor replays through E/F/H"
     }
   ],
   "cluster_fed_by": {

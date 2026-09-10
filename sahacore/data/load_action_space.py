@@ -23,12 +23,16 @@ _TABLES = {
     "info_actions": (
         "engine_internal.action_space_info", "info_id",
         ["info_id", "source_row", "information_action",
-         "expected_information_gain", "user_burden", "eligibility"],
+         "expected_information_gain", "user_burden", "eligibility",
+         "voi_score", "state_or_output_affected", "safety_veto",
+         "expiration", "policy_class", "exploration", "state_uncertainty",
+         "evaluation"],
     ),
     "phases": (
         "engine_internal.action_space_phase", "phase",
         ["phase", "source_row", "trigger_condition", "new_arms_activated",
-         "cumulative_arms", "active_categories"],
+         "cumulative_arms", "active_categories", "sample_threshold",
+         "convergence_criterion", "safety_notes"],
     ),
 }
 

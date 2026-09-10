@@ -47,6 +47,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "★ Equation Backbone"
 HEADER_ROW = 5
 FIRST_COL = 2
@@ -72,9 +74,7 @@ def _cell(ws, row: int, col: int) -> str | None:
 def extract(workbook_path: str) -> list[dict]:
     ws = openpyxl.load_workbook(workbook_path, data_only=True)[SHEET]
 
-    got = [_cell(ws, HEADER_ROW, c) for c in range(FIRST_COL, FIRST_COL + len(LABELS))]
-    if got != LABELS:
-        raise SystemExit(f"{SHEET} header changed: expected {LABELS}, got {got}")
+    check_header(ws, SHEET, HEADER_ROW, FIRST_COL, LABELS)
 
     rows = []
     for r in range(HEADER_ROW + 1, ws.max_row + 1):

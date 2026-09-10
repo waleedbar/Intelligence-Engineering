@@ -27,6 +27,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "MERGE·VETO FDA Messages"
 HEADER_ROW = 5
 OUT = Path(__file__).parent / "veto_messages.json"
@@ -73,9 +75,7 @@ def _cell(ws, row: int, col: int) -> str | None:
 def extract(workbook_path: str) -> list[dict]:
     ws = openpyxl.load_workbook(workbook_path, data_only=True)[SHEET]
 
-    got = [_cell(ws, HEADER_ROW, c) for c in range(1, len(LABELS) + 1)]
-    if got != LABELS:
-        raise SystemExit(f"{SHEET} header changed: expected {LABELS}, got {got}")
+    check_header(ws, SHEET, HEADER_ROW, 1, LABELS)
 
     rows = []
     for r in range(HEADER_ROW + 1, ws.max_row + 1):

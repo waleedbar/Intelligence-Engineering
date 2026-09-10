@@ -56,6 +56,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "O·O2 MVPA Prior"
 FIRST_COL = 3
 OUT = Path(__file__).parent / "onboarding_o2.json"
@@ -66,7 +68,8 @@ ENCODING_LABELS = ["UI Selection", "Mapped Value", "Variable", "Source"]
 
 EQUATION_HEADER_ROW = 25
 EQUATION_ROWS = range(26, 34)
-EQUATION_LABELS = ["ID", "Name", "Formula", "Variables", "Units", "Value/Range"]
+EQUATION_LABELS = ["ID", "Name", "Formula", "Variables", "Units",
+                   "Value/Range", "Engine Target"]
 
 EXPECTED_EQUATIONS = 8
 EXPECTED_ENCODINGS = 11
@@ -137,21 +140,12 @@ def _mapped_number(text: str, where: str) -> float | int:
     return int(value) if "." not in value else float(value)
 
 
-def _check_header(ws, row: int, labels: list[str]) -> None:
-    for offset, expected in enumerate(labels):
-        found = _text(_cell(ws, row, offset))
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: header row {row} column {FIRST_COL + offset} reads "
-                f"{found!r}, expected {expected!r}.")
-
-
 def extract(path: str) -> dict:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb[SHEET]
 
-    _check_header(ws, ENCODING_HEADER_ROW, ENCODING_LABELS)
-    _check_header(ws, EQUATION_HEADER_ROW, EQUATION_LABELS)
+    check_header(ws, SHEET, ENCODING_HEADER_ROW, FIRST_COL, ENCODING_LABELS)
+    check_header(ws, SHEET, EQUATION_HEADER_ROW, FIRST_COL, EQUATION_LABELS)
 
     encodings = []
     for row in ENCODING_ROWS:
@@ -187,6 +181,7 @@ def extract(path: str) -> dict:
             "variables": _text(_cell(ws, row, 3)),
             "units": _text(_cell(ws, row, 4)),
             "value_range": _text(_cell(ws, row, 5)),
+            "engine_target": _text(_cell(ws, row, 6)),
             "computable": unresolved is None,
             "unresolved": unresolved,
         })
@@ -204,7 +199,8 @@ def check(data: dict) -> None:
     if [e["equation_id"] for e in equations] != expected:
         raise SystemExit(f"{SHEET}: equations are not O2.1..O2.{EXPECTED_EQUATIONS}.")
     for equation in equations:
-        for field in ("name", "formula", "units", "value_range"):
+        for field in ("name", "formula", "units", "value_range",
+                      "engine_target"):
             if not equation[field]:
                 raise SystemExit(
                     f"{SHEET}: {equation['equation_id']} has no {field}.")

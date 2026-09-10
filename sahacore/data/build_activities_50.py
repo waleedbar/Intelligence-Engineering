@@ -40,6 +40,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "P1 Activities 50"
 FIRST_COL = 3
 OUT = Path(__file__).parent / "activities_50.json"
@@ -92,13 +94,7 @@ def extract(path: str) -> dict:
     ws = wb[SHEET]
 
     labels = FIXED_LABELS + CLUSTER_LABELS
-    for offset, expected in enumerate(labels):
-        found = _cell(ws, HEADER_ROW, offset)
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: header row {HEADER_ROW} column {FIRST_COL + offset} "
-                f"reads {found!r}, expected {expected!r}.")
-
+    check_header(ws, SHEET, HEADER_ROW, FIRST_COL, labels)
     # A seventh cluster column would mean the sheet had been completed, which
     # changes what this registry can answer.
     beyond = _cell(ws, HEADER_ROW, len(labels))

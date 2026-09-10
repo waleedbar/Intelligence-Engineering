@@ -45,6 +45,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "★ Supplement Registry"
 HEADER_ROW = 7
 FIRST_COL = 2
@@ -74,9 +76,7 @@ def _cell(ws, row: int, col: int) -> str | None:
 def extract(workbook_path: str) -> list[dict]:
     ws = openpyxl.load_workbook(workbook_path, data_only=True)[SHEET]
 
-    got = [_cell(ws, HEADER_ROW, c) for c in range(FIRST_COL, FIRST_COL + len(LABELS))]
-    if got != LABELS:
-        raise SystemExit(f"{SHEET} header changed: expected {LABELS}, got {got}")
+    check_header(ws, SHEET, HEADER_ROW, FIRST_COL, LABELS)
 
     known = {n["id"] for n in json.loads(
         (Path(__file__).parent / "nutrients_81.json").read_text(encoding="utf-8"))}

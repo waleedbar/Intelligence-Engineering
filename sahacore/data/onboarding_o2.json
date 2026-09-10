@@ -121,6 +121,7 @@
       "variables": "f_mod, f_vig (sessions/wk), dur (min/session)",
       "units": "min/wk",
       "value_range": "0-1000+",
+      "engine_target": "O2.2, O2.3, O2.4",
       "computable": true,
       "unresolved": null
     },
@@ -132,6 +133,7 @@
       "variables": "MVPA_wk from O2.1",
       "units": "min/day",
       "value_range": "0-150+",
+      "engine_target": "Layer E: control input u_t",
       "computable": true,
       "unresolved": null
     },
@@ -143,6 +145,7 @@
       "variables": "MVPA_wk from O2.1; 300 = WHO upper target",
       "units": "dimensionless",
       "value_range": "0-1",
+      "engine_target": "O11: Z10 Sarcopenia",
       "computable": true,
       "unresolved": null
     },
@@ -154,6 +157,7 @@
       "variables": "HR_Arem = hazard ratio from dose-response curve\nAnchored at 150-300 min/wk zone",
       "units": "%",
       "value_range": "0-100",
+      "engine_target": "Layer C: repair rate modifier",
       "computable": false,
       "unresolved": {
         "missing_symbol": "HR_Arem",
@@ -177,6 +181,7 @@
       "variables": "rho_pop = population mean repair, PA = PA_benefit",
       "units": "1/day",
       "value_range": "varies",
+      "engine_target": "Layer C (C4): rho_k modifier",
       "computable": false,
       "unresolved": {
         "missing_symbol": "rho_pop",
@@ -192,6 +197,7 @@
       "variables": "4.5 MET = moderate midpoint, 7.5 MET = vigorous midpoint",
       "units": "MET-min/wk",
       "value_range": "0-5000+",
+      "engine_target": "O2.7",
       "computable": true,
       "unresolved": null
     },
@@ -203,6 +209,7 @@
       "variables": "METmin_wk from O2.6",
       "units": "MET-min/day",
       "value_range": "0-700+",
+      "engine_target": "Layer E: u_t[MVPA_min]",
       "computable": true,
       "unresolved": null
     },
@@ -214,6 +221,7 @@
       "variables": "sitting_hrs from Step 2 UI; 0.15 = penalty magnitude",
       "units": "dimensionless",
       "value_range": "0 or 0.15",
+      "engine_target": "Layer C: Z7 Atherosclerosis, Z3 Inflammation",
       "computable": true,
       "unresolved": null
     }

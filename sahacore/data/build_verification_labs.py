@@ -54,6 +54,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "Live Verification Lab"
 OUT = Path(__file__).parent / "verification_labs.json"
 
@@ -203,16 +205,6 @@ def _demo_point(labs: list[dict]) -> dict:
     return point
 
 
-def _check_header(ws, row: int, first_col: int, labels: list[str]) -> None:
-    for offset, expected in enumerate(labels):
-        found = _text(ws.cell(row=row, column=first_col + offset).value)
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: header row {row} column {first_col + offset} reads "
-                f"{found!r}, expected {expected!r}. The sheet moved; fix the "
-                "offsets rather than the expectation.")
-
-
 def extract(path: str) -> dict:
     values = openpyxl.load_workbook(path, read_only=True, data_only=True)[SHEET]
     formulas = openpyxl.load_workbook(path, read_only=True, data_only=False)[SHEET]
@@ -246,9 +238,8 @@ def extract(path: str) -> dict:
         if lab_id == "LAB 6":
             # LAB 6 lays its derived quantities in a second pane at D/E
             # rather than below its inputs.
-            _check_header(ws=values, row=173, first_col=1, labels=["Input", "Value"])
-            _check_header(ws=values, row=173, first_col=4,
-                          labels=["Derived quantity", "Formula result"])
+            check_header(values, SHEET, 173, 1, ["Input", "Value"])
+            check_header(values, SHEET, 173, 4, ["Derived quantity", "Formula result"])
             for row in range(174, 184):
                 name = _text(v(row, 4))
                 if name is None:
@@ -264,7 +255,7 @@ def extract(path: str) -> dict:
             "quantities": quantities,
         })
 
-    _check_header(values, ZOH_HEADER_ROW, ZOH_FIRST_COL, ZOH_LABELS)
+    check_header(values, SHEET, ZOH_HEADER_ROW, ZOH_FIRST_COL, ZOH_LABELS)
     zoh = [{
         "source_row": row,
         "dt_days": v(row, ZOH_FIRST_COL),
@@ -281,7 +272,7 @@ def extract(path: str) -> dict:
         "weights": [v(row, GAMMA_FIRST_COL + i) for i in range(GAMMA_N)],
     } for row in GAMMA_ROWS]
 
-    _check_header(values, TOPO_HEADER_ROW, TOPO_FIRST_COL, TOPO_LABELS)
+    check_header(values, SHEET, TOPO_HEADER_ROW, TOPO_FIRST_COL, TOPO_LABELS)
     topo = [{
         "source_row": row,
         "component": _text(v(row, TOPO_FIRST_COL)),

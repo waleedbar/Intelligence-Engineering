@@ -42,6 +42,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "★ Param Registry +20"
 HEADER_ROW = 3
 OUT = Path(__file__).parent / "param_registry_ext20.json"
@@ -67,9 +69,7 @@ def _cell(ws, row: int, col: int) -> str | None:
 def extract(workbook_path: str) -> list[dict]:
     ws = openpyxl.load_workbook(workbook_path, data_only=True)[SHEET]
 
-    header = [_cell(ws, HEADER_ROW, c) for c in range(1, len(COLUMNS) + 1)]
-    if header != HEADER_LABELS:
-        raise SystemExit(f"{SHEET} header changed: expected {HEADER_LABELS}, got {header}")
+    check_header(ws, SHEET, HEADER_ROW, 1, HEADER_LABELS)
 
     rows = []
     for r in range(HEADER_ROW + 1, ws.max_row + 1):

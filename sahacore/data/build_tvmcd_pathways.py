@@ -63,6 +63,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "TVMCD · 15 Pathways Build"
 FIRST_COL = 1
 OUT = Path(__file__).parent / "tvmcd_pathways_build.json"
@@ -73,7 +75,8 @@ LABELS = ["Pathway ID", "Biological meaning", "State variables",
           "Complete ODE / algebraic equation",
           "Inputs from nutrients / QSSA / activity / labs",
           "Parameters & units", "Cluster outputs", "Integration cadence",
-          "Numerical method", "Bounds", "Initialization"]
+          "Numerical method", "Bounds", "Initialization",
+          "Uncertainty treatment", "Validation scenario"]
 
 EXPECTED_PATHWAYS = 15
 CLUSTER_ID = re.compile(r"C\d+")
@@ -100,12 +103,7 @@ def extract(path: str) -> dict:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb[SHEET]
 
-    for offset, expected in enumerate(LABELS):
-        found = _text(_cell(ws, HEADER_ROW, offset))
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: header row {HEADER_ROW} column {FIRST_COL + offset} "
-                f"reads {found!r}, expected {expected!r}.")
+    check_header(ws, SHEET, HEADER_ROW, FIRST_COL, LABELS)
 
     pathways = []
     for row in DATA_ROWS:
@@ -127,6 +125,8 @@ def extract(path: str) -> dict:
             "numerical_method": _text(_cell(ws, row, 8)),
             "bounds": _text(_cell(ws, row, 9)),
             "initialization": _text(_cell(ws, row, 10)),
+            "uncertainty_treatment": _text(_cell(ws, row, 11)),
+            "validation_scenario": _text(_cell(ws, row, 12)),
         })
 
     wb.close()
@@ -161,7 +161,8 @@ def check(data: dict) -> None:
     for pathway in pathways:
         for field in ("state_variable", "ode", "cluster_outputs_verbatim",
                       "integration_cadence", "numerical_method", "bounds",
-                      "initialization"):
+                      "initialization", "uncertainty_treatment",
+                      "validation_scenario"):
             if not pathway[field]:
                 raise SystemExit(
                     f"{SHEET}: {pathway['pathway_id']} has no {field}. This is "

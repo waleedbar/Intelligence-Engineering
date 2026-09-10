@@ -39,6 +39,13 @@ because they change what the values mean:
 So O1.1 and O1.2 are priors to be replaced per nutrient, not compartment
 volumes to be trusted. `check()` requires that wording to still be there.
 
+THE ENGINE TARGET COLUMN says where each equation's output goes -- "Layer B
+(B1): V_f", "O1.6, O1.7, O11". It is the wiring between Layer 0 and the rest
+of the engine, and an earlier version of this extractor dropped it: the
+header check verified the six columns it was given and said nothing about the
+seventh. sahacore.data.sheet_header now refuses a header that carries more
+than the extractor declares.
+
 BSA IS SPECIFIED SOMEWHERE ELSE AND DEFINED NOWHERE HERE. 'O · Onboarding
 Canonical' and 'EQ · Canonical Build Rows' both give ONB-001 as including
 `BSA=sqrt(height_cm*weight_kg/3600)` -- the Mosteller formula, identically
@@ -53,13 +60,16 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "O·O1 Anthropometrics"
 FIRST_COL = 3
 OUT = Path(__file__).parent / "onboarding_o1.json"
 
 EQUATION_HEADER_ROW = 9
 EQUATION_ROWS = range(10, 20)
-EQUATION_LABELS = ["ID", "Name", "Formula", "Variables", "Units", "Value/Range"]
+EQUATION_LABELS = ["ID", "Name", "Formula", "Variables", "Units",
+                   "Value/Range", "Engine Target"]
 
 PARAMETER_HEADER_ROW = 24
 PARAMETER_ROWS = range(25, 37)
@@ -136,22 +146,12 @@ def _number(value, where: str) -> float | int:
             "parses as one.") from None
 
 
-def _check_header(ws, row: int, labels: list[str]) -> None:
-    for offset, expected in enumerate(labels):
-        found = _text(_cell(ws, row, offset))
-        if found != expected:
-            raise SystemExit(
-                f"{SHEET}: header row {row} column {FIRST_COL + offset} reads "
-                f"{found!r}, expected {expected!r}. The sheet moved; fix the "
-                "offsets rather than the expectation.")
-
-
 def extract(path: str) -> dict:
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
     ws = wb[SHEET]
 
-    _check_header(ws, EQUATION_HEADER_ROW, EQUATION_LABELS)
-    _check_header(ws, PARAMETER_HEADER_ROW, PARAMETER_LABELS)
+    check_header(ws, SHEET, EQUATION_HEADER_ROW, FIRST_COL, EQUATION_LABELS)
+    check_header(ws, SHEET, PARAMETER_HEADER_ROW, FIRST_COL, PARAMETER_LABELS)
 
     equations = []
     for row in EQUATION_ROWS:
@@ -166,6 +166,7 @@ def extract(path: str) -> dict:
             "variables": _text(_cell(ws, row, 3)),
             "units": _text(_cell(ws, row, 4)),
             "value_range": _text(_cell(ws, row, 5)),
+            "engine_target": _text(_cell(ws, row, 6)),
         })
 
     parameters = []
@@ -206,7 +207,8 @@ def check(data: dict) -> None:
         raise SystemExit(f"{SHEET}: equations are not O1.1..O1.{EXPECTED_EQUATIONS}: "
                          f"{[e['equation_id'] for e in equations]}")
     for equation in equations:
-        for field in ("name", "formula", "units", "value_range"):
+        for field in ("name", "formula", "units", "value_range",
+                      "engine_target"):
             if not equation[field]:
                 raise SystemExit(
                     f"{SHEET}: {equation['equation_id']} has no {field}.")

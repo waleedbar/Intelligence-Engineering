@@ -51,6 +51,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "Action_Space"
 HEADER_ROW = 9
 FIRST_ACTION_ROW = 10
@@ -71,17 +73,35 @@ HEADER_LABELS = [
 ]
 
 INFO_HEADER_ROW = 201
+# The information actions carry the same policy columns as the 127 main arms
+# -- VOI score, the state they affect, their safety position, how long the
+# answer stays useful, policy class, exploration rule, uncertainty rule and
+# the evaluation each needs. An earlier version of this extractor took the
+# first five and dropped these eight, including Safety/VETO. The header check
+# in sahacore.data.sheet_header now refuses a header wider than the labels
+# given, which is what surfaced them.
 INFO_COLUMNS = ["info_id", "information_action", "expected_information_gain",
-                "user_burden", "eligibility"]
+                "user_burden", "eligibility", "voi_score",
+                "state_or_output_affected", "safety_veto", "expiration",
+                "policy_class", "exploration", "state_uncertainty",
+                "evaluation"]
 INFO_HEADER_LABELS = ["Info ID", "Information action",
                       "Expected information gain target", "User burden",
-                      "Eligibility"]
+                      "Eligibility", "VOI score", "State/output affected",
+                      "Safety/VETO", "Expiration", "Policy class",
+                      "Exploration", "State uncertainty", "Evaluation"]
 
 PHASE_HEADER_ROW = 155
+# Three more columns the same partial-header check hid: how many samples a
+# phase needs before it may advance, what convergence means for it, and its
+# safety notes. A rollout schedule without its thresholds is a list of names.
 PHASE_COLUMNS = ["phase", "trigger_condition", "new_arms_activated",
-                 "cumulative_arms", "active_categories"]
+                 "cumulative_arms", "active_categories", "sample_threshold",
+                 "convergence_criterion", "safety_notes"]
 PHASE_HEADER_LABELS = ["Phase", "Trigger Condition", "New Arms Activated",
-                       "Cumulative Arms", "Active Categories"]
+                       "Cumulative Arms", "Active Categories",
+                       "Sample Threshold", "Convergence Criterion",
+                       "Safety Notes"]
 
 # The one action the sheet holds inactive, and the cell that says so. Both are
 # named here so the hold cannot silently move to another arm or be dropped.
@@ -103,15 +123,9 @@ def _cell(ws, row: int, col: int) -> str | None:
     return text or None
 
 
-def _check_header(ws, row: int, first_col: int, labels: list[str], what: str) -> None:
-    got = [_cell(ws, row, first_col + i) for i in range(len(labels))]
-    if got != labels:
-        raise SystemExit(f"{SHEET} {what} header changed: expected {labels}, got {got}")
-
-
 def _table(ws, header_row: int, columns: list[str], labels: list[str],
            what: str, stop_after: int | None = None) -> list[dict]:
-    _check_header(ws, header_row, 2, labels, what)
+    check_header(ws, f"{SHEET} ({what})", header_row, 2, labels)
     rows = []
     last = stop_after or ws.max_row
     for r in range(header_row + 1, last + 1):
@@ -128,7 +142,7 @@ def extract(workbook_path: str) -> dict:
     ws = openpyxl.load_workbook(workbook_path, data_only=True)[SHEET]
 
     actions = []
-    _check_header(ws, HEADER_ROW, 2, HEADER_LABELS, "action")
+    check_header(ws, f"{SHEET} (action)", HEADER_ROW, 2, HEADER_LABELS)
     for r in range(FIRST_ACTION_ROW, ws.max_row + 1):
         raw = _cell(ws, r, 2)
         if raw is None:

@@ -48,6 +48,8 @@ from pathlib import Path
 
 import openpyxl
 
+from sahacore.data.sheet_header import check_header
+
 SHEET = "★ Nutrient Class Registry"
 CLASS_HEADER_ROW = 5
 NUTRIENT_HEADER_ROW = 16
@@ -81,10 +83,8 @@ def _cell(ws, row: int, col: int) -> str | None:
 def extract(workbook_path: str) -> dict:
     ws = openpyxl.load_workbook(workbook_path, data_only=True)[SHEET]
 
-    got = [_cell(ws, CLASS_HEADER_ROW, c)
-           for c in range(FIRST_COL, FIRST_COL + len(CLASS_LABELS))]
-    if got != CLASS_LABELS:
-        raise SystemExit(f"{SHEET} class header changed: {got}")
+    check_header(ws, f"{SHEET} (classes)", CLASS_HEADER_ROW, FIRST_COL,
+                 CLASS_LABELS)
     # The nutrient header's sixth cell carries a long parenthetical; compare
     # on the prefix so a wording tweak does not fail the build, while a
     # reordering still does.
