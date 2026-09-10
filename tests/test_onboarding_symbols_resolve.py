@@ -240,8 +240,9 @@ def test_every_built_onboarding_module_is_the_one_the_contract_names():
             missing.append(step["step_id"])
 
     assert built == ["ONB-001", "ONB-002", "ONB-003", "ONB-004",
-                     "ONB-005", "ONB-006", "ONB-007", "ONB-008"], built
-    assert len(missing) == 6
+                     "ONB-005", "ONB-006", "ONB-007", "ONB-008",
+                     "ONB-009"], built
+    assert len(missing) == 5
     # The two that are blocked must be among the unbuilt, not quietly written.
     blocked = [s["step_id"] for s in contract["steps"] if s["blocked_by"]]
     assert set(blocked) <= set(missing)

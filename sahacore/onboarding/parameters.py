@@ -160,6 +160,33 @@ def load_o7_patterns() -> tuple[dict, ...]:
 
 
 @lru_cache(maxsize=1)
+def _o9() -> dict:
+    return json.loads((DATA_DIR / "onboarding_o9.json").read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def load_o9_interactions() -> tuple[dict, ...]:
+    """The twenty drug-nutrient rows of 'O·O9 Drug-Nutrient Mods'.
+
+    Five carry a multiplier and its log-odds shift; the other fifteen carry
+    an ACTION CLASS -- TIMING, MONITOR, VETO, CLEARANCE, N/A -- which is not
+    an absorption effect. The production target is kept because on two rows
+    it says in so many words that the nutrient's absorption is unchanged.
+    """
+    return tuple(_o9()["interactions"])
+
+
+@lru_cache(maxsize=1)
+def load_o9_severity_disagreements() -> tuple[dict, ...]:
+    """Where O9 and the 339-row VETO registry rate the same hazard differently.
+
+    Insulin and sulfonylureas: CRITICAL with a prescriber referral there,
+    MODERATE with a monitoring action here.
+    """
+    return tuple(_o9()["severity_disagreements"])
+
+
+@lru_cache(maxsize=1)
 def _o8() -> dict:
     return json.loads((DATA_DIR / "onboarding_o8.json").read_text(encoding="utf-8"))
 

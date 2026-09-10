@@ -89,6 +89,7 @@ jobs:
           python -m sahacore.data.load_onboarding_o6
           python -m sahacore.data.load_onboarding_o7
           python -m sahacore.data.load_onboarding_o8
+          python -m sahacore.data.load_onboarding_o9
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -168,7 +169,7 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 65, f'expected 65 versioned registries, got {versioned}'
+              assert versioned == 66, f'expected 66 versioned registries, got {versioned}'
               # The twelve per-cluster ceilings on the scarring feedback loop,
               # each confirmed by the sheet's own section-8 audit receipt.
               cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
@@ -367,6 +368,23 @@ jobs:
               cur.execute(\"SELECT text FROM engine_internal.onboarding_o8_rule WHERE name = 'compatibility_rule'\")
               o8r = cur.fetchone()[0]
               assert 'sigmoid' in o8r and 'logit' in o8r, f'O8 rule: {o8r!r}'
+              # ONB-009. Twenty drug-nutrient rows; five carry a multiplier
+              # and its shift, and every shift recomputes as ln(m) -- O8's
+              # rule confirmed by another sheet's arithmetic. The other 15
+              # carry an action class and must have NO shift.
+              cur.execute('SELECT count(*), count(legacy_multiplier) FROM engine_internal.onboarding_o9_interaction')
+              o9i, o9m = cur.fetchone()
+              assert (o9i, o9m) == (20, 5), f'O9 interactions: {(o9i, o9m)}'
+              cur.execute(\"SELECT count(*) FROM engine_internal.onboarding_o9_interaction WHERE severity = 'CRITICAL'\")
+              o9c = cur.fetchone()[0]
+              assert o9c == 9, f'expected 9 CRITICAL O9 rows, got {o9c}'
+              cur.execute('SELECT max(abs(delta_logit_abs - ln(legacy_multiplier))) FROM engine_internal.onboarding_o9_interaction WHERE legacy_multiplier IS NOT NULL')
+              o9e = cur.fetchone()[0]
+              assert o9e < 5e-7, f'O9 shift is not ln(m): max error {o9e}'
+              # The disagreement with the VETO registry, kept visible.
+              cur.execute('SELECT count(*) FROM engine_internal.onboarding_o9_severity_disagreement')
+              o9d = cur.fetchone()[0]
+              assert o9d == 2, f'expected 2 O9/VETO severity disagreements, got {o9d}'
               # 48 organ-pathway links over 13 pathways: none for D14/D15,
               # which is gate d14_d15_fail_closed agreeing with the data.
               cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
@@ -432,7 +450,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), ONB-004 live (9 eq/10 PSS-10 items/3 bands), 12 onboarding steps (73 questions), ONB-005 live (7 eq/18 encoded answers), ONB-006 live (11 eq/6 sourced risks), ONB-007 partial (4 eq/8 patterns, 1296 priors absent), ONB-008 live (10 conditions/20 links, 9 quantified), 65 versioned registries')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), ONB-004 live (9 eq/10 PSS-10 items/3 bands), 12 onboarding steps (73 questions), ONB-005 live (7 eq/18 encoded answers), ONB-006 live (11 eq/6 sourced risks), ONB-007 partial (4 eq/8 patterns, 1296 priors absent), ONB-008 live (10 conditions/20 links, 9 quantified), ONB-009 live (20 rows, 5 shifts = ln(m), 2 VETO disagreements), 66 versioned registries')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

@@ -2301,3 +2301,116 @@ committing, which is the third time this pattern has shown up in this file.
    withheld until then, and neither term is defined.
 3. **What happens when a user reports ulcerative colitis?** Step 5 offers it
    and this sheet has no row for it.
+
+---
+
+## 2026-09-10: ONB-009 — two registries in one workbook disagree about a safety hazard
+
+`O·O9 Drug-Nutrient Mods` (manifest 79) gives twenty drug-nutrient rows. Two
+things about it are new.
+
+### O8's rule, confirmed by another sheet's arithmetic
+
+`O·O8` says a legacy multiplier becomes `Δlogit_abs = ln(m)`. This sheet,
+written separately, does exactly that five times:
+
+| drug × nutrient | m | sheet's Δlogit_abs | ln(m) |
+|---|---|---|---|
+| Metformin × B12 | 0.70 | −0.356675 | −0.356675 |
+| PPIs × Mg | 0.75 | −0.287682 | −0.287682 |
+| PPIs × Ca | 0.80 | −0.223144 | −0.223144 |
+| PPIs × B12 | 0.85 | −0.162519 | −0.162519 |
+| PPIs × Fe | 0.80 | −0.223144 | −0.223144 |
+
+Correct to six decimals, every one. This is the **first place in the build
+where one sheet's rule is verified by a different sheet's numbers** rather
+than by its own restatement — and the CI verify step now recomputes it in
+SQL, so Postgres checks it too.
+
+### Fifteen rows are not absorption effects, and the sheet says so twice
+
+Their rule cell holds an action class — `TIMING`, `MONITOR`, `VETO`,
+`VETO/MONITOR`, `CLEARANCE`, `N/A` — and two production targets spell out
+what that means, in the strongest terms a spreadsheet has:
+
+> Levothyroxine — *"Layer H: timing VETO; **do not alter nutrient F_abs**"*
+> Fluoroquinolones — *"Layer H: timing VETO; **nutrient F_abs unchanged**"*
+
+In both, chelation reduces absorption of the **drug**. Code that read it the
+other way would cut a user's calcium target because they take a thyroid
+tablet. So `delta_logit_abs` **raises** on those rows, quoting the sheet's own
+sentence, rather than returning a number or a convenient zero — returning 0.0
+would be as wrong as returning a shift, because this is a different *kind* of
+effect, not a smaller one.
+
+Statins × CoQ10 is the same distinction from the other side: CRITICAL, real,
+and *"Biosynthesis depletion; not intestinal F_abs"*.
+
+### The finding: O9 and the VETO registry disagree, downwards
+
+| | severity | action |
+|---|---|---|
+| `VETO-DN-0265` Insulin (any) × Carbohydrate intake | **CRITICAL** | "STABLE PATTERN — discuss with prescriber" |
+| `VETO-DN-0267` Sulfonylureas × Carbohydrate intake | **CRITICAL** | "STABLE PATTERN — discuss with prescriber" |
+| O9 row 29 — Insulin/sulfonylureas × Glucose | **MODERATE** | "MONITOR", *Layer H: glucose safety* |
+
+Same drug class, the same hypoglycaemia hazard. One registry routes it to a
+**prescriber**; the other asks for a **measurement**. This is the pair earlier
+sessions flagged as MSG-CRITICAL-STABLE, now seen from the other side.
+
+Recorded, not resolved. `severity_disagreements()` reports it and a CHECK
+constraint refuses to store a "disagreement" whose two severities are equal,
+so the row cannot go stale silently.
+
+**The bridge is declared by hand, one pair at a time.** A substring match on
+"Metformin" pulls in seven VETO rows about different nutrients, and comparing
+severities across those would manufacture disagreements that are not there.
+Only the pair actually read row-by-row is recorded.
+
+### The two severity scales do not match at all
+
+| | scale |
+|---|---|
+| O9 | CRITICAL / MODERATE / LOW |
+| VETO registry | CRITICAL / HIGH / MODERATE / LOW / CONTROVERSIAL |
+
+O9 has **no HIGH tier**, and HIGH is the VETO registry's **largest** — 111 of
+339 rows, just under a third (CRITICAL 94, MODERATE 110, LOW 23,
+CONTROVERSIAL 1). An O9 row cannot express what the biggest slice of that
+registry says. That is a plausible mechanism for the insulin disagreement
+rather than an excuse for it: with no HIGH available, a HIGH-shaped hazard has
+to round somewhere, and here it rounded down.
+
+### The interface gap, third sheet running
+
+Step 7 names 22 medications. Three are the same drug spelled differently —
+"ACE Inhibitors & ARBs" against "ACE inhibitors/ARBs", "Oral Contraceptives"
+against "Oral contraceptives" — and normalising case and `&`/`/` bridges those
+without changing a word. **Eight remain:**
+
+- **seven with no row of any kind**: Antibiotics, Antiplatelet, Beta Blockers,
+  Magnesium, SNRIs, Theophylline, Vitamin E
+- **"Diuretics"**, which is a *broader* class than the sheet's "Thiazide/loop
+  diuretics" — a different question from a drug with no row, and kept separate
+
+And it runs the other way too: **Warfarin is modelled, with a CRITICAL Vitamin
+K veto, and the interface never names it.** Step 7's first row is a free-text
+"Search bar + categories", so the named medications are examples rather than
+the whole list — which is itself why neither direction can be closed from
+here.
+
+### One claim I made loosely and then measured
+
+I wrote that HIGH is "a third" of the VETO registry. It is 111 of 339 —
+32.7%, just *under* a third. What is true and worth saying is that it is the
+**largest** tier. Corrected in four files before committing.
+
+### For Dr. Ali — three questions
+
+1. **Which severity is right for insulin and sulfonylureas?** One registry
+   says CRITICAL and refers to a prescriber; this one says MODERATE and asks
+   for a measurement.
+2. **Should O9 have a HIGH tier?** Without one it cannot express the VETO
+   registry's largest category.
+3. **What happens for the seven medications with no row** — and for warfarin,
+   which the interface cannot record?
