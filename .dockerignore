@@ -1,0 +1,31 @@
+# Everything the image does not need, and two things it must not have.
+
+# archive/ holds modules parked ahead of the build order. pytest.ini already
+# excludes them from collection; keeping them out of the image means a stray
+# import cannot reach code the engine has deliberately set aside.
+archive/
+
+# docs/ is 2,400 lines of findings for the workbook's author. Useful, and
+# not something a running service reads.
+docs/
+
+.git/
+.github/
+.gitignore
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Never: the master workbook. The engine reads the committed JSON that the
+# extractors produced, never a spreadsheet. If one ever appears here it would
+# be both a large layer and a second source of truth.
+*.xlsx
+*.xlsm
+
+Dockerfile
+.dockerignore
+docker-compose.yml

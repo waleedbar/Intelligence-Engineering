@@ -1,0 +1,57 @@
+# Two ways to run what the image contains.
+#
+#   docker compose run --rm tests     the suite, against a real PostgreSQL
+#   docker compose up api             the service, on http://localhost:8000
+#
+# The suite runs inside the SAME image that serves the API -- that is the
+# point of the milestone's third requirement. Running the tests from a
+# different image would prove nothing about the one that ships.
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: sahacore
+      POSTGRES_PASSWORD: sahacore
+      POSTGRES_DB: sahacore
+    # No published port. The API and the tests reach it on the compose
+    # network; nothing outside needs to, and a database on localhost:5432 is
+    # how a development box ends up exposed.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sahacore -d sahacore"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # Applies migrations, then exits. Both services below wait for it, so
+  # neither can start against an unmigrated database.
+  migrate:
+    build: .
+    image: sahacore:dev
+    environment:
+      DATABASE_URL: postgresql://sahacore:sahacore@db:5432/sahacore
+    command: ["python", "-m", "sahacore.migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build: .
+    image: sahacore:dev
+    environment:
+      DATABASE_URL: postgresql://sahacore:sahacore@db:5432/sahacore
+    ports:
+      - "8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  tests:
+    build: .
+    image: sahacore:dev
+    environment:
+      DATABASE_URL: postgresql://sahacore:sahacore@db:5432/sahacore
+    command: ["python", "-m", "pytest", "tests/", "-q"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully

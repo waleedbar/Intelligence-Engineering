@@ -471,3 +471,74 @@ jobs:
       # Postgres service rather than a mock.
       - name: Run the full suite against PostgreSQL (ledger acceptance tests)
         run: python -m pytest tests/ -v
+
+  # The image the milestone asks for, and the proof it works. This job is
+  # where "the test suite passes inside the Docker container" is actually
+  # verified: the suite runs in the SAME image that serves the API, because
+  # a test image built from different layers proves nothing about the one
+  # that ships.
+  docker:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sahacore_ci
+          POSTGRES_PASSWORD: sahacore_ci
+          POSTGRES_DB: sahacore_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the image
+        run: docker build -t sahacore:ci .
+
+      # The suite with no database configured, exactly as a bare
+      # `docker run` would: this is the equation layer proving it still
+      # needs nothing but Python.
+      - name: Run the suite inside the image, with no database
+        run: docker run --rm -e DATABASE_URL= sahacore:ci python -m pytest tests/ -q
+
+      - name: Apply migrations from inside the image
+        run: |
+          docker run --rm --network host \
+            -e DATABASE_URL=postgresql://sahacore_ci:sahacore_ci@127.0.0.1:5432/sahacore_ci \
+            sahacore:ci python -m sahacore.migrate
+
+      - name: Run the whole suite inside the image, against PostgreSQL
+        run: |
+          docker run --rm --network host \
+            -e DATABASE_URL=postgresql://sahacore_ci:sahacore_ci@127.0.0.1:5432/sahacore_ci \
+            sahacore:ci python -m pytest tests/ -q
+
+      # The image must serve, not merely contain code that imports. This
+      # starts the real CMD and probes the endpoint the HEALTHCHECK uses.
+      - name: The container serves /health
+        run: |
+          docker run -d --name sahacore-probe --network host \
+            -e DATABASE_URL=postgresql://sahacore_ci:sahacore_ci@127.0.0.1:5432/sahacore_ci \
+            sahacore:ci
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8000/health > /tmp/health.json; then break; fi
+            sleep 1
+          done
+          cat /tmp/health.json
+          grep -q '"status":"ok"' /tmp/health.json
+          curl -sf http://127.0.0.1:8000/health/ready | grep -q '"status":"ready"'
+          docker rm -f sahacore-probe
+
+      # The image runs as a non-root user. A container that quietly reverts
+      # to root is the kind of regression nobody notices until an audit.
+      - name: The container does not run as root
+        run: |
+          uid=$(docker run --rm sahacore:ci id -u)
+          echo "container uid: $uid"
+          test "$uid" = "10001"

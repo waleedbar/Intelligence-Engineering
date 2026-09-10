@@ -15,3 +15,16 @@ openpyxl==3.1.5
 # to check its shell quoting -- CI was red for three commits on a bug no
 # Python-level test could see.
 PyYAML==6.0.1
+
+# The HTTP surface (sahacore/api). FastAPI brings pydantic, but pydantic is
+# imported by name in sahacore/api/schemas.py, so it is pinned in its own
+# right -- tests/test_requirements_cover_imports.py checks the manifest
+# against the imports in both directions.
+fastapi==0.121.2
+pydantic==2.13.1
+# The ASGI server. Imported by sahacore/api/__main__.py so `python -m
+# sahacore.api` and the image's CMD start the same thing.
+uvicorn==0.41.0
+# tests/test_api.py drives the app through httpx's ASGI transport rather
+# than a live socket, so the API tests need no port and no running server.
+httpx==0.28.1
