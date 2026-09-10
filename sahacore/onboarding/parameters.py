@@ -139,6 +139,27 @@ def load_o5_ssb_midpoints() -> tuple[float, ...]:
 
 
 @lru_cache(maxsize=1)
+def load_o7_patterns() -> tuple[dict, ...]:
+    """The eight dietary patterns of 'O·O7 Diet Pattern Priors'.
+
+    Descriptions, not measurements: each carries its nutrient shifts and
+    typical deficiencies as prose, because that is all the sheet gives. The
+    means and variances O7.1 needs -- 8 x 81 x 2 of them -- are absent, so
+    sahacore.onboarding.diet_priors.nutrient_prior raises rather than
+    inventing one.
+
+    `ui_status` records how each pattern's declared label relates to what the
+    interface actually offers, which is how the Intermittent Fasting gap was
+    found.
+    """
+    data = json.loads((DATA_DIR / "onboarding_o7.json").read_text(encoding="utf-8"))
+    return tuple({k: pattern[k] for k in
+                  ("pattern", "key_nutrient_shifts", "typical_deficiencies",
+                   "ui_label", "ui_status")}
+                 for pattern in data["patterns"])
+
+
+@lru_cache(maxsize=1)
 def _o6() -> dict:
     return json.loads((DATA_DIR / "onboarding_o6.json").read_text(encoding="utf-8"))
 

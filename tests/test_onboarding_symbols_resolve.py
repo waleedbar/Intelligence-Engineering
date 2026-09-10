@@ -51,7 +51,9 @@ def test_the_known_holes_are_still_holes(result):
         # O6.9's liability threshold model
         "g", "e", "threshold", "sigma",
         # O6.10 and O6.11
-        "FH_relevant", "eta_hi", "sigma2_base"}
+        "FH_relevant", "eta_hi", "sigma2_base",
+        # O7.1's 1,296 absent numbers, and O7.2's two runtime inputs
+        "mu_pattern_i", "sigma2_pattern_i", "sigma2_prior", "sigma2_obs", "k"}
     assert result["unresolved"]["e_WHtR"] == ["O1.9"]
     assert result["unresolved"]["e_BMI"] == ["O1.9"]
     assert result["unresolved"]["f_u_ref"] == ["O1.8"]
@@ -238,8 +240,8 @@ def test_every_built_onboarding_module_is_the_one_the_contract_names():
             missing.append(step["step_id"])
 
     assert built == ["ONB-001", "ONB-002", "ONB-003", "ONB-004",
-                     "ONB-005", "ONB-006"], built
-    assert len(missing) == 8
+                     "ONB-005", "ONB-006", "ONB-007"], built
+    assert len(missing) == 7
     # The two that are blocked must be among the unbuilt, not quietly written.
     blocked = [s["step_id"] for s in contract["steps"] if s["blocked_by"]]
     assert set(blocked) <= set(missing)

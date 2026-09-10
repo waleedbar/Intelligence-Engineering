@@ -2056,3 +2056,133 @@ dangerous than one that returns nothing.
    pathway's own?
 4. **Is the RR table's Z-Pathway column what `FH_relevant` means?** It is the
    only candidate, and the sheet does not say so.
+
+---
+
+## 2026-09-10: ONB-007 — the sheet that initialises 81 states and supplies no numbers
+
+`O·O7 Diet Pattern Priors` (manifest 77) is the largest gap found in this
+build. Its first equation is the whole point of the sheet:
+
+    O7.1   C_f(0)_i ~ N(mu_pattern_i, sigma2_pattern_i)
+    engine target: "Layer E: x_hat(0)[1..81]"
+
+Those are the starting values of **81 of the engine's 219 states** — every
+nutrient it tracks. To fill them the sheet needs a mean and a variance per
+nutrient per pattern:
+
+**8 patterns × 81 nutrients × 2 parameters = 1,296 numbers. The workbook has
+none of them.**
+
+What it supplies instead is prose, one line per pattern:
+
+| pattern | key nutrient shifts | typical deficiencies |
+|---|---|---|
+| Mediterranean | "High omega-3, olive oil, fiber" | "None typical" |
+| Vegan | "No animal products" | "B12, Iron, Zinc, Omega-3, Ca, VitD" |
+
+Useful to a dietitian. Uncomputable by anything.
+
+### Searched before concluding
+
+- `mu_pattern` and `sigma2_pattern` appear in the entire workbook **only** on
+  this sheet and its duplicate at `P1 Onboarding` row 328.
+- The 81-nutrient registry carries kinetics — gamma shapes, decay constants,
+  half-lives, `s_hi_log`, `s_lo_log` — and **no baseline-intake column of any
+  kind**.
+- The only other sheet whose name suggests patterns, `M-WPAT Patterns
+  Alarms`, is Layer W's behavioural alarms and has nothing to do with diet.
+
+So `nutrient_prior` **raises** rather than returning a number. A stub
+returning zero, or a population average, would put an invented initial
+condition into 81 states and nothing downstream could ever tell. The
+exception is its own type, `PriorNotSupplied`, so it cannot be mistaken for a
+mistyped nutrient id and so the day it is fixed the fix is greppable.
+
+This blocks ONB-007 the way ONB-011 and ONB-012 are blocked — but more
+sharply. Those are missing a *mapping*; this is missing 1,296 *numbers*.
+
+### The pattern list is stated three times and the three disagree
+
+| source | says |
+|---|---|
+| this sheet | **8** patterns; its own UI Label column marks two "Not in current UI" |
+| `P1 DataMap` row 125 | "Radio (**8** options)", default "Standard Balanced" |
+| the questionnaire, Step 3 | **6** options, including **Intermittent Fasting** |
+
+The sheet already knows about two of the three gaps — DASH and Carnivore have
+priors and cannot be selected, and it says so. Credit where due.
+
+**What nothing anywhere mentions is that the interface offers a seventh
+pattern the sheet has never heard of.** A user selecting *Intermittent
+Fasting* matches no pattern, no nutrient shift, no deficiency list and no
+prior.
+
+Two further UI options fail an exact-label match — `Mediterranean` against
+the sheet's "Mediterranean Diet", and `Low-carb/Keto` against
+"Low-carb/Ketogenic". Those are near-misses with an obvious intended meaning,
+and they are recorded rather than bridged, for the same reason `f_u_ref` is
+not tied to parameter #37 and `sitting_hrs` is not tied to `standing_hrs`.
+They are a *different kind* of problem from Intermittent Fasting, which has
+no candidate at all, and keeping them apart is the point.
+
+### O7.4 needs an encoding that does not exist
+
+`DQI = (fruit_serv + veg_serv) / 10`, declared range 0-1, feeding O11's Z5.
+
+Step 3 collects fruit and vegetable servings as **bands** — `0 / 1-2 / 3-4 /
+5+` — and no sheet in the workbook says what those bands are worth. O5.2
+gives midpoints for alcohol and O5.5 gives (wrong) ones for sugary drinks;
+fruit and vegetables get none at all. So the declared 0-1 range cannot be
+verified, and `diet_quality_index` takes servings rather than a band.
+
+### What is buildable, and is built
+
+O7.2's update is correct as written and needs no missing constant:
+
+    sigma2_post = 1 / (1/sigma2_prior + k/sigma2_obs)
+
+Precisions add, and each day of food logging contributes one more unit of
+observation precision. `prior_weight` is that rearranged, which turns O7.3's
+schedule ("days 1-7 the prior dominates, day 14+ the logs do") from decoration
+into something checkable. O7.3 itself is reported as the sheet's **schedule**,
+not as a computation — which source actually dominates depends on the ratio of
+the two variances, and O7.1 supplies neither. Days 8–13 are named
+`"transition"` rather than assigned to a side, because the sheet says nothing
+about them.
+
+Note the circularity: O7.2's `sigma2_prior` is exactly what O7.1 fails to
+supply. Correct arithmetic that cannot be run until the priors exist.
+
+### Five detector gaps fixed, none by suppression
+
+Adding O7 reported seventeen new "undefined" symbols and **not one was a
+source hole beyond the ones above**:
+
+| symbols | what was actually wrong |
+|---|---|
+| `Day`, `Days`, `dominate(s)`, `food`, `logs`, `prior`, `large`, `small` | O7.3's whole cell is **prose**, not a formula |
+| `C_f` | `~` asserts a distribution and defines its left side, exactly as `=` defines a value |
+| `_i` | a trailing subscript tokenised out of `C_f(0)_i` |
+| `N` | names the Normal distribution |
+
+Each fix is a rule true of the notation: a cell with **no relation operator at
+all** (`=` or `~`) asserts nothing and so names nothing; `~` is a relation
+operator; a token starting with `_` is a subscript. `C_f` is then bridged to
+the state vector's `C_fast` block — a structural match, not a resemblance:
+that block is slots 1–81 and O7.1's engine target reads `x_hat(0)[1..81]`.
+
+And one earlier trap recurred in a new place: a plain search for a digit read
+`"High omega-3, olive oil, fiber"` as a table of numbers, because `omega-3`
+and `B12` carry digits in their **names**. Same shape as the hyphen in
+`dose-response`. The check now looks for a standalone number.
+
+### For Dr. Ali — three questions
+
+1. **Where do the 1,296 nutrient priors come from?** This is the single
+   largest missing thing in the build: the initial condition of 81 of 219
+   states. Without it, ONB-007 cannot initialise Layer E at all.
+2. **What happens when a user selects Intermittent Fasting?** The interface
+   offers it and the engine has no pattern for it.
+3. **What are Step 3's fruit and vegetable bands worth numerically?** O7.4
+   divides their sum by 10 and nothing says what `1-2` means.

@@ -1,0 +1,181 @@
+"""ONB-007 — the diet-pattern priors, and the 1,296 numbers that are missing.
+
+Authority: 'O·O7 Diet Pattern Priors', equations O7.1-O7.4, via
+sahacore/data/onboarding_o7.json.
+
+Onboarding step 3, "81-nutrient Normal priors", feeding Layers A, B and E.
+
+    O7.1  C_f(0)_i ~ N(mu_pattern_i, sigma2_pattern_i)
+    O7.2  sigma2_post = 1 / (1/sigma2_prior + k/sigma2_obs)
+    O7.3  days 1-7 the prior dominates; day 14+ the food logs do
+    O7.4  DQI = (fruit_serv + veg_serv) / 10
+
+THIS MODULE CANNOT DO WHAT THE SHEET IS FOR, and says so rather than
+improvising. O7.1's engine target is "Layer E: x_hat(0)[1..81]" -- the
+starting value of every nutrient the engine tracks, 81 of its 219 states. It
+needs a mean and a variance per nutrient per pattern: 8 x 81 x 2 = 1,296
+numbers. The workbook supplies none of them.
+
+What it supplies instead is prose, one line per pattern: "High omega-3, olive
+oil, fiber", "B12, Iron (heme), Zinc, Omega-3". Useful to a dietitian,
+uncomputable by anything.
+
+Searched before concluding: `mu_pattern` and `sigma2_pattern` appear only on
+this sheet and its duplicate at 'P1 Onboarding' row 328; the 81-nutrient
+registry carries kinetics and no baseline intake column; and the only other
+"pattern" sheet is Layer W's behavioural alarms.
+
+So `nutrient_prior` REFUSES rather than returning a made-up number. Returning
+zero, or a population average, would put an invented initial condition into
+81 states and nothing downstream would ever know. See docs/parameter-gaps.md.
+
+WHAT IS BUILT: O7.2's precision-weighted update, O7.3's crossover as the
+sheet states it, O7.4's index, and the eight-pattern catalogue -- which is
+worth having on its own, because comparing it against the interface is what
+turned up the finding below.
+
+THE INTERFACE OFFERS A PATTERN THE SHEET HAS NEVER HEARD OF. Step 3 lists
+six options; this sheet describes eight; 'P1 DataMap' row 125 says "Radio (8
+options)". The sheet's own UI Label column marks DASH and Carnivore "Not in
+current UI" -- it knows about those. Nothing anywhere mentions that the
+interface also offers **Intermittent Fasting**, for which no pattern, no
+nutrient shift and no prior exists. A user selecting it gets nothing.
+"""
+from dataclasses import dataclass
+
+# O7.4's divisor, written into the formula by the sheet.
+_DQI_DIVISOR = 10.0
+
+# O7.3's two stated edges, in days of food logging.
+_PRIOR_DOMINATES_THROUGH_DAY = 7
+_LOGS_DOMINATE_FROM_DAY = 14
+
+
+class PriorNotSupplied(LookupError):
+    """Raised because the workbook does not contain the number asked for.
+
+    A distinct type so a caller cannot mistake it for a typo in a nutrient
+    id, and so that the day this is fixed the fix is greppable.
+    """
+
+
+@dataclass(frozen=True)
+class DietPattern:
+    """One of the sheet's eight patterns, as described rather than measured."""
+    pattern: str
+    key_nutrient_shifts: str
+    typical_deficiencies: str
+    ui_label: str
+    ui_status: str
+
+
+def patterns() -> tuple[DietPattern, ...]:
+    """The eight dietary patterns, in the sheet's order."""
+    from sahacore.onboarding.parameters import load_o7_patterns
+    return tuple(DietPattern(**row) for row in load_o7_patterns())
+
+
+def pattern_for_ui_option(option: str) -> DietPattern:
+    """The pattern whose declared UI label is exactly this option.
+
+    EXACT, deliberately. 'Mediterranean Diet' plainly means the interface's
+    'Mediterranean' and 'Low-carb/Ketogenic' its 'Low-carb/Keto' -- and
+    matching on "plainly means" is the move this repo refuses, the same one
+    refused for f_u_ref and for standing_hrs. Those two are bridges for the
+    sheet's author to declare.
+    """
+    for pattern in patterns():
+        if pattern.ui_label == option:
+            return pattern
+    raise PriorNotSupplied(
+        f"no dietary pattern declares the UI label {option!r}. The interface "
+        "offers six options and the sheet describes eight, and they do not "
+        "line up -- see docs/parameter-gaps.md.")
+
+
+def nutrient_prior(pattern: str, nutrient_id: str) -> tuple[float, float]:
+    """O7.1. The (mean, variance) this nutrient starts at under this pattern.
+
+    ALWAYS RAISES. The sheet states the distribution and gives neither
+    parameter, for any of the 81 nutrients under any of the 8 patterns.
+
+    This is not a stub awaiting code -- the code is one line. It is a
+    deliberate refusal to invent 1,296 numbers that would become the initial
+    condition of 81 of the engine's 219 states, with nothing downstream able
+    to tell they were guessed.
+    """
+    raise PriorNotSupplied(
+        f"O7.1 gives no mu_pattern or sigma2_pattern for nutrient "
+        f"{nutrient_id!r} under pattern {pattern!r}, and neither does any "
+        "other sheet in the workbook. 8 patterns x 81 nutrients x (mean, "
+        "variance) = 1,296 numbers, none of them written down. See "
+        "docs/parameter-gaps.md.")
+
+
+def posterior_variance(sigma2_prior: float, sigma2_obs: float,
+                       observation_days: int) -> float:
+    """O7.2. sigma2_post = 1 / (1/sigma2_prior + k/sigma2_obs).
+
+    Precision-weighted, and correct as written: precisions add, and each day
+    of food logging contributes one more unit of observation precision. It
+    needs no missing constants -- only the two variances the caller has, and
+    the day count.
+
+    Note that sigma2_prior is exactly what O7.1 fails to supply. So this
+    function is buildable and, until the priors arrive, not callable with a
+    real prior.
+    """
+    if sigma2_prior <= 0 or sigma2_obs <= 0:
+        raise ValueError(
+            f"variances must be positive; got prior={sigma2_prior}, "
+            f"observed={sigma2_obs}.")
+    if observation_days < 0:
+        raise ValueError(f"observation_days is {observation_days}.")
+    return 1.0 / (1.0 / sigma2_prior + observation_days / sigma2_obs)
+
+
+def prior_weight(sigma2_prior: float, sigma2_obs: float,
+                 observation_days: int) -> float:
+    """How much of the posterior precision still comes from the prior, 0-1.
+
+    Not an equation on the sheet -- it is O7.2 rearranged, and it is what
+    makes O7.3's claim checkable rather than decorative. At k = 0 it is 1;
+    it falls monotonically as days accumulate.
+    """
+    prior_precision = 1.0 / sigma2_prior
+    total = prior_precision + observation_days / sigma2_obs
+    return prior_precision / total
+
+
+def dominant_source(observation_days: int) -> str:
+    """O7.3, as the sheet states it: 'prior', 'logs', or 'transition'.
+
+    The sheet gives day 7 and day 14 as edges and says nothing about the days
+    between, so they are named rather than assigned to one side. Which source
+    actually dominates depends on the ratio of the two variances, and O7.1
+    supplies neither -- so this reports the sheet's SCHEDULE, not a
+    computation. `prior_weight` is the computation.
+    """
+    if observation_days < 0:
+        raise ValueError(f"observation_days is {observation_days}.")
+    if observation_days <= _PRIOR_DOMINATES_THROUGH_DAY:
+        return "prior"
+    if observation_days >= _LOGS_DOMINATE_FROM_DAY:
+        return "logs"
+    return "transition"
+
+
+def diet_quality_index(fruit_servings: float, veg_servings: float) -> float:
+    """O7.4. DQI = (fruit_serv + veg_serv) / 10, feeding O11's Z5.
+
+    THE SERVING COUNTS ARE NUMBERS AND THE INTERFACE COLLECTS BANDS. Step 3
+    asks for fruit and vegetable servings as '0 / 1-2 / 3-4 / 5+', and no
+    sheet in the workbook says what those bands are worth -- O5.2 gives
+    midpoints for alcohol and O5.5 gives (wrong) ones for sugary drinks, and
+    nothing gives any for fruit or vegetables.
+
+    So this takes servings, not a band, and the caller supplies the
+    conversion the sheet declines to. Not clamped: the declared range is 0-1
+    and whether it holds depends entirely on that missing encoding.
+    """
+    return (fruit_servings + veg_servings) / _DQI_DIVISOR

@@ -1,0 +1,124 @@
+{
+  "sheet": "O·O7 Diet Pattern Priors",
+  "equations": [
+    {
+      "equation_id": "O7.1",
+      "source_row": 10,
+      "name": "Nutrient prior (per pattern)",
+      "formula": "C_f(0)_i ~ N(mu_pattern_i, sigma2_pattern_i)",
+      "variables": "mu_pattern_i = expected intake for nutrient i under pattern m",
+      "units": "mg or g",
+      "value_range": "varies per nutrient",
+      "engine_target": "Layer E: x_hat(0)[1..81]"
+    },
+    {
+      "equation_id": "O7.2",
+      "source_row": 11,
+      "name": "Bayesian posterior update",
+      "formula": "sigma2_post = 1 / (1/sigma2_prior + k/sigma2_obs)",
+      "variables": "sigma2_prior from pattern, sigma2_obs from food logs, k=days",
+      "units": "varies",
+      "value_range": "narrows over time",
+      "engine_target": "Layer E: P(0) diagonal"
+    },
+    {
+      "equation_id": "O7.3",
+      "source_row": 12,
+      "name": "Prior dominance period",
+      "formula": "Days 1-7: prior dominates (k small)\nDay 14+: food logs dominate (k large)",
+      "variables": "k = number of observation days",
+      "units": "days",
+      "value_range": "1-14+",
+      "engine_target": "Transition logic"
+    },
+    {
+      "equation_id": "O7.4",
+      "source_row": 13,
+      "name": "Diet Quality Index",
+      "formula": "DQI = (fruit_serv + veg_serv) / 10",
+      "variables": "fruit_serv, veg_serv from Step 3",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O11: Z5 Epigenetic Drift"
+    }
+  ],
+  "patterns": [
+    {
+      "pattern": "Standard/Balanced",
+      "source_row": 19,
+      "key_nutrient_shifts": "Moderate across all nutrients",
+      "typical_deficiencies": "None specific",
+      "ui_label": "Default",
+      "ui_status": "LABEL_DOES_NOT_MATCH_ANY_UI_OPTION"
+    },
+    {
+      "pattern": "Mediterranean",
+      "source_row": 20,
+      "key_nutrient_shifts": "High omega-3, olive oil, fiber",
+      "typical_deficiencies": "None typical",
+      "ui_label": "Mediterranean Diet",
+      "ui_status": "LABEL_DOES_NOT_MATCH_ANY_UI_OPTION"
+    },
+    {
+      "pattern": "Keto/Low-Carb",
+      "source_row": 21,
+      "key_nutrient_shifts": "High fat, very low carb, moderate protein",
+      "typical_deficiencies": "Fiber, Mg, K, some vitamins",
+      "ui_label": "Low-carb/Ketogenic",
+      "ui_status": "LABEL_DOES_NOT_MATCH_ANY_UI_OPTION"
+    },
+    {
+      "pattern": "Vegetarian",
+      "source_row": 22,
+      "key_nutrient_shifts": "No meat, high plant-based",
+      "typical_deficiencies": "B12, Iron (heme), Zinc, Omega-3",
+      "ui_label": "Vegetarian",
+      "ui_status": "MATCHES_UI_EXACTLY"
+    },
+    {
+      "pattern": "Vegan",
+      "source_row": 23,
+      "key_nutrient_shifts": "No animal products",
+      "typical_deficiencies": "B12, Iron, Zinc, Omega-3, Ca, VitD",
+      "ui_label": "Vegan",
+      "ui_status": "MATCHES_UI_EXACTLY"
+    },
+    {
+      "pattern": "Paleo",
+      "source_row": 24,
+      "key_nutrient_shifts": "High protein, no grains/dairy",
+      "typical_deficiencies": "Calcium, Fiber, VitD",
+      "ui_label": "Paleo",
+      "ui_status": "MATCHES_UI_EXACTLY"
+    },
+    {
+      "pattern": "DASH",
+      "source_row": 25,
+      "key_nutrient_shifts": "High K, Ca, Mg; low Na",
+      "typical_deficiencies": "None typical",
+      "ui_label": "Not in current UI",
+      "ui_status": "DECLARED_NOT_IN_UI"
+    },
+    {
+      "pattern": "Carnivore",
+      "source_row": 26,
+      "key_nutrient_shifts": "All animal products",
+      "typical_deficiencies": "Fiber, VitC, polyphenols",
+      "ui_label": "Not in current UI",
+      "ui_status": "DECLARED_NOT_IN_UI"
+    }
+  ],
+  "ui_options": [
+    "Low-carb/Keto",
+    "Vegetarian",
+    "Mediterranean",
+    "Vegan",
+    "Paleo",
+    "Intermittent Fasting"
+  ],
+  "ui_options_no_pattern_claims": [
+    "Low-carb/Keto",
+    "Mediterranean",
+    "Intermittent Fasting"
+  ]
+}

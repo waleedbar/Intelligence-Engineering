@@ -43,7 +43,10 @@ FUNCTIONS = {"min", "max", "exp", "sqrt", "ln", "log", "abs", "I",
              # O6.9 writes "P(disease) = Phi((l - threshold)/sigma)".
              # Phi is the standard normal CDF and P(...) is probability
              # notation -- both are functions, neither is a quantity.
-             "Phi", "P"}
+             "Phi", "P",
+             # O7.1 writes "C_f(0)_i ~ N(mu_pattern_i, sigma2_pattern_i)".
+             # N names the Normal distribution, not a quantity.
+             "N"}
 
 # English the sheets write inside formula cells. 'O3.5' reads
 # "0 if 7<=h<=9; min(1,(7-h)/2) if h<7" and 'O3.1' continues on a second
@@ -92,6 +95,23 @@ _BOUND_INDEX = re.compile(r"\bfor\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?:=|\bin\b)")
 # which is an encoding rather than a guard -- that case is handled by passing
 # the encoded variable in as a definition.
 _CASE_GUARD = re.compile(r"^(Female|Male)\s*:\s*")
+
+# A trailing subscript, tokenised out of an expression rather than named as a
+# quantity: O7.1's "C_f(0)_i" yields a bare `_i` after the bracket. A leading
+# underscore never starts a symbol anywhere in this workbook, so a token that
+# begins with one is notation.
+_SUBSCRIPT = re.compile(r"^_")
+
+# A formula cell that is PROSE rather than an equation. O7.3's whole cell
+# reads "Days 1-7: prior dominates (k small) / Day 14+: food logs dominate
+# (k large)" -- a schedule, with no relation asserted anywhere in it.
+# Tokenising that yields ten English words as missing symbols, which is how a
+# useful check becomes one nobody reads.
+#
+# The test is the absence of any relation operator in the WHOLE cell: '=' or
+# '~'. Every real formula in the O-sheets carries one, including O7.1, whose
+# '~' is what makes C_f(0) a definition rather than a use.
+_RELATION = re.compile(r"[=~]")
 
 
 def _states_a_value(right: str) -> bool:
@@ -166,6 +186,12 @@ SHEET_SPELLINGS = {
     # instantiation supplies a value with a cited source.
     "RR": "the relative risk in O6.1's general form; O6.2-O6.7 each supply "
           "one, and the reference table cites a study for all six",
+    # O7.1's "C_f(0)_i" is the fast nutrient state at t=0. The state vector
+    # registry names that block C_fast and gives it slots 1-81, and O7.1's
+    # own engine target reads "Layer E: x_hat(0)[1..81]" -- the same 81. A
+    # structural match, not a resemblance between two names.
+    "C_f": "C_fast, the 81-slot nutrient block of the 219-state vector; "
+           "O7.1's engine target names exactly those slots, x_hat(0)[1..81]",
 }
 
 SHEETS = {
@@ -175,6 +201,7 @@ SHEETS = {
     "O4": ("onboarding_o4.json", "O·O4 Stress Index"),
     "O5": ("onboarding_o5.json", "O·O5 Substance Exposure"),
     "O6": ("onboarding_o6.json", "O·O6 Family History"),
+    "O7": ("onboarding_o7.json", "O·O7 Diet Pattern Priors"),
 }
 
 # Symbols already reported, with what each one is missing. Anything the
@@ -264,6 +291,41 @@ KNOWN_UNRESOLVED = {
                    "1.5. Layer E's P(0) diagonal is its engine target and no "
                    "sheet gives its default. Searched both parameter "
                    "registries for a prior variance and there is none.",
+
+    # --- O7.1, the largest gap in the build -------------------------------
+    #
+    # C_f(0)_i ~ N(mu_pattern_i, sigma2_pattern_i), engine target
+    # "Layer E: x_hat(0)[1..81]". Eight patterns x 81 nutrients x two
+    # parameters is 1,296 numbers and the workbook has none of them.
+    "mu_pattern_i":
+        "O7.1's expected intake of nutrient i under dietary pattern m -- the "
+        "STARTING VALUE of 81 of the engine's 219 states. Eight patterns x 81 "
+        "nutrients = 648 means, and the sheet gives prose instead: 'High "
+        "omega-3, olive oil, fiber'.\n"
+        "             Searched before concluding: mu_pattern appears in the "
+        "whole workbook only on O·O7 and its duplicate at 'P1 Onboarding' row "
+        "328; the 81-nutrient registry carries kinetics and no baseline "
+        "intake column; and the only other 'pattern' sheet is Layer W's "
+        "behavioural alarms. This is the largest single gap found so far.",
+    "sigma2_pattern_i":
+        "O7.1's variance on that same prior -- the other 648 numbers. Same "
+        "absence, and it is what Layer E's P(0) diagonal would be "
+        "initialised from.",
+
+    # --- O7.2 -------------------------------------------------------------
+    "sigma2_prior":
+        "O7.2's prior variance, described by its own Variables cell as 'from "
+        "pattern'. That is sigma2_pattern_i, so this is the SAME hole seen "
+        "from the equation that consumes it: O7.2 is correct arithmetic that "
+        "cannot be run until O7.1's priors exist.",
+    "sigma2_obs":
+        "O7.2's observation variance, 'from food logs'. A RUNTIME quantity "
+        "rather than a missing constant -- the sheet says where it comes "
+        "from and the source is one the engine will have. Reported because "
+        "nothing defines it as a symbol, not because it is unobtainable; "
+        "sahacore.onboarding.diet_priors takes it as an argument.",
+    "k": "O7.2's observation count, 'k=days'. Runtime like sigma2_obs, and "
+         "adequately located by the sheet. Also an argument.",
 }
 
 # Routings already reported, in the same spirit. Anything broken_routings
@@ -316,6 +378,12 @@ def formula_parts(formula: str, variables: str = "",
     # sheet look accounted for.
     bound = set(_BOUND_INDEX.findall(formula))
     excluded = (ordinal_options or set()) | KEYWORDS | FUNCTIONS
+
+    # A prose cell asserts no relation, so it names no quantities either.
+    # Its Variables column is still read, because that is where such a row
+    # says what its symbols mean.
+    if not _RELATION.search(formula):
+        formula = ""
     defined: set[str] = set()
     used: set[str] = set()
 
@@ -336,7 +404,11 @@ def formula_parts(formula: str, variables: str = "",
             guard = _CASE_GUARD.match(statement)
             if guard:
                 statement = statement[guard.end():].strip()
-            left, sep, right = statement.partition("=")
+            # '~' asserts a distribution and defines its left-hand side
+            # exactly as '=' defines a value: O7.1's "C_f(0)_i ~ N(...)" is
+            # what says C_f(0) is being given a prior.
+            separator = "~" if ("~" in statement and "=" not in statement) else "="
+            left, sep, right = statement.partition(separator)
             yield statement, left.strip(), sep, right
 
     for statement, left, sep, right in statements(formula):
@@ -346,7 +418,7 @@ def formula_parts(formula: str, variables: str = "",
         else:
             source = statement
         used |= {name for name in _IDENTIFIER.findall(source)
-                 if name not in excluded}
+                 if name not in excluded and not _SUBSCRIPT.match(name)}
 
     # THE VARIABLES COLUMN CONTRIBUTES DEFINITIONS AND NOTHING ELSE.
     #

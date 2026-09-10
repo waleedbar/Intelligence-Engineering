@@ -87,6 +87,7 @@ jobs:
           python -m sahacore.data.load_step_questions
           python -m sahacore.data.load_onboarding_o5
           python -m sahacore.data.load_onboarding_o6
+          python -m sahacore.data.load_onboarding_o7
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -166,7 +167,7 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 62, f'expected 62 versioned registries, got {versioned}'
+              assert versioned == 64, f'expected 64 versioned registries, got {versioned}'
               # The twelve per-cluster ceilings on the scarring feedback loop,
               # each confirmed by the sheet's own section-8 audit receipt.
               cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
@@ -336,6 +337,21 @@ jobs:
               cur.execute('SELECT count(*), count(DISTINCT z_pathway) FROM engine_internal.onboarding_o6_condition_pathway')
               o6p, o6z = cur.fetchone()
               assert (o6p, o6z) == (7, 7), f'O6 pathway map: {(o6p, o6z)}'
+              # ONB-007. Four equations, eight dietary patterns -- and NO
+              # prior table, because O7.1 needs 8 x 81 x 2 = 1,296 numbers
+              # and the workbook supplies none. Two patterns the sheet
+              # itself marks absent from the UI; three UI options no
+              # pattern claims by an exact label, one of which
+              # (Intermittent Fasting) has no candidate at all.
+              cur.execute('SELECT count(*) FROM engine_internal.onboarding_o7_equation')
+              o7e = cur.fetchone()[0]
+              assert o7e == 4, f'expected 4 O7 equations, got {o7e}'
+              cur.execute(\"SELECT count(*), count(*) FILTER (WHERE ui_status = 'DECLARED_NOT_IN_UI') FROM engine_internal.onboarding_o7_pattern\")
+              o7p, o7a = cur.fetchone()
+              assert (o7p, o7a) == (8, 2), f'O7 patterns: {(o7p, o7a)}'
+              cur.execute('SELECT count(*) FROM engine_internal.onboarding_o7_ui_option_unclaimed')
+              o7u = cur.fetchone()[0]
+              assert o7u == 3, f'expected 3 unclaimed UI diet options, got {o7u}'
               # 48 organ-pathway links over 13 pathways: none for D14/D15,
               # which is gate d14_d15_fail_closed agreeing with the data.
               cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
@@ -401,7 +417,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), ONB-004 live (9 eq/10 PSS-10 items/3 bands), 12 onboarding steps (73 questions), ONB-005 live (7 eq/18 encoded answers), ONB-006 live (11 eq/6 sourced risks), 62 versioned registries')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), ONB-004 live (9 eq/10 PSS-10 items/3 bands), 12 onboarding steps (73 questions), ONB-005 live (7 eq/18 encoded answers), ONB-006 live (11 eq/6 sourced risks), ONB-007 partial (4 eq/8 patterns, 1296 priors absent), 64 versioned registries')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event
