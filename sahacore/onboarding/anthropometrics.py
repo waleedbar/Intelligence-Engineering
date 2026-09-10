@@ -165,7 +165,18 @@ def waist_exposure_index(waist_cm: float, sex: str, p: O1Parameters) -> float:
 def central_adiposity_composite(e_waist: float, e_whtr: float, e_bmi: float,
                                 neck_cm: float, p: O1Parameters) -> float:
     """O1.9. The three exposure indices are normalised [0, 1] and the neck
-    term is an indicator, so the result is in [0, 1] whenever they are."""
+    term is an indicator, so the result is in [0, 1] whenever they are.
+
+    TWO OF THE THREE INDICES ARE NOT DEFINED BY THE WORKBOOK. O1.10 gives
+    e_waist. `e_WHtR` and `e_BMI` appear only inside O1.9 itself, described as
+    "normalized [0,1] indices" and given no formula, no thresholds and no
+    parameter row -- see sahacore.data.onboarding_symbols.
+
+    They are therefore arguments, not computed here: normalising BMI or WHtR
+    on a range this build chose would be inventing two thirds of a
+    composite that feeds Layer C. A caller must supply them from a source it
+    can name.
+    """
     return (_CENTADIP_WEIGHTS["waist"] * e_waist
             + _CENTADIP_WEIGHTS["whtr"] * e_whtr
             + _CENTADIP_WEIGHTS["bmi"] * e_bmi

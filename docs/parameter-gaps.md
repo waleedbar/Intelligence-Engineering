@@ -1236,3 +1236,92 @@ catalogue's, whose Light band runs to 3.5 and whose Vigorous band runs to
 
 **For Dr. Ali:** are the six missing cluster columns pending, and are the
 intensity labels meant to follow the Compendium's boundaries?
+
+## 2026-09-10: an audit of my own work — three misses, and a mechanical fix
+
+Asked to check the recent work before continuing, rather than summarise it.
+Three real defects, one of them substantive.
+
+### 1. I reported ONB-001 as complete when two of O1.9's three inputs are undefined
+
+`O1.9 mu_centadip = 0.45*e_waist + 0.30*e_WHtR + 0.20*e_BMI + 0.05*I(neck>40cm)`
+
+`e_waist` is defined by O1.10. **`e_WHtR` and `e_BMI` are not defined
+anywhere.** They appear in exactly two cells in the whole workbook — inside
+O1.9 and inside its duplicate on `P1 Onboarding` — described as *"normalized
+[0,1] indices"* with no formula, no thresholds and no parameter row.
+
+The code was not wrong: `central_adiposity_composite` takes them as
+arguments, so nothing was invented. **The reporting was wrong.** ONB-001 was
+committed as ten equations implemented, and two thirds of one of them cannot
+be computed from the workbook.
+
+`f_u_ref` in O1.8 is the same story — two mentions, both inside O1.8. Note
+that parameter **#37 `f_unbound,i` declares exactly the same range, 0.01-1.0**.
+That is suggestive and it is *not* evidence: the spellings differ and the
+81-nutrient registry has no unbound-fraction column. Left unbridged, in the
+style of `build_eq_param_fk.ALIASES`, which requires a declared reason.
+
+### The pattern, and the fix
+
+These are not isolated. A symbol that appears **exactly twice** — once on its
+own sheet, once on `P1 Onboarding`, which duplicates the O-sheets — is a
+symbol nothing defines:
+
+| symbol | used by | mentions |
+|---|---|---|
+| `e_WHtR` | O1.9 | 2 |
+| `e_BMI` | O1.9 | 2 |
+| `f_u_ref` | O1.8 | 2 |
+| `HR_Arem` | O2.4 | 2 |
+| `rho_pop` | O2.5 | 2 |
+| `K_PA` | consolidated ONB-002 | 2 |
+| `CRP_ref` | O11 Z3 | 2 |
+
+I caught three of these by reading and walked past four. Reading does not
+scale to twelve more O-sheets, and an undefined symbol reaching code becomes
+a guess.
+
+So `sahacore/data/onboarding_symbols.py` now does it mechanically: for every
+imported onboarding equation it pulls the symbols off the right-hand side and
+accounts for each against the parameters, the other equations' left-hand
+sides, and the declared user inputs. Anything left over is a hole in the
+source. `tests/test_onboarding_symbols_resolve.py` **fails on a symbol that
+has not been reported**, so finding one means reading the sheet and writing
+down what is missing.
+
+Its tokeniser is itself tested against the three things this workbook does
+that break a naive parser: version tags (`[v39l F-DM]`), units glued to
+numbers (`40cm` must not yield `cm`), and a second definition on a second
+line. Getting any of those wrong makes the guard vacuous.
+
+### 2. An unused import
+
+`import math` in `mvpa_prior.py`, left over from a draft. Removed.
+
+### 3. Nothing checked that a built module is the one the contract names
+
+`O · Onboarding Canonical` names a `sahacore.onboarding.*` function per step.
+Two are built and both match — but nothing verified it, so a module written
+under a different name would have satisfied no contract while looking done.
+Now tested.
+
+### And a standing item, now guarded
+
+Six JSON seeds have no loader and no version: `arthur_signals_raw`,
+`arthur_signals_validated`, `damage_clusters_12`, `lifestyle_states_24`,
+`mechanistic_states_9`, `tvmcd_pathways_15`. Left over from before this
+build's conventions. They are pinned by a test, so a **seventh** — a new
+extractor shipped without its loader — fails.
+
+My first version of that test listed `activities_50.json` among them. It is
+not an orphan: `load_onboarding_o2` reads it. The test caught my own wrong
+assumption before it was committed.
+
+### For Dr. Ali — one question, seven symbols
+
+> Seven symbols are used in onboarding equations and defined nowhere in the
+> workbook: `e_WHtR`, `e_BMI` (O1.9), `f_u_ref` (O1.8), `HR_Arem` (O2.4),
+> `rho_pop` (O2.5), `K_PA` (consolidated ONB-002), `CRP_ref` (O11 Z3). Each
+> appears exactly twice — on its own sheet and in the `P1 Onboarding` copy.
+> Where are their definitions?

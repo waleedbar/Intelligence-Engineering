@@ -34,7 +34,6 @@ and on purpose: O2.1 doubles vigorous minutes, the WHO convention for
 7.5 for vigorous, a ratio of 1.67. Neither is a rounding of the other, and a
 caller that needs one must not take the other.
 """
-import math
 from dataclasses import dataclass
 
 # Written into the formulas by the sheet itself, not parameters.

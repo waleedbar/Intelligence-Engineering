@@ -1,0 +1,156 @@
+"""Every symbol an imported onboarding equation reads must resolve somewhere.
+
+ONB-002 turned up three symbols the workbook names and never defines. They
+were found by hand while reading, and a later audit found three more that the
+same reading had walked past -- e_WHtR and e_BMI in O1.9 and f_u_ref in O1.8,
+after ONB-001 had already been committed as complete.
+
+Reading does not scale to twelve more O-sheets. This makes the check
+mechanical, and pins the holes that are known so a new one fails loudly.
+"""
+import json
+import pathlib
+
+import pytest
+
+from sahacore.data.onboarding_symbols import (
+    KNOWN_UNRESOLVED, analyse, formula_parts,
+)
+
+DATA_DIR = pathlib.Path(__file__).parent.parent / "sahacore" / "data"
+
+
+@pytest.fixture(scope="module")
+def result() -> dict:
+    return analyse()
+
+
+def test_no_symbol_is_unresolved_that_has_not_been_reported(result):
+    """THE GUARD. A symbol nothing defines is a hole in the source, and an
+    unreported one is a hole nobody has looked at. Adding to KNOWN_UNRESOLVED
+    means reading the sheet and writing down what is missing -- which is the
+    work this test exists to force."""
+    surprises = sorted(set(result["unresolved"]) - set(KNOWN_UNRESOLVED))
+    assert not surprises, (
+        f"these symbols are used by an imported equation and defined nowhere, "
+        f"and have not been reported: {surprises}")
+
+
+def test_the_five_known_holes_are_still_holes(result):
+    """If one of these is defined later, this test fails and the entry comes
+    out of KNOWN_UNRESOLVED -- so the list cannot quietly go stale."""
+    assert set(result["unresolved"]) == {
+        "e_WHtR", "e_BMI", "f_u_ref", "HR_Arem", "rho_pop"}
+    assert result["unresolved"]["e_WHtR"] == ["O1.9"]
+    assert result["unresolved"]["e_BMI"] == ["O1.9"]
+    assert result["unresolved"]["f_u_ref"] == ["O1.8"]
+    assert result["unresolved"]["HR_Arem"] == ["O2.4"]
+    assert result["unresolved"]["rho_pop"] == ["O2.5"]
+
+
+def test_every_hole_says_what_is_missing(result):
+    for name in result["unresolved"]:
+        assert KNOWN_UNRESOLVED[name].strip(), name
+
+
+def test_f_u_ref_is_not_bridged_to_parameter_37_on_a_matching_range():
+    """Parameter #37 f_unbound,i declares 0.01-1.0 and so does O1.8. That is
+    suggestive and it is not evidence: the spellings differ, and matching a
+    range is how a wrong alias gets made. Left unbridged deliberately, in the
+    style of build_eq_param_fk.ALIASES, which requires a declared reason."""
+    registry = json.loads(
+        (DATA_DIR / "parameter_registry_192.json").read_text(encoding="utf-8"))
+    thirty_seven = next(r for r in registry if r["param_no"] == 37)
+    assert thirty_seven["symbol"] == "f_unbound,i"
+    assert thirty_seven["default_or_range"] == "0.01-1.0"
+
+    o1 = json.loads((DATA_DIR / "onboarding_o1.json").read_text(encoding="utf-8"))
+    o1_8 = next(e for e in o1["equations"] if e["equation_id"] == "O1.8")
+    assert o1_8["value_range"] == "0.01-1.0"
+    assert "f_u_ref" in o1_8["variables"]
+    assert "f_u_ref" not in {p["key"] for p in o1["parameters"]}
+
+    nutrients = json.loads(
+        (DATA_DIR / "nutrients_81.json").read_text(encoding="utf-8"))
+    assert not [k for k in nutrients[0] if "unbound" in k or k.startswith("f_u")]
+
+
+def test_the_analyser_reads_formulas_the_way_the_sheet_writes_them():
+    """The canary. Three things the workbook does that a naive tokeniser gets
+    wrong, and getting any of them wrong makes the guard above vacuous."""
+    # A version tag appended to a formula is not a symbol.
+    defined, used = formula_parts("x = a + b  [v39l F-DM]")
+    assert defined == {"x"} and used == {"a", "b"}
+
+    # A unit glued to a number is not a symbol: 40cm must not yield 'cm'.
+    _, used = formula_parts("y = 0.05*I(neck>40cm)")
+    assert used == {"neck"}
+
+    # A second definition on a second line is a definition, not a use.
+    defined, used = formula_parts(
+        "BMR_male = 10*BW + 5\nBMR_female = 10*BW - 161")
+    assert defined == {"BMR_male", "BMR_female"}
+    assert used == {"BW"}
+
+
+def test_the_module_does_not_compute_the_indices_it_cannot_define():
+    """O1.9's e_WHtR and e_BMI are arguments, not derived. Normalising BMI on
+    a range this build chose would be inventing two thirds of a composite
+    that feeds Layer C."""
+    from sahacore.onboarding import anthropometrics as o1
+    import inspect
+
+    signature = inspect.signature(o1.central_adiposity_composite)
+    assert "e_whtr" in signature.parameters
+    assert "e_bmi" in signature.parameters
+    assert not hasattr(o1, "whtr_exposure_index")
+    assert not hasattr(o1, "bmi_exposure_index")
+
+
+# --- two other things the audit turned up ---------------------------------
+
+def test_every_built_onboarding_module_is_the_one_the_contract_names():
+    """'O · Onboarding Canonical' names a sahacore.onboarding function per
+    step. A module built under a different name would satisfy no contract."""
+    import importlib
+
+    contract = json.loads(
+        (DATA_DIR / "onboarding_canonical.json").read_text(encoding="utf-8"))
+    built, missing = [], []
+    for step in contract["steps"]:
+        try:
+            importlib.import_module(step["python_function"])
+            built.append(step["step_id"])
+        except ModuleNotFoundError:
+            missing.append(step["step_id"])
+
+    assert built == ["ONB-001", "ONB-002"], built
+    assert len(missing) == 12
+    # The two that are blocked must be among the unbuilt, not quietly written.
+    blocked = [s["step_id"] for s in contract["steps"] if s["blocked_by"]]
+    assert set(blocked) <= set(missing)
+
+
+def test_no_data_file_is_loaded_by_nothing_beyond_the_known_six():
+    """A JSON seed with no loader and no version is a file that looks used and
+    is not.
+
+    Six are left over from before this build's conventions -- Arthur's two
+    signal files, and four state/pathway seeds written in an early session.
+    A seventh would mean a new extractor shipped without its loader, which is
+    the case this guards.
+    """
+    data = DATA_DIR
+    loaders = "\n".join(p.read_text(encoding="utf-8")
+                        for p in data.glob("load_*.py"))
+    versions = (data / "record_registry_versions.py").read_text(encoding="utf-8")
+    orphans = sorted(p.name for p in data.glob("*.json")
+                     if p.name not in loaders and p.name not in versions)
+    assert orphans == [
+        "arthur_signals_raw.json",
+        "arthur_signals_validated.json",
+        "damage_clusters_12.json",
+        "lifestyle_states_24.json",
+        "mechanistic_states_9.json",
+        "tvmcd_pathways_15.json",
+    ], orphans
