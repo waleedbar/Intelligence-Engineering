@@ -1567,3 +1567,121 @@ new tool, just a test that refused to be written vaguely.
    value, or `sleep_def`'s zero?
 3. **Is O3.6's polarity intended in O3.7?** As written, better schedule
    consistency increases `mu_sleep`.
+
+---
+
+## 2026-09-10: ONB-004 — the best-specified O-sheet, and a break it shares with two others
+
+`O·O4 Stress Index` is the strongest of the four O-sheets imported so far.
+Every symbol resolves. Every constant is stated. It carries three tables —
+the PSS-10 instrument, nine equations, three interpretation bands — and it
+makes claims that can be checked against each other, which none of O1, O2 or
+O3 does.
+
+### What it gets right, and what that made possible
+
+**It states its reverse-scored items twice.** Once in a `Reverse?` column,
+once inside O4.1's formula as `r_i' = 4-r_i for i in {4,5,7,8}`. Neither is
+more authoritative, so the extractor holds them to each other and refuses to
+import a sheet where they disagree. They agree, and they are the published
+PSS-10's items 4, 5, 7 and 8 — which matters because the sheet's own header
+reads **"CORRECTED: PSS-10, NOT PSS-4"**, so an earlier revision scored a
+different instrument.
+
+**Its bands corroborate its equations.** Two independent checks, both pass:
+
+| the bands say | the equations say | at Θ_AL = 1 |
+|---|---|---|
+| High: "+40% damage sensitivity" | O4.5 `γ_cort = 1 + 0.4·Θ_AL` | +40% ✓ |
+| Moderate: "−15% is the maximum at Θ_AL=1" | O4.9 `λ_rep_mod = 1 − 0.15·Θ_AL` | −15% ✓ |
+
+and across the Moderate band's 14–26, O4.9 gives −5.25% to −9.75%, against
+the sheet's stated "≈−5% to −10%".
+
+**Its bands tile 0–40** with no gap and no overlap, so every possible PSS-10
+total has exactly one stated meaning.
+
+A sheet that agrees with itself in places that were written separately is
+evidence its numbers were meant rather than typed. That is worth saying
+plainly, because most of this document is the opposite.
+
+### The finding: `p_stressprot` reaches nothing
+
+O4.3 computes
+
+    stress_idx_adj = max(0, stress_idx_raw − p_stressprot)
+    where p_stressprot = 0.05 per practice (cap 0.20)
+
+and its Engine Target names `O4.4, O4.5, O4.6, O4.7`. **None of the four
+reads it.** O4.4 is `Θ_AL = PSS10/40` — recomputed from the total, not taken
+from the adjusted index — and O4.5 through O4.9 all read `Θ_AL`.
+
+So the credit a user earns for stress-management practices, worth up to 0.20
+of a 0–1 scale, changes no modifier the engine uses. A user reporting four
+practices gets identical cortisol, inflammation, glucose, CVD and repair
+modifiers to one reporting none.
+
+It is easy to miss because **O4.2 and O4.4 are the same function**:
+`stress_idx_raw = PSS10/40` and `Θ_AL = PSS10/40`. `Θ_AL` reads as though it
+descends from the stress index. It does not.
+
+`stress_index_adjusted` is implemented and called by nothing, which is what
+the sheet specifies. It is not wired into `allostatic_load` on this build's
+initiative: that would move five downstream modifiers on an authority the
+sheet does not give.
+
+## The same break, three times — so it stopped being a reading problem
+
+O3.1's quality weighting reached none of its declared consumers. O4.3's
+stress credit reaches none of its declared consumers. Both were found by
+hand, one per sheet, by writing a test that had to state a best and a worst
+case and finding the arithmetic would not produce them.
+
+Finding the second one the same way as the first is the signal. Ten O-sheets
+remain, and an equation that computes something real and is read by nobody is
+**invisible to every other check in this repo** — the symbols resolve, the
+formula transcribes verbatim, the header matches, the loader loads.
+
+So `sahacore.data.onboarding_symbols` now carries a second mechanical check,
+`broken_routings`:
+
+> An Engine Target cell that names other equations on the same sheet is a
+> claim those equations consume this one's output. Each named consumer is
+> checked for any symbol this equation defines. Targets naming a layer
+> (`Layer C: Z3`) are off-sheet and not checked — nothing here can see
+> Layer C.
+
+### It immediately found a third, in a sheet imported two days ago
+
+**O2.1** routes `MVPA_wk` to `O2.2, O2.3, O2.4`. The first two read it. O2.4
+is `PA_benefit = 100·(1 − HR_Arem)` and does not.
+
+This one is **not a separate defect** — it is the known `HR_Arem` hole seen
+from the other side, and it is *evidence about that hole*. O2.4 describes
+`HR_Arem` as coming from a "dose-response curve, Anchored at 150-300 min/wk
+zone", and min/wk is exactly `MVPA_wk`'s unit. So the routing tells us the
+missing curve is meant to be a function **of `MVPA_wk`**.
+
+That identifies the missing curve's argument. It does not supply the curve.
+
+### The pattern this makes four of
+
+1. `e_WHtR`, `e_BMI`, `f_u_ref` — read past, because reading is not searching.
+2. The 15→12 map — missed because the pattern scored it **3**, not 0.
+3. Sixteen columns — missed because the check only looked where it was told.
+4. Three dead routings — missed because nothing asked *"and does anyone read
+   this?"*
+
+Each time the tool answered exactly the question asked and the question was
+too narrow. The fix has the same shape every time: make the check report what
+is *unaccounted for*, rather than confirm what was declared.
+
+### For Dr. Ali — three questions on O4
+
+1. **Should O4.4 read `stress_idx_adj` instead of recomputing from PSS10?**
+   As written, stress-management practices affect nothing. If that is
+   intended, O4.3's engine target should not name O4.4–O4.7.
+2. **Are O4.2 and O4.4 meant to be the same quantity?** They are identical
+   formulas under two names with different engine targets.
+3. **Is `HR_Arem` a function of `MVPA_wk`?** O2.1's routing and O2.4's
+   "150-300 min/wk" both say so; the curve itself is still missing.

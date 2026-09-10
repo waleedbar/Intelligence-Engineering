@@ -143,6 +143,12 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("tvmcd_pathways_build.json", "pathways", "TVMCD · 15 Pathways Build"),
     "engine_internal.onboarding_o3_equation":
         ("onboarding_o3.json", "equations", "O·O3 Sleep Deficit"),
+    "engine_internal.onboarding_o4_item":
+        ("onboarding_o4.json", "items", "O·O4 Stress Index"),
+    "engine_internal.onboarding_o4_equation":
+        ("onboarding_o4.json", "equations", "O·O4 Stress Index"),
+    "engine_internal.onboarding_o4_band":
+        ("onboarding_o4.json", "bands", "O·O4 Stress Index"),
 }
 
 

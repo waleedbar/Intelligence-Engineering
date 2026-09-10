@@ -63,3 +63,29 @@ def load_o3_consistency() -> dict[str, float]:
     data = json.loads((DATA_DIR / "onboarding_o3.json").read_text(encoding="utf-8"))
     o3_6 = next(e for e in data["equations"] if e["equation_id"] == "O3.6")
     return {option["option"]: option["value"] for option in o3_6["ordinal_scale"]}
+
+
+@lru_cache(maxsize=1)
+def load_o4_reverse_items() -> frozenset[int]:
+    """The PSS-10 items O4.1 reverse-scores, as 1-based item numbers.
+
+    Read rather than written into the module. 'O·O4 Stress Index' states them
+    twice -- a Reverse? column and O4.1's own formula -- and its header calls
+    the change from PSS-4 to PSS-10 a correction, so this is exactly the kind
+    of decision the sheet owns. The extractor refuses to import a sheet whose
+    two statements disagree.
+    """
+    data = json.loads((DATA_DIR / "onboarding_o4.json").read_text(encoding="utf-8"))
+    return frozenset(item["item_number"] for item in data["items"]
+                     if item["reverse_scored"])
+
+
+@lru_cache(maxsize=1)
+def load_o4_bands() -> tuple[dict, ...]:
+    """The three PSS-10 interpretation bands, in ascending score order.
+
+    Where 'Moderate' ends is a clinical judgement, so the boundaries are read.
+    The extractor checks they tile 0-40 with no gap and no overlap.
+    """
+    data = json.loads((DATA_DIR / "onboarding_o4.json").read_text(encoding="utf-8"))
+    return tuple(sorted(data["bands"], key=lambda band: band["score_min"]))

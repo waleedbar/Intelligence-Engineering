@@ -37,15 +37,18 @@ DATA_DIR = Path(__file__).parent
 
 # Function names and operators that appear in formulas but are not quantities.
 FUNCTIONS = {"min", "max", "exp", "sqrt", "ln", "log", "abs", "I",
-             "MifflinStJeor", "DualHill", "SUMXMY2", "SUMSQ"}
+             "MifflinStJeor", "DualHill", "SUMXMY2", "SUMSQ", "SUM"}
 
 # English the sheets write inside formula cells. 'O3.5' reads
 # "0 if 7<=h<=9; min(1,(7-h)/2) if h<7" and 'O3.1' continues on a second
 # line with "where quality_factor = 1 - (quality_rating - 1)/4". These are
 # prose, not quantities, and a tokeniser that took them for symbols would
 # report five holes per sheet and be switched off within a week.
+# 'in' joins them via O4.1's "for i in {4,5,7,8}", and 'cap'/'practice' via
+# O4.3's parenthetical "0.05 per practice (cap 0.20)" -- English written
+# inside a formula cell, describing a constant the same cell already gives.
 KEYWORDS = {"where", "if", "else", "and", "or", "for", "otherwise", "each",
-            "from", "per", "with", "of", "the", "to"}
+            "from", "per", "with", "of", "the", "to", "in", "cap", "practice"}
 
 # Version tags the workbook appends to cells: '[v39l F-DM]', '[v39s QA]'.
 _TAG = re.compile(r"\[[^\]]*\]")
@@ -63,6 +66,15 @@ _IDENTIFIER = re.compile(r"(?<![0-9A-Za-z_.])([A-Za-z_][A-Za-z0-9_]*)")
 # silently un-reported one of the holes this file exists to find.
 _WORD_HYPHEN = re.compile(r"(?<=[A-Za-z])-(?=[A-Za-z])")
 _COMPUTABLE = re.compile(r"[0-9]|[+\-*/^()]")
+
+# A summation or iteration index, bound by the formula that introduces it:
+# O4.1's "SUM(r_i') for i=1..10" and "for i in {4,5,7,8}" both bind `i`.
+#
+# A bound index is not a quantity anything has to supply, so reporting it as
+# undefined would be reporting the notation rather than a hole. It is matched
+# against the whole formula before the statement split, because splitting on
+# commas cuts "{4,5,7,8}" into pieces.
+_BOUND_INDEX = re.compile(r"\bfor\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?:=|\bin\b)")
 
 
 def _states_a_value(right: str) -> bool:
@@ -93,6 +105,7 @@ SHEETS = {
     "O1": ("onboarding_o1.json", "O·O1 Anthropometrics"),
     "O2": ("onboarding_o2.json", "O·O2 MVPA Prior"),
     "O3": ("onboarding_o3.json", "O·O3 Sleep Deficit"),
+    "O4": ("onboarding_o4.json", "O·O4 Stress Index"),
 }
 
 # Symbols already reported, with what each one is missing. Anything the
@@ -112,6 +125,29 @@ KNOWN_UNRESOLVED = {
     "rho_pop": "O2.5's 'population mean repair'. In neither parameter registry.",
 }
 
+# Routings already reported, in the same spirit. Anything broken_routings
+# finds that is NOT in here is a break nobody has looked at.
+KNOWN_BROKEN_ROUTINGS = {
+    "O2.1": "MVPA_wk routes to O2.2, O2.3 and O2.4. The first two read it; "
+            "O2.4 is PA_benefit = 100*(1 - HR_Arem) and does not. This is "
+            "the SAME hole as HR_Arem seen from the other side, not a "
+            "separate one -- and it is evidence about the missing curve: "
+            "O2.4 describes HR_Arem as coming from a 'dose-response curve, "
+            "Anchored at 150-300 min/wk zone', and min/wk is exactly "
+            "MVPA_wk's unit. So the routing says HR_Arem is meant to be a "
+            "function OF MVPA_wk. That identifies the missing curve's "
+            "argument; it does not supply the curve.",
+    "O3.1": "SDS is the quality-WEIGHTED shortfall and routes to O3.2, O3.3 "
+            "and O3.4. All three compute from deficit_hrs = max(0, 7 - "
+            "sleep_hrs) instead, so sleep quality reaches Layer C's Z3, Z6 "
+            "and Z10 nowhere. Two users sleeping five hours who rate quality "
+            "1/5 and 5/5 get identical modifiers.",
+    "O4.3": "stress_idx_adj subtracts p_stressprot -- 0.05 per stress "
+            "practice, capped at 0.20, a fifth of a 0-1 scale -- and routes "
+            "to O4.4-O4.7. All four read Theta_AL, which O4.4 recomputes as "
+            "PSS10/40 from the total, so the credit reaches no modifier.",
+}
+
 
 def formula_parts(formula: str, variables: str = "",
                   ordinal_options: set[str] | None = None
@@ -129,7 +165,15 @@ def formula_parts(formula: str, variables: str = "",
       * An inline ordinal scale -- "Very Inconsistent=1, Somewhat=2" --
         looks like four assignments to four symbols. The option names are
         passed in so they can be excluded; they are data, not quantities.
+      * A formula can bind its own index: O4.1's "SUM(r_i') for i=1..10".
+        `i` is notation, not a quantity anyone has to supply, and it is
+        scoped to the equation that binds it rather than pooled.
     """
+    # Bound indices are dropped from `used` at the end rather than added to
+    # `defined`: `defined` is pooled across every equation to decide what
+    # resolves, and O4.1 binding `i` must not make a stray `i` on another
+    # sheet look accounted for.
+    bound = set(_BOUND_INDEX.findall(formula))
     excluded = (ordinal_options or set()) | KEYWORDS | FUNCTIONS
     defined: set[str] = set()
     used: set[str] = set()
@@ -187,8 +231,9 @@ def formula_parts(formula: str, variables: str = "",
         if _states_a_value(right):
             defined.add(left)
 
-    # A symbol a statement defines is not also a symbol it needs supplied.
-    return defined, used - defined
+    # A symbol a statement defines is not also a symbol it needs supplied,
+    # and neither is an index the formula binds for itself.
+    return defined, used - defined - bound
 
 
 def analyse() -> dict:
@@ -213,6 +258,7 @@ def analyse() -> dict:
                 "sheet": sheet,
                 "defines": sorted(defined),
                 "uses": sorted(used),
+                "engine_target": equation.get("engine_target") or "",
             })
 
     defined_anywhere = {name for e in equations for name in e["defines"]}
@@ -232,7 +278,61 @@ def analyse() -> dict:
         "parameters": sorted(parameters),
         "defined_by_equations": sorted(defined_anywhere),
         "unresolved": unresolved,
+        "broken_routings": broken_routings(equations),
     }
+
+
+# An equation id named inside an Engine Target cell: 'O4.4, O4.5, O4.6, O4.7'
+# routes on-sheet, 'Layer C: Z3 Inflammation rate' routes off-sheet.
+_ROUTED_TO = re.compile(r"\bO\d+\.\d+\b")
+
+
+def broken_routings(equations: list[dict]) -> list[dict]:
+    """Equations whose declared on-sheet consumers do not read what they define.
+
+    WHY THIS EXISTS, and it is the same lesson as the other checks in this
+    file. Two findings of exactly this shape were found by hand, one per
+    sheet, by writing a test that had to state a best and worst case:
+
+      O3.1  SDS is quality-weighted and routes to O3.2, O3.3 and O3.4. All
+            three read deficit_hrs instead, so sleep QUALITY reaches Layer C
+            nowhere.
+      O4.3  stress_idx_adj subtracts up to 0.20 of a 0-1 scale for stress
+            practices and routes to O4.4-O4.7. All four read Theta_AL, which
+            O4.4 recomputes from PSS10, so the credit reaches nothing.
+
+    Finding the second one by hand after the first is a warning: there are
+    ten more O-sheets, and an equation that computes something real and is
+    then read by nobody is invisible to every other check here. Symbols that
+    resolve, formulas that transcribe, headers that match -- all pass.
+
+    THE RULE. An Engine Target cell that names other equations on the same
+    sheet is a claim those equations consume this one's output. So each named
+    consumer is checked for ANY symbol this equation defines. Targets that
+    name a layer instead ('Layer C: Z3') are off-sheet and not checked --
+    nothing here can see Layer C.
+
+    A hit is not automatically a defect. It means the sheet says X feeds Y
+    and Y does not mention X, which is a question for its author.
+    """
+    by_id = {e["equation_id"]: e for e in equations}
+    broken = []
+    for equation in equations:
+        named = [eid for eid in _ROUTED_TO.findall(equation["engine_target"])
+                 if eid in by_id and eid != equation["equation_id"]]
+        if not named:
+            continue
+        defines = set(equation["defines"])
+        deaf = [eid for eid in named if not (defines & set(by_id[eid]["uses"]))]
+        if deaf:
+            broken.append({
+                "equation_id": equation["equation_id"],
+                "sheet": equation["sheet"],
+                "defines": equation["defines"],
+                "engine_target": equation["engine_target"],
+                "consumers_that_do_not_read_it": deaf,
+            })
+    return broken
 
 
 def main() -> None:
@@ -243,13 +343,28 @@ def main() -> None:
     print()
     if not result["unresolved"]:
         print("every symbol resolves.")
+    else:
+        print("SYMBOLS NOTHING DEFINES:")
+        for name, used_by in sorted(result["unresolved"].items()):
+            status = "known" if name in KNOWN_UNRESOLVED else "*** NEW ***"
+            print(f"  {name:<10} used by {', '.join(used_by):<12} {status}")
+            if name in KNOWN_UNRESOLVED:
+                print(f"             {KNOWN_UNRESOLVED[name]}")
+
+    print()
+    if not result["broken_routings"]:
+        print("every on-sheet engine target reads what routes to it.")
         return
-    print("SYMBOLS NOTHING DEFINES:")
-    for name, used_by in sorted(result["unresolved"].items()):
-        status = "known" if name in KNOWN_UNRESOLVED else "*** NEW ***"
-        print(f"  {name:<10} used by {', '.join(used_by):<12} {status}")
-        if name in KNOWN_UNRESOLVED:
-            print(f"             {KNOWN_UNRESOLVED[name]}")
+    print("EQUATIONS WHOSE DECLARED CONSUMERS DO NOT READ THEM:")
+    for routing in result["broken_routings"]:
+        equation_id = routing["equation_id"]
+        status = "known" if equation_id in KNOWN_BROKEN_ROUTINGS else "*** NEW ***"
+        print(f"  {equation_id:<10} defines {', '.join(routing['defines'])}, "
+              f"routes to {routing['engine_target']!r}  {status}")
+        print("             not read by "
+              + ", ".join(routing["consumers_that_do_not_read_it"]))
+        if equation_id in KNOWN_BROKEN_ROUTINGS:
+            print(f"             {KNOWN_BROKEN_ROUTINGS[equation_id]}")
 
 
 if __name__ == "__main__":

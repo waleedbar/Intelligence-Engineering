@@ -14,7 +14,7 @@ import pathlib
 import pytest
 
 from sahacore.data.onboarding_symbols import (
-    KNOWN_UNRESOLVED, analyse, formula_parts,
+    KNOWN_BROKEN_ROUTINGS, KNOWN_UNRESOLVED, analyse, formula_parts,
 )
 
 DATA_DIR = pathlib.Path(__file__).parent.parent / "sahacore" / "data"
@@ -46,6 +46,55 @@ def test_the_five_known_holes_are_still_holes(result):
     assert result["unresolved"]["f_u_ref"] == ["O1.8"]
     assert result["unresolved"]["HR_Arem"] == ["O2.4"]
     assert result["unresolved"]["rho_pop"] == ["O2.5"]
+
+
+# --- the second mechanical check: routings that go nowhere -----------------
+
+def test_no_broken_routing_that_has_not_been_reported(result):
+    """THE OTHER GUARD, and the reason it exists is worth keeping.
+
+    An equation can define something real, declare which equations consume
+    it, and be read by none of them. Every other check in this repo passes on
+    that: the symbols resolve, the formula transcribes, the header matches.
+
+    Two of these were found by hand, one per sheet, by writing a test that
+    had to state a best and a worst case -- O3.1's quality weighting and
+    O4.3's stress-practice credit. Finding the second the same way as the
+    first is the signal that it needs a tool, because ten O-sheets remain.
+
+    Running it over what was already imported immediately turned up a third
+    in O2, which two passes of reading had not.
+    """
+    surprises = sorted({r["equation_id"] for r in result["broken_routings"]}
+                       - set(KNOWN_BROKEN_ROUTINGS))
+    assert not surprises, (
+        f"these equations declare on-sheet consumers that do not read what "
+        f"they define, and have not been reported: {surprises}")
+
+
+def test_the_three_known_broken_routings_are_still_broken(result):
+    """So the list cannot go stale if a sheet is corrected."""
+    broken = {r["equation_id"]: r for r in result["broken_routings"]}
+    assert set(broken) == {"O2.1", "O3.1", "O4.3"}
+
+    # O3.1 routes to four and is read by none of the three on its own sheet;
+    # O11 is unimported and so cannot be checked either way.
+    assert broken["O3.1"]["consumers_that_do_not_read_it"] == [
+        "O3.2", "O3.3", "O3.4"]
+    assert broken["O4.3"]["consumers_that_do_not_read_it"] == [
+        "O4.4", "O4.5", "O4.6", "O4.7"]
+    # O2.1 is the mildest: two of its three consumers DO read MVPA_wk.
+    assert broken["O2.1"]["consumers_that_do_not_read_it"] == ["O2.4"]
+
+
+def test_a_routing_into_a_layer_is_not_checked(result):
+    """The check can only see this workbook's equations. 'Layer C: Z3
+    Inflammation rate' is a claim about code that does not exist yet, and
+    reporting it as broken would fill the output with noise that cannot be
+    acted on -- which is how a useful check becomes one nobody reads."""
+    by_id = {e["equation_id"]: e for e in result["equations"]}
+    assert by_id["O3.2"]["engine_target"] == "Layer C: Z3 Inflammation rate"
+    assert "O3.2" not in {r["equation_id"] for r in result["broken_routings"]}
 
 
 def test_every_hole_says_what_is_missing(result):
@@ -124,8 +173,8 @@ def test_every_built_onboarding_module_is_the_one_the_contract_names():
         except ModuleNotFoundError:
             missing.append(step["step_id"])
 
-    assert built == ["ONB-001", "ONB-002", "ONB-003"], built
-    assert len(missing) == 11
+    assert built == ["ONB-001", "ONB-002", "ONB-003", "ONB-004"], built
+    assert len(missing) == 10
     # The two that are blocked must be among the unbuilt, not quietly written.
     blocked = [s["step_id"] for s in contract["steps"] if s["blocked_by"]]
     assert set(blocked) <= set(missing)

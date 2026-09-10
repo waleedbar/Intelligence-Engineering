@@ -1,0 +1,206 @@
+{
+  "sheet": "O·O4 Stress Index",
+  "items": [
+    {
+      "item_number": 1,
+      "source_row": 10,
+      "question": "Upset by unexpected events",
+      "scale": "0-4",
+      "scoring": "Direct: r1' = r1",
+      "reverse_scored": false
+    },
+    {
+      "item_number": 2,
+      "source_row": 11,
+      "question": "Unable to control important things",
+      "scale": "0-4",
+      "scoring": "Direct: r2' = r2",
+      "reverse_scored": false
+    },
+    {
+      "item_number": 3,
+      "source_row": 12,
+      "question": "Felt nervous and stressed",
+      "scale": "0-4",
+      "scoring": "Direct: r3' = r3",
+      "reverse_scored": false
+    },
+    {
+      "item_number": 4,
+      "source_row": 13,
+      "question": "Confident handling problems",
+      "scale": "0-4",
+      "scoring": "REVERSE: r4' = 4 - r4",
+      "reverse_scored": true
+    },
+    {
+      "item_number": 5,
+      "source_row": 14,
+      "question": "Things going your way",
+      "scale": "0-4",
+      "scoring": "REVERSE: r5' = 4 - r5",
+      "reverse_scored": true
+    },
+    {
+      "item_number": 6,
+      "source_row": 15,
+      "question": "Could not cope",
+      "scale": "0-4",
+      "scoring": "Direct: r6' = r6",
+      "reverse_scored": false
+    },
+    {
+      "item_number": 7,
+      "source_row": 16,
+      "question": "Able to control irritations",
+      "scale": "0-4",
+      "scoring": "REVERSE: r7' = 4 - r7",
+      "reverse_scored": true
+    },
+    {
+      "item_number": 8,
+      "source_row": 17,
+      "question": "On top of things",
+      "scale": "0-4",
+      "scoring": "REVERSE: r8' = 4 - r8",
+      "reverse_scored": true
+    },
+    {
+      "item_number": 9,
+      "source_row": 18,
+      "question": "Angered by outside control",
+      "scale": "0-4",
+      "scoring": "Direct: r9' = r9",
+      "reverse_scored": false
+    },
+    {
+      "item_number": 10,
+      "source_row": 19,
+      "question": "Difficulties piling up",
+      "scale": "0-4",
+      "scoring": "Direct: r10' = r10",
+      "reverse_scored": false
+    }
+  ],
+  "equations": [
+    {
+      "equation_id": "O4.1",
+      "source_row": 25,
+      "name": "PSS-10 Total",
+      "formula": "PSS10 = SUM(r_i') for i=1..10\nwhere r_i' = 4-r_i for i in {4,5,7,8}, else r_i' = r_i",
+      "variables": "r_i = raw item responses (0-4)",
+      "units": "score",
+      "value_range": "0-40",
+      "engine_target": "O4.2"
+    },
+    {
+      "equation_id": "O4.2",
+      "source_row": 26,
+      "name": "Stress index (raw)",
+      "formula": "stress_idx_raw = PSS10 / 40",
+      "variables": "PSS10 from O4.1",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O4.3"
+    },
+    {
+      "equation_id": "O4.3",
+      "source_row": 27,
+      "name": "Stress index (adjusted)",
+      "formula": "stress_idx_adj = max(0, stress_idx_raw - p_stressprot)\nwhere p_stressprot = 0.05 per practice (cap 0.20)",
+      "variables": "stress_idx_raw (O4.2), stress practices from Step 8",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O4.4, O4.5, O4.6, O4.7"
+    },
+    {
+      "equation_id": "O4.4",
+      "source_row": 28,
+      "name": "Allostatic load proxy",
+      "formula": "Theta_AL = PSS10 / 40",
+      "variables": "PSS10 from O4.1",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "Layer C: damage sensitivity"
+    },
+    {
+      "equation_id": "O4.5",
+      "source_row": 29,
+      "name": "Cortisol modifier",
+      "formula": "gamma_cort = 1 + 0.4 * Theta_AL",
+      "variables": "Theta_AL from O4.4",
+      "units": "dimensionless",
+      "value_range": "1.0-1.4",
+      "engine_target": "Layer C: Z3, Z6, Z7"
+    },
+    {
+      "equation_id": "O4.6",
+      "source_row": 30,
+      "name": "Inflammation modifier",
+      "formula": "gamma_infl = 1 + 0.3 * Theta_AL",
+      "variables": "Theta_AL from O4.4",
+      "units": "dimensionless",
+      "value_range": "1.0-1.3",
+      "engine_target": "Layer C: Z3 Inflammation"
+    },
+    {
+      "equation_id": "O4.7",
+      "source_row": 31,
+      "name": "Glucose modifier",
+      "formula": "gamma_gluc = 1 + 0.3 * Theta_AL",
+      "variables": "Theta_AL from O4.4",
+      "units": "dimensionless",
+      "value_range": "1.0-1.3",
+      "engine_target": "Layer C: Z1 Glycation"
+    },
+    {
+      "equation_id": "O4.8",
+      "source_row": 32,
+      "name": "CVD modifier",
+      "formula": "gamma_cvd = 1 + 0.3 * Theta_AL",
+      "variables": "Theta_AL from O4.4",
+      "units": "dimensionless",
+      "value_range": "1.0-1.3",
+      "engine_target": "Layer C: Z7 Atherosclerosis"
+    },
+    {
+      "equation_id": "O4.9",
+      "source_row": 33,
+      "name": "Repair rate modifier",
+      "formula": "lambda_rep_mod = 1 - 0.15 * Theta_AL",
+      "variables": "Theta_AL from O4.4",
+      "units": "dimensionless",
+      "value_range": "0.85-1.0",
+      "engine_target": "Layer C: all Z repair rates"
+    }
+  ],
+  "bands": [
+    {
+      "source_row": 39,
+      "score_range": "0-13",
+      "score_min": 0,
+      "score_max": 13,
+      "stress_level": "Low",
+      "cortisol_impact": "Basal levels",
+      "system_response": "Normal repair (lambda_rep)"
+    },
+    {
+      "source_row": 40,
+      "score_range": "14-26",
+      "score_min": 14,
+      "score_max": 26,
+      "stress_level": "Moderate",
+      "cortisol_impact": "Elevated cortisol AUC",
+      "system_response": "≈−5% to −10% repair efficiency across the Moderate band; −15% is the maximum at Θ_AL=1"
+    },
+    {
+      "source_row": 41,
+      "score_range": "27-40",
+      "score_min": 27,
+      "score_max": 40,
+      "stress_level": "High",
+      "cortisol_impact": "Severe allostatic load",
+      "system_response": "+40% damage sensitivity"
+    }
+  ]
+}

@@ -83,6 +83,7 @@ jobs:
           python -m sahacore.data.load_onboarding_o2
           python -m sahacore.data.load_tvmcd_pathways
           python -m sahacore.data.load_onboarding_o3
+          python -m sahacore.data.load_onboarding_o4
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -162,7 +163,7 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 53, f'expected 53 versioned registries, got {versioned}'
+              assert versioned == 56, f'expected 56 versioned registries, got {versioned}'
               # The twelve per-cluster ceilings on the scarring feedback loop,
               # each confirmed by the sheet's own section-8 audit receipt.
               cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
@@ -280,6 +281,19 @@ jobs:
               cur.execute('SELECT count(*) FROM engine_internal.onboarding_o3_ordinal')
               o3o = cur.fetchone()[0]
               assert o3o == 4, f'expected 4 O3 ordinal options, got {o3o}'
+              # ONB-004. Ten PSS-10 items with four reverse-scored -- the
+              # sheet states which twice and the extractor holds the two
+              # statements to each other. Nine equations, and three bands
+              # that must tile 0-40 so every total has one meaning.
+              cur.execute('SELECT count(*), count(*) FILTER (WHERE reverse_scored) FROM engine_internal.onboarding_o4_item')
+              o4i, o4r = cur.fetchone()
+              assert (o4i, o4r) == (10, 4), f'O4 items: {(o4i, o4r)}'
+              cur.execute('SELECT count(*), count(engine_target) FROM engine_internal.onboarding_o4_equation')
+              o4e, o4t = cur.fetchone()
+              assert (o4e, o4t) == (9, 9), f'O4 equations: {(o4e, o4t)}'
+              cur.execute('SELECT count(*), min(score_min), max(score_max) FROM engine_internal.onboarding_o4_band')
+              o4b, o4lo, o4hi = cur.fetchone()
+              assert (o4b, o4lo, o4hi) == (3, 0, 40), f'O4 bands: {(o4b, o4lo, o4hi)}'
               # 48 organ-pathway links over 13 pathways: none for D14/D15,
               # which is gate d14_d15_fail_closed agreeing with the data.
               cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
@@ -345,7 +359,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), 53 versioned registries')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), ONB-004 live (9 eq/10 PSS-10 items/3 bands), 56 versioned registries')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event
