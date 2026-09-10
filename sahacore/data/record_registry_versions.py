@@ -149,6 +149,10 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("onboarding_o4.json", "equations", "O·O4 Stress Index"),
     "engine_internal.onboarding_o4_band":
         ("onboarding_o4.json", "bands", "O·O4 Stress Index"),
+    "engine_internal.onboarding_step_question_step":
+        ("step_questions.json", "steps", "O·Step-by-Step Questions"),
+    "engine_internal.onboarding_step_question":
+        ("step_questions.json", "questions", "O·Step-by-Step Questions"),
 }
 
 

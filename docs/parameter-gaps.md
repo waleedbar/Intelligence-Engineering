@@ -1685,3 +1685,137 @@ is *unaccounted for*, rather than confirm what was declared.
    formulas under two names with different engine targets.
 3. **Is `HR_Arem` a function of `MVPA_wk`?** O2.1's routing and O2.4's
    "150-300 min/wk" both say so; the curve itself is still missing.
+
+---
+
+## 2026-09-10: the UI contract was manifest order 70, and I built four modules before it
+
+`O·Step-by-Step Questions` is **manifest order 70**. O1 is 71, O2 is 72, O3
+is 73, O4 is 74. I built all four before importing the sheet that says what
+their inputs *are*.
+
+Nothing failed, because every O-sheet names its own inputs in a Variables
+column. What was missing was any way to **check** them: an O-module's inputs
+could only be compared against the same O-sheet that declared them, which is
+the sheet agreeing with itself.
+
+The clearest symptom is in my own code. `onboarding_symbols.DECLARED_INPUTS`
+is a hand-written set carrying this comment:
+
+> Written by hand because "this is an answer the user gives" is not something
+> a parser can tell from a name.
+
+That was true only while this sheet was unimported. It states exactly that,
+for every input, in a column called **Maps To**. 73 questions across 12
+steps, each with its answer options, its variable, and which O-module
+consumes it.
+
+### What it corroborates
+
+**The PSS-10 reverse set, a third time.** The workbook now states it in three
+independently written places, and all three agree on items 4, 5, 7 and 8:
+
+| # | where | how |
+|---|---|---|
+| 1 | `O·O4` `Reverse?` column | `YES` on four rows |
+| 2 | `O·O4` O4.1's formula | `r_i' = 4-r_i for i in {4,5,7,8}` |
+| 3 | Step 8 question text **and** Maps To | `...(REVERSE)` and `r4 → O4 (reverse)` |
+
+That matters because O4's header reads "CORRECTED: PSS-10, NOT PSS-4". Three
+agreeing statements is the evidence the correction landed everywhere.
+
+**O4.3's cap is exactly the number of practices the UI offers.** O4.3 credits
+0.05 per stress-management practice, capped at 0.20 — which is four. Step 8
+offers four practices plus "None". So the cap is precisely reachable and
+cannot be exceeded, and neither sheet mentions the other.
+
+**O3.6's scale matches Step 9's options** — four ordered choices, scored 1 to
+4. O3 abbreviates two labels ("Somewhat", "Fairly"); the UI writes them out.
+
+### What it contradicts
+
+#### 1. O5.5's "midpoints" are not the midpoints of the bands the UI offers
+
+Step 3 asks "Daily sugary drink servings" with options `0 / 1-2 / 3-4 / 5+`.
+O5.5's Variables cell reads `SSB_serv_day from Step 3 (midpoint: 0/0.5/1.75/3)`.
+
+| band | true midpoint | sheet's "midpoint" |
+|---|---|---|
+| `0` | 0 | 0 ✓ |
+| `1-2` | 1.5 | **0.5** |
+| `3-4` | 3.5 | **1.75** |
+| `5+` | open | 3 |
+
+The sheet knows how to write a correct midpoint — **O5.2 does it exactly**,
+for alcohol: bands `0 / 1-3 / 4-7 / 8+` with declared values `0 / 2 / 5.5 /
+10`, and 2 and 5.5 are the true midpoints of `1-3` and `4-7`.
+
+It changes a Layer C input. `e_SSB = min(1, SSB_serv_day/1.5)`:
+
+| band | with the sheet's value | with the true midpoint |
+|---|---|---|
+| `1-2` | **0.333** | **1.0** (saturated) |
+| `3-4` | 1.0 | 1.0 |
+
+So a user answering "1–2 sugary drinks a day" is recorded at a third of
+maximum glycation exposure rather than at maximum. Only that band's outcome
+differs; `3-4` saturates either way.
+
+#### 2. O5's five tobacco categories are not what the UI collects
+
+O5.1 and O5.7 both map a single five-valued variable — `Never`,
+`Former(>1yr)`, `Former(<1yr)`, `Occasional`, `Daily`. Step 10 asks **two**
+questions:
+
+- `smoke_status`: `Yes daily / Yes occasionally / No`
+- `quit_time`: `Within last year / More than a year ago / Never`
+
+Neither offers "Former". The five categories must be **derived** by joining
+the two answers — "No" plus "Within last year" is presumably `Former(<1yr)` —
+and **no sheet states the join rule**.
+
+#### 3. `units_week` and `drinks_wk` are the same question under two names
+
+Step 10 collects `drinks_wk` with bands `0 / 1-3 / 4-7 / 8+`. O5.2 encodes
+`units_week` over exactly those bands. O5.4 and O5.6 then do arithmetic on
+`drinks_wk`. The sheet never says they are the same quantity, but the UI
+offers only one alcohol question, so they must be.
+
+**That makes O5.6's male branch unreachable.** With `drinks_wk` taking O5.2's
+midpoints, its maximum is 10:
+
+    Female: e_alcohol = min(1, max(0, (drinks_wk − 7)/7))   → tops out at 0.43
+    Male:   e_alcohol = min(1, max(0, (drinks_wk − 14)/14)) → is 0 for every answer
+
+Both are declared `0-1`. A male cannot score above zero on hepatic-fibrosis
+alcohol exposure under any answer the UI accepts, and a female cannot exceed
+0.43.
+
+#### 4. The sleep slider may not reach O3.5's upper branch
+
+Step 9 collects sleep with a "Slider 0-8+ hours". O3.5 has a third branch for
+`h > 9`. Whether it is reachable depends on what "8+" permits, which the
+sheet does not say. Flagged, not assumed either way.
+
+### The lesson, again, and it is the same one
+
+I searched for Step 3's SSB answer labels expecting them to be absent — and
+`O·Step-by-Step Questions` had them, along with the labels for every other
+banded question in the workbook. The habit of *looking once more before
+concluding absence* has now paid out four times.
+
+The structural version of the same lesson: **I skipped manifest orders 69 and
+70 and started the O-series at 71.** The manifest is the project's own build
+order, and it put the UI contract before the modules that consume it for a
+reason. Order 69 (`O·Overview`) is still unimported.
+
+### For Dr. Ali — four questions on the UI contract
+
+1. **Are O5.5's SSB values meant to be midpoints?** They are labelled as
+   such and are not; O5.2's alcohol midpoints are exact.
+2. **How do Step 10's two smoking questions become O5's five categories?**
+   No sheet gives the rule.
+3. **Are `units_week` and `drinks_wk` the same answer?** If so, O5.6's male
+   branch is identically zero.
+4. **Does the Step 9 sleep slider go above 9 hours?** If not, O3.5's upper
+   branch is dead code.

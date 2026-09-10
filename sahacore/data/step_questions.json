@@ -1,0 +1,1332 @@
+{
+  "sheet": "O·Step-by-Step Questions",
+  "steps": [
+    {
+      "step_number": 1,
+      "source_row": 8,
+      "title": "Let's establish your baseline"
+    },
+    {
+      "step_number": 2,
+      "source_row": 16,
+      "title": "How active is your day?"
+    },
+    {
+      "step_number": 3,
+      "source_row": 28,
+      "title": "What is fueling your body?"
+    },
+    {
+      "step_number": 4,
+      "source_row": 34,
+      "title": "What is your primary goal?"
+    },
+    {
+      "step_number": 5,
+      "source_row": 38,
+      "title": "What is your health condition?"
+    },
+    {
+      "step_number": 6,
+      "source_row": 44,
+      "title": "Family Medical History"
+    },
+    {
+      "step_number": 7,
+      "source_row": 51,
+      "title": "What medications are you taking?"
+    },
+    {
+      "step_number": 8,
+      "source_row": 59,
+      "title": "Stress & Mental Well-being"
+    },
+    {
+      "step_number": 9,
+      "source_row": 71,
+      "title": "Sleep Quality & Recovery"
+    },
+    {
+      "step_number": 10,
+      "source_row": 75,
+      "title": "Substance use"
+    },
+    {
+      "step_number": 11,
+      "source_row": 79,
+      "title": "Your Health Goals & Priorities"
+    },
+    {
+      "step_number": 12,
+      "source_row": 81,
+      "title": "Lab Test Results + Connect Your Devices"
+    }
+  ],
+  "questions": [
+    {
+      "source_row": 9,
+      "step_number": 1,
+      "category": "Biometrics",
+      "question": "Date of birth",
+      "answer_options_text": "Date picker",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "age",
+      "targets": [
+        "O1"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 10,
+      "step_number": 1,
+      "category": "Biometrics",
+      "question": "Biological sex",
+      "answer_options_text": "Male / Female",
+      "answer_options": [
+        "Male",
+        "Female"
+      ],
+      "is_choice": true,
+      "variable": "sex",
+      "targets": [
+        "O1",
+        "O5"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 11,
+      "step_number": 1,
+      "category": "Biometrics",
+      "question": "Height",
+      "answer_options_text": "ft/in or cm",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "height_cm",
+      "targets": [
+        "O1"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 12,
+      "step_number": 1,
+      "category": "Biometrics",
+      "question": "Current weight",
+      "answer_options_text": "kg or lbs",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "BW",
+      "targets": [
+        "O1"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 13,
+      "step_number": 1,
+      "category": "Biometrics",
+      "question": "Body fat %",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "body_fat",
+      "targets": [
+        "O1"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 14,
+      "step_number": 1,
+      "category": "Biometrics",
+      "question": "Abdominal circumference",
+      "answer_options_text": "cm or inches",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "waist_cm",
+      "targets": [
+        "O1"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 15,
+      "step_number": 1,
+      "category": "Biometrics",
+      "question": "Neck circumference",
+      "answer_options_text": "cm or inches",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "neck_cm",
+      "targets": [
+        "O1"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 17,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "General daily activity level",
+      "answer_options_text": "Sedentary / Lightly Active / Active / Very Active / Other",
+      "answer_options": [
+        "Sedentary",
+        "Lightly Active",
+        "Active",
+        "Very Active",
+        "Other"
+      ],
+      "is_choice": true,
+      "variable": "activity_level",
+      "targets": [
+        "O2"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 18,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Weekly moderate cardio frequency",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+ sessions/week",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+ sessions/week"
+      ],
+      "is_choice": true,
+      "variable": "f_mod",
+      "targets": [
+        "O2"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 19,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Weekly vigorous cardio frequency",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+ sessions/week",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+ sessions/week"
+      ],
+      "is_choice": true,
+      "variable": "f_vig",
+      "targets": [
+        "O2"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 20,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Weekly strength training frequency",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+ sessions/week",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+ sessions/week"
+      ],
+      "is_choice": true,
+      "variable": "f_strength",
+      "targets": [
+        "O2"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 21,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Typical session duration",
+      "answer_options_text": "<30 min / 30-60 min / >60 min",
+      "answer_options": [
+        "<30 min",
+        "30-60 min",
+        ">60 min"
+      ],
+      "is_choice": true,
+      "variable": "dur",
+      "targets": [
+        "O2"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 22,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Flexibility & mobility frequency",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+ sessions/week",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+ sessions/week"
+      ],
+      "is_choice": true,
+      "variable": "f_flex",
+      "targets": [
+        "O2"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 23,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Hours spent standing daily",
+      "answer_options_text": "<1 hr / 2 hrs / 3 hrs / 5 hrs",
+      "answer_options": [
+        "<1 hr",
+        "2 hrs",
+        "3 hrs",
+        "5 hrs"
+      ],
+      "is_choice": true,
+      "variable": "standing_hrs",
+      "targets": [
+        "O2"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 24,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Heart condition safety check",
+      "answer_options_text": "Yes / No",
+      "answer_options": [
+        "Yes",
+        "No"
+      ],
+      "is_choice": true,
+      "variable": "safety_flag",
+      "targets": [
+        "VETO"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 25,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Chest pain during activity",
+      "answer_options_text": "Yes / No",
+      "answer_options": [
+        "Yes",
+        "No"
+      ],
+      "is_choice": true,
+      "variable": "safety_flag",
+      "targets": [
+        "VETO"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 26,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Balance/dizziness issues",
+      "answer_options_text": "Yes / No / Sometimes",
+      "answer_options": [
+        "Yes",
+        "No",
+        "Sometimes"
+      ],
+      "is_choice": true,
+      "variable": "safety_flag",
+      "targets": [
+        "VETO"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 27,
+      "step_number": 2,
+      "category": "Physical Activity",
+      "question": "Activity challenges",
+      "answer_options_text": "Lack of time / Lack of energy / Weak muscles / No gym access / Injury/pain",
+      "answer_options": [
+        "Lack of time",
+        "Lack of energy",
+        "Weak muscles",
+        "No gym access",
+        "Injury/pain"
+      ],
+      "is_choice": true,
+      "variable": "challenge_flags",
+      "targets": [
+        "UX"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 29,
+      "step_number": 3,
+      "category": "Diet & Food Frequency",
+      "question": "Dietary pattern",
+      "answer_options_text": "Low-carb/Keto / Vegetarian / Mediterranean / Vegan / Paleo / Intermittent Fasting",
+      "answer_options": [
+        "Low-carb/Keto",
+        "Vegetarian",
+        "Mediterranean",
+        "Vegan",
+        "Paleo",
+        "Intermittent Fasting"
+      ],
+      "is_choice": true,
+      "variable": "diet_pattern",
+      "targets": [
+        "O7"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 30,
+      "step_number": 3,
+      "category": "Diet & Food Frequency",
+      "question": "Daily fruit servings",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+"
+      ],
+      "is_choice": true,
+      "variable": "fruit_serv",
+      "targets": [
+        "O7"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 31,
+      "step_number": 3,
+      "category": "Diet & Food Frequency",
+      "question": "Daily vegetable servings",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+"
+      ],
+      "is_choice": true,
+      "variable": "veg_serv",
+      "targets": [
+        "O7"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 32,
+      "step_number": 3,
+      "category": "Diet & Food Frequency",
+      "question": "Daily sugary drink servings",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+"
+      ],
+      "is_choice": true,
+      "variable": "SSB_serv",
+      "targets": [
+        "O5",
+        "O11"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 33,
+      "step_number": 3,
+      "category": "Diet & Food Frequency",
+      "question": "Daily packaged food servings",
+      "answer_options_text": "0 / 1-2 / 3-4 / 5+",
+      "answer_options": [
+        "0",
+        "1-2",
+        "3-4",
+        "5+"
+      ],
+      "is_choice": true,
+      "variable": "packaged_serv",
+      "targets": [
+        "O7"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 35,
+      "step_number": 4,
+      "category": "Health Goals",
+      "question": "Primary health goal",
+      "answer_options_text": "Weight Loss / Muscle Gain / Energy Levels / Digestive Health / Chronic Condition / Manage Benefits / Healthy Aging",
+      "answer_options": [
+        "Weight Loss",
+        "Muscle Gain",
+        "Energy Levels",
+        "Digestive Health",
+        "Chronic Condition",
+        "Manage Benefits",
+        "Healthy Aging"
+      ],
+      "is_choice": true,
+      "variable": "primary_goal",
+      "targets": [
+        "O10"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 36,
+      "step_number": 4,
+      "category": "Health Goals",
+      "question": "Weight loss pace (if applicable)",
+      "answer_options_text": "Gentle (0.5 kg/wk) / Steady (0.75 kg/wk) / Ambitious",
+      "answer_options": [
+        "Gentle (0.5 kg/wk)",
+        "Steady (0.75 kg/wk)",
+        "Ambitious"
+      ],
+      "is_choice": true,
+      "variable": "pace",
+      "targets": [
+        "O10"
+      ],
+      "reverse_scored": false,
+      "required": "Conditional"
+    },
+    {
+      "source_row": 37,
+      "step_number": 4,
+      "category": "Health Goals",
+      "question": "Muscle gain targets (if applicable)",
+      "answer_options_text": "Protein target / MET minutes / Progressive overload",
+      "answer_options": [
+        "Protein target",
+        "MET minutes",
+        "Progressive overload"
+      ],
+      "is_choice": true,
+      "variable": "muscle_targets",
+      "targets": [
+        "O10"
+      ],
+      "reverse_scored": false,
+      "required": "Conditional"
+    },
+    {
+      "source_row": 39,
+      "step_number": 5,
+      "category": "Medical Conditions",
+      "question": "Cardiovascular conditions",
+      "answer_options_text": "Multi-select checkboxes",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "conditions[]",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 40,
+      "step_number": 5,
+      "category": "Medical Conditions",
+      "question": "Endocrine / Metabolic conditions",
+      "answer_options_text": "Multi-select: T2D, etc.",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "conditions[]",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 41,
+      "step_number": 5,
+      "category": "Medical Conditions",
+      "question": "Gastrointestinal conditions",
+      "answer_options_text": "Multi-select: IBS, GERD, Celiac, UC, NAFLD",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "conditions[]",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 42,
+      "step_number": 5,
+      "category": "Medical Conditions",
+      "question": "Neurologic & Mental Health",
+      "answer_options_text": "Multi-select checkboxes",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "conditions[]",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 43,
+      "step_number": 5,
+      "category": "Medical Conditions",
+      "question": "Other Systemic conditions",
+      "answer_options_text": "Multi-select checkboxes",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "conditions[]",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 45,
+      "step_number": 6,
+      "category": "Family Medical History",
+      "question": "Heart Disease",
+      "answer_options_text": "Checkbox (Yes/No)",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "FH_CVD",
+      "targets": [
+        "O6",
+        "O11"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 46,
+      "step_number": 6,
+      "category": "Family Medical History",
+      "question": "Stroke",
+      "answer_options_text": "Checkbox (Yes/No)",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "FH_stroke",
+      "targets": [
+        "O6",
+        "O11"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 47,
+      "step_number": 6,
+      "category": "Family Medical History",
+      "question": "Type 2 Diabetes",
+      "answer_options_text": "Checkbox (Yes/No)",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "FH_T2D",
+      "targets": [
+        "O6",
+        "O11"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 48,
+      "step_number": 6,
+      "category": "Family Medical History",
+      "question": "Colon Cancer",
+      "answer_options_text": "Checkbox (Yes/No)",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "FH_colon",
+      "targets": [
+        "O6",
+        "O11"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 49,
+      "step_number": 6,
+      "category": "Family Medical History",
+      "question": "Breast Cancer",
+      "answer_options_text": "Checkbox (Yes/No)",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "FH_breast",
+      "targets": [
+        "O6",
+        "O11"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 50,
+      "step_number": 6,
+      "category": "Family Medical History",
+      "question": "Dementia or Alzheimer's",
+      "answer_options_text": "Checkbox (Yes/No)",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "FH_AD",
+      "targets": [
+        "O6",
+        "O11"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 52,
+      "step_number": 7,
+      "category": "Medications",
+      "question": "Search and select medications",
+      "answer_options_text": "Search bar + categories",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "med_list[]",
+      "targets": [
+        "O9"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 53,
+      "step_number": 7,
+      "category": "Medications",
+      "question": "Endocrine & Metabolic",
+      "answer_options_text": "Metformin / Insulin & Sulfonylureas / Levothyroxine / Corticosteroids",
+      "answer_options": [
+        "Metformin",
+        "Insulin & Sulfonylureas",
+        "Levothyroxine",
+        "Corticosteroids"
+      ],
+      "is_choice": true,
+      "variable": "med_list[]",
+      "targets": [
+        "O9"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 54,
+      "step_number": 7,
+      "category": "Medications",
+      "question": "Cardiovascular & Blood",
+      "answer_options_text": "ACE Inhibitors & ARBs / Beta Blockers / Diuretics / Antiplatelet / Statins / Digoxin",
+      "answer_options": [
+        "ACE Inhibitors & ARBs",
+        "Beta Blockers",
+        "Diuretics",
+        "Antiplatelet",
+        "Statins",
+        "Digoxin"
+      ],
+      "is_choice": true,
+      "variable": "med_list[]",
+      "targets": [
+        "O9"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 55,
+      "step_number": 7,
+      "category": "Medications",
+      "question": "Psychotropic & Neurologic",
+      "answer_options_text": "SSRIs / Lithium / SNRIs / Anticonvulsants",
+      "answer_options": [
+        "SSRIs",
+        "Lithium",
+        "SNRIs",
+        "Anticonvulsants"
+      ],
+      "is_choice": true,
+      "variable": "med_list[]",
+      "targets": [
+        "O9"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 56,
+      "step_number": 7,
+      "category": "Medications",
+      "question": "Anti-Infectives & GI",
+      "answer_options_text": "Antibiotics / PPIs / Fluoroquinolones / Oral Contraceptives",
+      "answer_options": [
+        "Antibiotics",
+        "PPIs",
+        "Fluoroquinolones",
+        "Oral Contraceptives"
+      ],
+      "is_choice": true,
+      "variable": "med_list[]",
+      "targets": [
+        "O9"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 57,
+      "step_number": 7,
+      "category": "Medications",
+      "question": "Miscellaneous",
+      "answer_options_text": "NSAIDs / Vitamin E / Theophylline / Magnesium / Oral Contraceptives",
+      "answer_options": [
+        "NSAIDs",
+        "Vitamin E",
+        "Theophylline",
+        "Magnesium",
+        "Oral Contraceptives"
+      ],
+      "is_choice": true,
+      "variable": "med_list[]",
+      "targets": [
+        "O9"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 58,
+      "step_number": 7,
+      "category": "Medications",
+      "question": "Dosage and frequency",
+      "answer_options_text": "Dosage input + Daily+",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "med_dose",
+      "targets": [
+        "O9"
+      ],
+      "reverse_scored": false,
+      "required": "Conditional"
+    },
+    {
+      "source_row": 60,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 1: Upset by unexpected events",
+      "answer_options_text": "0 (Never) to 4 (Very Often)",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r1",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 61,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 2: Unable to control important things",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r2",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 62,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 3: Felt nervous and stressed",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r3",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 63,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 4: Confident handling problems (REVERSE)",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r4",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": true,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 64,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 5: Things going your way (REVERSE)",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r5",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": true,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 65,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 6: Could not cope",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r6",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 66,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 7: Able to control irritations (REVERSE)",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r7",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": true,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 67,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 8: On top of things (REVERSE)",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r8",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": true,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 68,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 9: Angered by things outside control",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r9",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 69,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "PSS-10 Item 10: Difficulties piling up",
+      "answer_options_text": "0-4 scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "r10",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 70,
+      "step_number": 8,
+      "category": "Stress & Mental Well-being",
+      "question": "Stress-reduction practices",
+      "answer_options_text": "Regular Meditation / Yoga/Tai Chi / Deep Breathing / Journaling / None",
+      "answer_options": [
+        "Regular Meditation",
+        "Yoga/Tai Chi",
+        "Deep Breathing",
+        "Journaling",
+        "None"
+      ],
+      "is_choice": true,
+      "variable": "stress_practice",
+      "targets": [
+        "O4"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 72,
+      "step_number": 9,
+      "category": "Sleep Quality & Recovery",
+      "question": "Typical sleep hours per night",
+      "answer_options_text": "Slider 0-8+ hours",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "sleep_hrs",
+      "targets": [
+        "O3"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 73,
+      "step_number": 9,
+      "category": "Sleep Quality & Recovery",
+      "question": "Overall sleep quality rating",
+      "answer_options_text": "1-5 emoji scale",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "sleep_quality",
+      "targets": [
+        "O3"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 74,
+      "step_number": 9,
+      "category": "Sleep Quality & Recovery",
+      "question": "Sleep schedule consistency",
+      "answer_options_text": "Very Inconsistent / Somewhat Inconsistent / Fairly Consistent / Very Consistent",
+      "answer_options": [
+        "Very Inconsistent",
+        "Somewhat Inconsistent",
+        "Fairly Consistent",
+        "Very Consistent"
+      ],
+      "is_choice": true,
+      "variable": "sched_consistency",
+      "targets": [
+        "O3"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 76,
+      "step_number": 10,
+      "category": "Substance Use",
+      "question": "Alcoholic drinks per week",
+      "answer_options_text": "0 / 1-3 / 4-7 / 8+ drinks",
+      "answer_options": [
+        "0",
+        "1-3",
+        "4-7",
+        "8+ drinks"
+      ],
+      "is_choice": true,
+      "variable": "drinks_wk",
+      "targets": [
+        "O5"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 77,
+      "step_number": 10,
+      "category": "Substance Use",
+      "question": "Current smoking/tobacco status",
+      "answer_options_text": "Yes daily / Yes occasionally / No",
+      "answer_options": [
+        "Yes daily",
+        "Yes occasionally",
+        "No"
+      ],
+      "is_choice": true,
+      "variable": "smoke_status",
+      "targets": [
+        "O5"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 78,
+      "step_number": 10,
+      "category": "Substance Use",
+      "question": "If former smoker, when quit",
+      "answer_options_text": "Within last year / More than a year ago / Never",
+      "answer_options": [
+        "Within last year",
+        "More than a year ago",
+        "Never"
+      ],
+      "is_choice": true,
+      "variable": "quit_time",
+      "targets": [
+        "O5"
+      ],
+      "reverse_scored": false,
+      "required": "Conditional"
+    },
+    {
+      "source_row": 80,
+      "step_number": 11,
+      "category": "Health Goals & Priorities",
+      "question": "Health areas of interest (multi-select)",
+      "answer_options_text": "Heart Health / Metabolism & Diabetes / Longevity & Anti-Aging / Bone Health / Immunity & Inflammation Control / Gut Health / Fertility & Hormone Health / Stress & Mental Health",
+      "answer_options": [
+        "Heart Health",
+        "Metabolism & Diabetes",
+        "Longevity & Anti-Aging",
+        "Bone Health",
+        "Immunity & Inflammation Control",
+        "Gut Health",
+        "Fertility & Hormone Health",
+        "Stress & Mental Health"
+      ],
+      "is_choice": true,
+      "variable": "goal_areas[]",
+      "targets": [
+        "O10"
+      ],
+      "reverse_scored": false,
+      "required": "Mandatory"
+    },
+    {
+      "source_row": 82,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "HbA1c (%)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "HbA1c",
+      "targets": [
+        "O11 (Z1)"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 83,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "LDL Cholesterol (mg/dL)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "LDL",
+      "targets": [
+        "O11 (Z7)"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 84,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "Serum B12 (pg/mL)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "B12",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 85,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "Serum Ferritin (ng/mL)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "ferritin",
+      "targets": [
+        "O11 (Z12)"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 86,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "Total Vitamin D (ng/mL)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "VitD_25OH",
+      "targets": [
+        "O11 (Z15)"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 87,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "CRP (mg/L)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "CRP",
+      "targets": [
+        "O11 (Z3)"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 88,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "Homocysteine (umol/L)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "Hcy",
+      "targets": [
+        "O11 (Z13)"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 89,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "Fasting Glucose (mg/dL)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "glucose",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 90,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "Creatinine (mg/dL)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "creatinine",
+      "targets": [
+        "O8"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 91,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "eGFR (mL/min/1.73m2)",
+      "answer_options_text": "Numeric entry",
+      "answer_options": [],
+      "is_choice": false,
+      "variable": "eGFR",
+      "targets": [
+        "O11 (Z9)"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    },
+    {
+      "source_row": 92,
+      "step_number": 12,
+      "category": "Lab Test Results & Devices",
+      "question": "Device connections",
+      "answer_options_text": "Apple Health / Google Fit / Wearable sensors",
+      "answer_options": [
+        "Apple Health",
+        "Google Fit",
+        "Wearable sensors"
+      ],
+      "is_choice": true,
+      "variable": "device_data",
+      "targets": [
+        "daily inputs"
+      ],
+      "reverse_scored": false,
+      "required": "Optional"
+    }
+  ]
+}
