@@ -1943,3 +1943,116 @@ a case guard prefixes a definition the way `where` does. The ninth,
    that moment.
 2. **Which tobacco ranking is right?** O5.1 ties a recent ex-smoker with an
    occasional smoker; O5.7 does not.
+
+---
+
+## 2026-09-10: ONB-006 — the best-sourced sheet, and twelve symbols with no values
+
+`O·O6 Family History` (manifest 76) is the only O-sheet that says where its
+numbers came from. Every relative risk cites a study — EPIC-InterAct for type
+2 diabetes, an AHA meta-analysis for stroke, first-degree-relative studies for
+the cancers. Worth stating plainly, because most of this document is the
+opposite.
+
+It also states each relative risk **four times** — inside the formula as
+`ln(RR)`, again pre-computed (`* 1.000`), again in the Variables cell
+(`RR=2.72`), and again in the reference table — so the extractor recomputes
+the logarithm and holds all four together. Nothing here rests on one cell.
+
+### The one row that needs explaining
+
+`ln(2.72) = 1.000632`, which rounds to **1.001**. The sheet writes **1.000**.
+
+That is not an error. The T2D relative risk is ***e***, whose log is exactly
+1, and 2.72 is *e* rounded for display. So the `ln(RR)` column is the exact
+one and the `RR` column is the rounded one — the same "each column is
+independently rounded" shape already recorded for `★ Scarring Bistability
+Guard`. Every other row is straightforward correct rounding to three
+decimals (error ≤ 5e-4); T2D's 6.3e-4 is the only one that is not.
+
+The module therefore reads the sheet's **pre-computed** log rather than
+recomputing `ln(2.72)`, because O6.2's declared range ("0 or 1.000") was
+written against it.
+
+### Checked against the UI, in both directions
+
+Step 6 collects exactly six family-history checkboxes and O6.2–O6.7 read
+exactly those six. A history collected and never read would be a question
+asked for nothing; one read and never collected would be an equation that
+cannot run. Neither happens here — the first O-sheet for which that could be
+verified at all.
+
+### The finding: twelve symbols named and never given
+
+O6.8 and O6.9 are standard statistics written with **none of their inputs**.
+
+| equation | names | supplies |
+|---|---|---|
+| O6.8 Pearson-Aitken | `mu`, `Sigma_12`, `Sigma_22`, `x2`, `mu_2` | nothing |
+| O6.9 liability threshold | `g`, `e`, `threshold`, `sigma` | nothing |
+| O6.10 | `eta_hi`, `FH_relevant` | see below |
+| O6.11 | `sigma2_base` | nothing |
+
+There is no covariance anywhere in the workbook between a family history and
+a damage state, no population mean vector, no liability threshold for any of
+the six conditions, and no default prior variance. The mathematics is
+complete; only the numbers are missing.
+
+So `pearson_aitken_posterior` and `liability_probability` take **every**
+missing input as an argument, exactly as O1.9's `e_WHtR` is an argument. A
+module that invented a covariance block would be inventing the prior.
+
+#### `eta_hi` — the strongest bridge candidate so far, and still not bridged
+
+O6.10's Variables cell says `eta_hi = base damage sensitivity`. Parameter
+**#47** is `eta_hi,k`, layer C, equation C2, full name **"High damage
+sensitivity"**. Same base spelling, same layer, same words; the `,k` is the
+per-cluster subscript O6.10 drops while stating a general rule.
+
+That is far better evidence than `f_u_ref` ever had — and it is still
+inference, not a declaration, so it goes to the author rather than into the
+code.
+
+#### `FH_relevant` — answerable, but not by the sheet that asks
+
+O6.10 raises damage sensitivity 30% when a family history is "relevant per
+pathway", and defines relevance nowhere. The RR table's **Z-Pathway
+Affected** column *does* map each condition to its pathways, and that is what
+`relevant_pathways` reads. But the sheet never says that column is what
+`FH_relevant` means, so the symbol stays reported.
+
+### O6.11 is ambiguous and is not resolved
+
+`sigma2_inflated = sigma2_base * 1.5 if FH positive` does not say **which**
+family history, and the six are collected separately. Two readings:
+
+- **any of six ticked** → a user with one distant relative gets the whole
+  prior inflated, on every pathway
+- **this pathway's own history** → only the pathways that history touches
+
+`variance_inflation` therefore takes an explicit boolean rather than a
+`FamilyHistory`. Choosing would be inventing the prior.
+
+### A bug my own test caught
+
+`load_o6_pathways` first joined equations to table rows **on the log-hazard**.
+CVD, colon cancer and breast cancer all carry `ln(2.0) = 0.693`, so three
+conditions collapsed into one and **CVD silently received breast cancer's
+pathway** (Z2 instead of Z7).
+
+The fix is a key that is actually unique: each equation is named `"FH " +` its
+condition, exactly, and the extractor now asserts that correspondence and
+checks the relative risks match across the join. Recorded because the failure
+mode is the recurring one — a lookup that returns *something* is more
+dangerous than one that returns nothing.
+
+### For Dr. Ali — four questions
+
+1. **Is O6.10's `eta_hi` parameter #47 `eta_hi,k`?** Everything matches but
+   the cluster subscript.
+2. **Where do O6.8's covariances and O6.9's thresholds come from?** Twelve
+   symbols across four equations have no values anywhere.
+3. **Which family history does O6.11 inflate on** — any of the six, or the
+   pathway's own?
+4. **Is the RR table's Z-Pathway column what `FH_relevant` means?** It is the
+   only candidate, and the sheet does not say so.

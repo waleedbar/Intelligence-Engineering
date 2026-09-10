@@ -1,0 +1,239 @@
+{
+  "sheet": "O·O6 Family History",
+  "equations": [
+    {
+      "equation_id": "O6.1",
+      "source_row": 10,
+      "name": "Log-hazard shift (general)",
+      "formula": "delta_FH = I(FH) * ln(RR)",
+      "variables": "I(FH) = 1 if family history present, RR = relative risk",
+      "units": "log-hazard",
+      "value_range": "0 or ln(RR)",
+      "engine_target": "O11: Z_k(t0) initialization",
+      "indicator": null,
+      "rr_in_formula": null,
+      "log_in_formula": null,
+      "rr_in_variables": null,
+      "condition": null
+    },
+    {
+      "equation_id": "O6.2",
+      "source_row": 11,
+      "name": "FH Type 2 Diabetes",
+      "formula": "delta_FH_T2D = I(FH_T2D) * ln(2.72) = I(FH_T2D) * 1.000",
+      "variables": "RR=2.72 (EPIC-InterAct)",
+      "units": "log-hazard",
+      "value_range": "0 or 1.000",
+      "engine_target": "O11: Z1, Z6",
+      "indicator": "FH_T2D",
+      "rr_in_formula": 2.72,
+      "log_in_formula": 1.0,
+      "rr_in_variables": 2.72,
+      "condition": "Type 2 Diabetes"
+    },
+    {
+      "equation_id": "O6.3",
+      "source_row": 12,
+      "name": "FH Heart Disease (CVD)",
+      "formula": "delta_FH_CVD = I(FH_CVD) * ln(2.0) = I(FH_CVD) * 0.693",
+      "variables": "RR=2.0 (conservative estimate)",
+      "units": "log-hazard",
+      "value_range": "0 or 0.693",
+      "engine_target": "O11: Z7",
+      "indicator": "FH_CVD",
+      "rr_in_formula": 2.0,
+      "log_in_formula": 0.693,
+      "rr_in_variables": 2.0,
+      "condition": "Heart Disease (CVD)"
+    },
+    {
+      "equation_id": "O6.4",
+      "source_row": 13,
+      "name": "FH Stroke",
+      "formula": "delta_FH_stroke = I(FH_stroke) * ln(1.63) = I(FH_stroke) * 0.489",
+      "variables": "RR=1.63 (AHA meta-analysis)",
+      "units": "log-hazard",
+      "value_range": "0 or 0.489",
+      "engine_target": "O11: Z13",
+      "indicator": "FH_stroke",
+      "rr_in_formula": 1.63,
+      "log_in_formula": 0.489,
+      "rr_in_variables": 1.63,
+      "condition": "Stroke"
+    },
+    {
+      "equation_id": "O6.5",
+      "source_row": 14,
+      "name": "FH Colon Cancer",
+      "formula": "delta_FH_colon = I(FH_colon) * ln(2.0) = I(FH_colon) * 0.693",
+      "variables": "RR=2.0 (first-degree relative)",
+      "units": "log-hazard",
+      "value_range": "0 or 0.693",
+      "engine_target": "O11: Z3",
+      "indicator": "FH_colon",
+      "rr_in_formula": 2.0,
+      "log_in_formula": 0.693,
+      "rr_in_variables": 2.0,
+      "condition": "Colon Cancer"
+    },
+    {
+      "equation_id": "O6.6",
+      "source_row": 15,
+      "name": "FH Breast Cancer",
+      "formula": "delta_FH_breast = I(FH_breast) * ln(2.0) = I(FH_breast) * 0.693",
+      "variables": "RR=2.0 (first-degree relative)",
+      "units": "log-hazard",
+      "value_range": "0 or 0.693",
+      "engine_target": "O11: Z2",
+      "indicator": "FH_breast",
+      "rr_in_formula": 2.0,
+      "log_in_formula": 0.693,
+      "rr_in_variables": 2.0,
+      "condition": "Breast Cancer"
+    },
+    {
+      "equation_id": "O6.7",
+      "source_row": 16,
+      "name": "FH Dementia/Alzheimer's",
+      "formula": "delta_FH_AD = I(FH_AD) * ln(1.73) = I(FH_AD) * 0.548",
+      "variables": "RR=1.73 (AD family-history meta)",
+      "units": "log-hazard",
+      "value_range": "0 or 0.548",
+      "engine_target": "O11: Z5",
+      "indicator": "FH_AD",
+      "rr_in_formula": 1.73,
+      "log_in_formula": 0.548,
+      "rr_in_variables": 1.73,
+      "condition": "Dementia/Alzheimer's"
+    },
+    {
+      "equation_id": "O6.8",
+      "source_row": 17,
+      "name": "Pearson-Aitken posterior",
+      "formula": "mu_post = mu + Sigma_12 * Sigma_22^-1 * (x2 - mu_2)",
+      "variables": "mu=population mean, Sigma=covariance, x2=observed FH",
+      "units": "varies",
+      "value_range": "varies",
+      "engine_target": "Layer E: P(0) inflation",
+      "indicator": null,
+      "rr_in_formula": null,
+      "log_in_formula": null,
+      "rr_in_variables": null,
+      "condition": null
+    },
+    {
+      "equation_id": "O6.9",
+      "source_row": 18,
+      "name": "Liability threshold model",
+      "formula": "l = g + e; P(disease) = Phi((l - threshold) / sigma)",
+      "variables": "g=genetic, e=environmental, Phi=normal CDF",
+      "units": "probability",
+      "value_range": "0-1",
+      "engine_target": "O11: composite risk",
+      "indicator": null,
+      "rr_in_formula": null,
+      "log_in_formula": null,
+      "rr_in_variables": null,
+      "condition": null
+    },
+    {
+      "equation_id": "O6.10",
+      "source_row": 19,
+      "name": "Eta sensitivity increase",
+      "formula": "eta_hi_modified = eta_hi * (1 + 0.3 * I(FH_relevant))",
+      "variables": "eta_hi = base damage sensitivity, FH_relevant per pathway",
+      "units": "dimensionless",
+      "value_range": "eta_hi to 1.3*eta_hi",
+      "engine_target": "Layer C: eta_hi modifiers",
+      "indicator": null,
+      "rr_in_formula": null,
+      "log_in_formula": null,
+      "rr_in_variables": null,
+      "condition": null
+    },
+    {
+      "equation_id": "O6.11",
+      "source_row": 20,
+      "name": "P(0) variance inflation",
+      "formula": "sigma2_inflated = sigma2_base * 1.5 if FH positive",
+      "variables": "sigma2_base = default prior variance",
+      "units": "varies",
+      "value_range": "1.5x base",
+      "engine_target": "Layer E: P(0) diagonal",
+      "indicator": null,
+      "rr_in_formula": null,
+      "log_in_formula": null,
+      "rr_in_variables": null,
+      "condition": null
+    }
+  ],
+  "conditions": [
+    {
+      "condition": "Type 2 Diabetes",
+      "source_row": 26,
+      "relative_risk": 2.72,
+      "log_relative_risk": 1.0,
+      "source": "EPIC-InterAct consortium",
+      "z_pathways": "Z1 Glycation, Z6 Insulin Resistance",
+      "z_pathway_codes": [
+        "Z1",
+        "Z6"
+      ]
+    },
+    {
+      "condition": "Heart Disease (CVD)",
+      "source_row": 27,
+      "relative_risk": 2.0,
+      "log_relative_risk": 0.693,
+      "source": "Conservative meta-analysis",
+      "z_pathways": "Z7 Atherosclerosis",
+      "z_pathway_codes": [
+        "Z7"
+      ]
+    },
+    {
+      "condition": "Stroke",
+      "source_row": 28,
+      "relative_risk": 1.63,
+      "log_relative_risk": 0.489,
+      "source": "AHA journal meta-analysis",
+      "z_pathways": "Z13 Hcy Vascular",
+      "z_pathway_codes": [
+        "Z13"
+      ]
+    },
+    {
+      "condition": "Colon Cancer",
+      "source_row": 29,
+      "relative_risk": 2.0,
+      "log_relative_risk": 0.693,
+      "source": "First-degree relative studies",
+      "z_pathways": "Z3 Inflammation",
+      "z_pathway_codes": [
+        "Z3"
+      ]
+    },
+    {
+      "condition": "Breast Cancer",
+      "source_row": 30,
+      "relative_risk": 2.0,
+      "log_relative_risk": 0.693,
+      "source": "First-degree relative studies",
+      "z_pathways": "Z2 Oxidative DNA",
+      "z_pathway_codes": [
+        "Z2"
+      ]
+    },
+    {
+      "condition": "Dementia/Alzheimer's",
+      "source_row": 31,
+      "relative_risk": 1.73,
+      "log_relative_risk": 0.548,
+      "source": "AD family-history risk meta",
+      "z_pathways": "Z5 Epigenetic Drift",
+      "z_pathway_codes": [
+        "Z5"
+      ]
+    }
+  ]
+}

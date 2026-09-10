@@ -39,7 +39,11 @@ DATA_DIR = Path(__file__).parent
 
 # Function names and operators that appear in formulas but are not quantities.
 FUNCTIONS = {"min", "max", "exp", "sqrt", "ln", "log", "abs", "I",
-             "MifflinStJeor", "DualHill", "SUMXMY2", "SUMSQ", "SUM"}
+             "MifflinStJeor", "DualHill", "SUMXMY2", "SUMSQ", "SUM",
+             # O6.9 writes "P(disease) = Phi((l - threshold)/sigma)".
+             # Phi is the standard normal CDF and P(...) is probability
+             # notation -- both are functions, neither is a quantity.
+             "Phi", "P"}
 
 # English the sheets write inside formula cells. 'O3.5' reads
 # "0 if 7<=h<=9; min(1,(7-h)/2) if h<7" and 'O3.1' continues on a second
@@ -49,8 +53,11 @@ FUNCTIONS = {"min", "max", "exp", "sqrt", "ln", "log", "abs", "I",
 # 'in' joins them via O4.1's "for i in {4,5,7,8}", and 'cap'/'practice' via
 # O4.3's parenthetical "0.05 per practice (cap 0.20)" -- English written
 # inside a formula cell, describing a constant the same cell already gives.
+# 'disease' and 'positive' join via O6.9's "P(disease)" and O6.11's "if FH
+# positive" -- English inside function notation and inside a condition.
 KEYWORDS = {"where", "if", "else", "and", "or", "for", "otherwise", "each",
-            "from", "per", "with", "of", "the", "to", "in", "cap", "practice"}
+            "from", "per", "with", "of", "the", "to", "in", "cap", "practice",
+            "disease", "positive"}
 
 # Version tags the workbook appends to cells: '[v39l F-DM]', '[v39s QA]'.
 _TAG = re.compile(r"\[[^\]]*\]")
@@ -147,6 +154,18 @@ SHEET_SPELLINGS = {
     # docs/parameter-gaps.md. The symbol is accounted for; the rule is not.
     "smoke_status": "collected by the UI, though O5's five categories are a "
                     "join of it with quit_time that no sheet specifies",
+    # O6.1 is the GENERAL form -- "delta_FH = I(FH) * ln(RR)", with its
+    # Variables cell reading "I(FH) = 1 if family history present". FH is a
+    # placeholder for whichever of the six histories is being shifted, and
+    # O6.2-O6.7 instantiate it. O6.11's "if FH positive" uses the same
+    # placeholder -- which is itself the ambiguity recorded against O6.11.
+    "FH": "the generic family history in O6.1's general form, instantiated "
+          "by O6.2-O6.7 as FH_T2D, FH_CVD, FH_stroke, FH_colon, FH_breast "
+          "and FH_AD -- all six of which the UI collects",
+    # O6.1's Variables cell defines RR as "relative risk" and every
+    # instantiation supplies a value with a cited source.
+    "RR": "the relative risk in O6.1's general form; O6.2-O6.7 each supply "
+          "one, and the reference table cites a study for all six",
 }
 
 SHEETS = {
@@ -155,6 +174,7 @@ SHEETS = {
     "O3": ("onboarding_o3.json", "O·O3 Sleep Deficit"),
     "O4": ("onboarding_o4.json", "O·O4 Stress Index"),
     "O5": ("onboarding_o5.json", "O·O5 Substance Exposure"),
+    "O6": ("onboarding_o6.json", "O·O6 Family History"),
 }
 
 # Symbols already reported, with what each one is missing. Anything the
@@ -188,6 +208,62 @@ KNOWN_UNRESOLVED = {
         "             Found only after 'O·Step-by-Step Questions' was "
         "imported, because until then the analyser took O2.8's own word for "
         "where its input came from.",
+
+    # --- O6.8, the Pearson-Aitken posterior ------------------------------
+    #
+    # mu_post = mu + Sigma_12 * Sigma_22^-1 * (x2 - mu_2). Standard, complete
+    # as mathematics, and the workbook supplies not one of its five inputs.
+    # There is no covariance anywhere between a family history and a damage
+    # state, and no population mean vector. Recorded one symbol at a time
+    # rather than as a single note, because each is separately missing.
+    "Sigma_12": "O6.8's cross-covariance between the damage states and the "
+                "observed family history. Nothing in the workbook states a "
+                "covariance between the two.",
+    "Sigma_22": "O6.8's covariance of the observed family history with "
+                "itself. Same absence -- and the six histories are collected "
+                "as independent checkboxes, so even their mutual correlation "
+                "is unstated.",
+    "mu":       "O6.8's population mean for the states being updated. The "
+                "Variables cell says 'mu=population mean' and no sheet gives "
+                "one.",
+    "mu_2":     "O6.8's population mean for the family-history block -- the "
+                "base rate of each history. Not in the workbook.",
+    "x2":       "O6.8's observed family history as a NUMBER. The UI collects "
+                "six booleans; how they become the vector this subtracts a "
+                "mean from is unstated.",
+
+    # --- O6.9, the liability threshold model ------------------------------
+    "g":         "O6.9's genetic component of liability. Named, never given, "
+                 "and no sheet says how a family history becomes one.",
+    "e":         "O6.9's environmental component of liability. Same.",
+    "threshold": "O6.9's liability threshold, above which disease occurs. "
+                 "Not given for any of the six conditions.",
+    "sigma":     "O6.9's liability standard deviation. Not given either, and "
+                 "P(disease) = Phi((l - threshold)/sigma) needs both it and "
+                 "the threshold to mean anything.",
+
+    # --- O6.10 and O6.11 --------------------------------------------------
+    "FH_relevant": "O6.10 raises damage sensitivity by 30% when a family "
+                   "history is 'relevant per pathway', and defines relevance "
+                   "nowhere. The RR reference table's Z-Pathway Affected "
+                   "column DOES map each condition to its pathways, and that "
+                   "is what sahacore.onboarding.family_history reads -- but "
+                   "the sheet never says that column is what FH_relevant "
+                   "means, so the bridge is not declared here.",
+    "eta_hi":     "O6.10's base damage sensitivity. THE STRONGEST BRIDGE "
+                  "CANDIDATE IN THIS LIST, and still not bridged: parameter "
+                  "#47 is 'eta_hi,k', layer C, equation C2, full name 'High "
+                  "damage sensitivity', and O6.10's Variables cell says "
+                  "'eta_hi = base damage sensitivity'. Same base spelling, "
+                  "same layer, same words -- the ',k' is the per-cluster "
+                  "subscript O6.10 drops while stating a general rule. That "
+                  "is far better evidence than f_u_ref had, and it is still "
+                  "inference rather than a declaration, so it is put to the "
+                  "author instead of assumed.",
+    "sigma2_base": "O6.11's default prior variance, which it multiplies by "
+                   "1.5. Layer E's P(0) diagonal is its engine target and no "
+                   "sheet gives its default. Searched both parameter "
+                   "registries for a prior variance and there is none.",
 }
 
 # Routings already reported, in the same spirit. Anything broken_routings

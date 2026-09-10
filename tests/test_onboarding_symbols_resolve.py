@@ -36,11 +36,22 @@ def test_no_symbol_is_unresolved_that_has_not_been_reported(result):
         f"and have not been reported: {surprises}")
 
 
-def test_the_six_known_holes_are_still_holes(result):
+def test_the_known_holes_are_still_holes(result):
     """If one of these is defined later, this test fails and the entry comes
-    out of KNOWN_UNRESOLVED -- so the list cannot quietly go stale."""
+    out of KNOWN_UNRESOLVED -- so the list cannot quietly go stale.
+
+    Twelve of the eighteen are O6.8-O6.11: standard statistics stated with
+    none of their inputs. They are listed one symbol at a time rather than as
+    a single note, because each is separately missing.
+    """
     assert set(result["unresolved"]) == {
-        "e_WHtR", "e_BMI", "f_u_ref", "HR_Arem", "rho_pop", "sitting_hrs"}
+        "e_WHtR", "e_BMI", "f_u_ref", "HR_Arem", "rho_pop", "sitting_hrs",
+        # O6.8's Pearson-Aitken update
+        "Sigma_12", "Sigma_22", "mu", "mu_2", "x2",
+        # O6.9's liability threshold model
+        "g", "e", "threshold", "sigma",
+        # O6.10 and O6.11
+        "FH_relevant", "eta_hi", "sigma2_base"}
     assert result["unresolved"]["e_WHtR"] == ["O1.9"]
     assert result["unresolved"]["e_BMI"] == ["O1.9"]
     assert result["unresolved"]["f_u_ref"] == ["O1.8"]
@@ -227,8 +238,8 @@ def test_every_built_onboarding_module_is_the_one_the_contract_names():
             missing.append(step["step_id"])
 
     assert built == ["ONB-001", "ONB-002", "ONB-003", "ONB-004",
-                     "ONB-005"], built
-    assert len(missing) == 9
+                     "ONB-005", "ONB-006"], built
+    assert len(missing) == 8
     # The two that are blocked must be among the unbuilt, not quietly written.
     blocked = [s["step_id"] for s in contract["steps"] if s["blocked_by"]]
     assert set(blocked) <= set(missing)

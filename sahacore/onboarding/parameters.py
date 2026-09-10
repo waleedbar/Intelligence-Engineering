@@ -136,3 +136,51 @@ def load_o5_ssb_midpoints() -> tuple[float, ...]:
             if row["encodes"] == "SSB_serv_day"]
     return tuple(row["value"]
                  for row in sorted(rows, key=lambda r: r["ordinal_position"]))
+
+
+@lru_cache(maxsize=1)
+def _o6() -> dict:
+    return json.loads((DATA_DIR / "onboarding_o6.json").read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def load_o6_shifts() -> dict[str, float]:
+    """Each family history's log-hazard shift, keyed by its FH_ variable.
+
+    The value is the log the SHEET pre-computes in O6.2-O6.7 ("* 1.000"), not
+    ln(RR) recomputed. They agree to 1e-3, and the sheet's is the one its
+    declared ranges were written against -- for T2D the relative risk is *e*
+    rounded to 2.72 for display, so 1.000 is the exact figure and
+    ln(2.72) = 1.000632 is the rounded one.
+    """
+    return {equation["indicator"]: equation["log_in_formula"]
+            for equation in _o6()["equations"]
+            if equation["indicator"] is not None}
+
+
+@lru_cache(maxsize=1)
+def load_o6_relative_risks() -> dict[str, float]:
+    """Each family history's relative risk, keyed by its FH_ variable."""
+    return {equation["indicator"]: equation["rr_in_formula"]
+            for equation in _o6()["equations"]
+            if equation["indicator"] is not None}
+
+
+@lru_cache(maxsize=1)
+def load_o6_pathways() -> dict[str, tuple[str, ...]]:
+    """Which Z-pathways each family history moves, keyed by its FH_ variable.
+
+    O6.10 reads "FH_relevant per pathway" and does not give the mapping; the
+    RR reference table's Z-Pathway Affected column is the only place in the
+    workbook that does.
+    """
+    data = _o6()
+    # Joined on the CONDITION NAME, not the log-hazard: CVD, colon cancer and
+    # breast cancer all carry ln(2.0) = 0.693, so a join on the number
+    # collapses three conditions into one. It did, and gave CVD the
+    # breast-cancer pathway until a test caught it.
+    by_condition = {condition["condition"]: condition["z_pathway_codes"]
+                    for condition in data["conditions"]}
+    return {equation["indicator"]: tuple(by_condition[equation["condition"]])
+            for equation in data["equations"]
+            if equation["indicator"] is not None}
