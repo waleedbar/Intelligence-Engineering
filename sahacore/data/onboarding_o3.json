@@ -1,0 +1,110 @@
+{
+  "sheet": "O·O3 Sleep Deficit",
+  "equations": [
+    {
+      "equation_id": "O3.1",
+      "source_row": 10,
+      "name": "Sleep Deficit Score",
+      "formula": "SDS = (7 - sleep_hrs) / 7 * quality_factor\nwhere quality_factor = 1 - (quality_rating - 1)/4",
+      "variables": "sleep_hrs from Step 9, quality_rating (1-5)",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O3.2, O3.3, O3.4, O11",
+      "ordinal_scale": []
+    },
+    {
+      "equation_id": "O3.2",
+      "source_row": 11,
+      "name": "Inflammation modifier",
+      "formula": "k_inflam_mod = 1 + 0.081 * deficit_hrs\nwhere deficit_hrs = max(0, 7 - sleep_hrs)",
+      "variables": "deficit_hrs = hours below 7h threshold",
+      "units": "dimensionless",
+      "value_range": "1.0-1.6+",
+      "engine_target": "Layer C: Z3 Inflammation rate",
+      "ordinal_scale": []
+    },
+    {
+      "equation_id": "O3.3",
+      "source_row": 12,
+      "name": "Insulin resistance (sleep)",
+      "formula": "k_IR_sleep = 1 - 0.045 * deficit_hrs",
+      "variables": "deficit_hrs from O3.2",
+      "units": "dimensionless",
+      "value_range": "0.7-1.0",
+      "engine_target": "Layer C: Z6 IR modifier",
+      "ordinal_scale": []
+    },
+    {
+      "equation_id": "O3.4",
+      "source_row": 13,
+      "name": "FSR modifier (anabolic)",
+      "formula": "FSR_mod = 1 - 0.18 * I(deficit > 1)",
+      "variables": "deficit = deficit_hrs; I() = indicator if deficit > 1h",
+      "units": "dimensionless",
+      "value_range": "0.82 or 1.0",
+      "engine_target": "Layer C: Z10 Sarcopenia",
+      "ordinal_scale": []
+    },
+    {
+      "equation_id": "O3.5",
+      "source_row": 14,
+      "name": "Sleep deficit index",
+      "formula": "sleep_def = 0 if 7<=h<=9; min(1,(7-h)/2) if h<7; min(1,(h-9)/2) if h>9",
+      "variables": "h = sleep_hrs from Step 9",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O3.7",
+      "ordinal_scale": []
+    },
+    {
+      "equation_id": "O3.6",
+      "source_row": 15,
+      "name": "Schedule consistency index",
+      "formula": "e_sched = (consistency_score - 1) / 3\nwhere Very Inconsistent=1, Somewhat=2, Fairly=3, Very Consistent=4",
+      "variables": "consistency from Step 9 UI",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "O3.7",
+      "ordinal_scale": [
+        {
+          "option": "Very Inconsistent",
+          "value": 1
+        },
+        {
+          "option": "Somewhat",
+          "value": 2
+        },
+        {
+          "option": "Fairly",
+          "value": 3
+        },
+        {
+          "option": "Very Consistent",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "equation_id": "O3.7",
+      "source_row": 16,
+      "name": "Composite sleep prior",
+      "formula": "mu_sleep = 0.5*sleep_def + 0.3*e_sleepqual + 0.2*e_sched",
+      "variables": "sleep_def (O3.5), e_sleepqual=(5-quality)/4, e_sched (O3.6)",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "engine_target": "Layer E: state prior",
+      "ordinal_scale": []
+    },
+    {
+      "equation_id": "O3.8",
+      "source_row": 17,
+      "name": "Sleep minutes (control)",
+      "formula": "sleep_minutes = 60 * sleep_hrs",
+      "variables": "sleep_hrs from Step 9",
+      "units": "minutes",
+      "value_range": "0-600",
+      "engine_target": "Layer E: u_t[sleep_hrs]",
+      "ordinal_scale": []
+    }
+  ]
+}

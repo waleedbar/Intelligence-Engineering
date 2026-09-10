@@ -124,8 +124,8 @@ def test_every_built_onboarding_module_is_the_one_the_contract_names():
         except ModuleNotFoundError:
             missing.append(step["step_id"])
 
-    assert built == ["ONB-001", "ONB-002"], built
-    assert len(missing) == 12
+    assert built == ["ONB-001", "ONB-002", "ONB-003"], built
+    assert len(missing) == 11
     # The two that are blocked must be among the unbuilt, not quietly written.
     blocked = [s["step_id"] for s in contract["steps"] if s["blocked_by"]]
     assert set(blocked) <= set(missing)

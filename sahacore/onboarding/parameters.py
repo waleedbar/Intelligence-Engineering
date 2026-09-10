@@ -49,3 +49,17 @@ def load_activity_mets() -> dict[str, float]:
     """Activity id -> MET, from 'P1 Activities 50'."""
     data = json.loads((DATA_DIR / "activities_50.json").read_text(encoding="utf-8"))
     return {row["activity_id"]: row["met"] for row in data["activities"]}
+
+
+@lru_cache(maxsize=1)
+def load_o3_consistency() -> dict[str, float]:
+    """O3.6's schedule-consistency scale, option -> score.
+
+    'Very Inconsistent' is 1 and 'Very Consistent' is 4, written inline in
+    O3.6's own formula cell rather than in a separate encoding table as O2
+    does. Read rather than retyped: what a user's answer is worth is the
+    sheet's decision.
+    """
+    data = json.loads((DATA_DIR / "onboarding_o3.json").read_text(encoding="utf-8"))
+    o3_6 = next(e for e in data["equations"] if e["equation_id"] == "O3.6")
+    return {option["option"]: option["value"] for option in o3_6["ordinal_scale"]}

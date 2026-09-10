@@ -1471,3 +1471,99 @@ Each time the tool answered exactly the question asked and the question was
 too narrow. The fixes have the same shape too: make the check say what it
 *cannot* see (`onboarding_symbols`), or refuse to pass when something is
 present that was not declared (`sheet_header`).
+
+---
+
+## 2026-09-10: ONB-003 — O3 defines every symbol it uses, and disagrees with itself three ways
+
+`O·O3 Sleep Deficit` is the first of the three O-sheets whose symbols all
+resolve. `python -m sahacore.data.onboarding_symbols` now covers O1, O2 and
+O3, and O3 adds nothing to the unresolved list — its one composite input,
+`e_sleepqual`, is defined in O3.7's own Variables cell as `(5-quality)/4`,
+which is exactly what O1.9 fails to do for `e_WHtR` and `e_BMI`. O3.6 also
+carries its ordinal encoding inline rather than in a separate table, so the
+module reads it instead of retyping it.
+
+The sheet also has **no PARAMETERS table**. Every constant — the 7-hour
+threshold, 0.081, 0.045, 0.18, the 7–9 hour window, O3.7's weights — lives
+inside a formula. That is a difference in the source, not a relaxation of the
+no-hardcoding rule: a value the sheet puts in a formula is part of the
+formula, and it is transcribed with it.
+
+What the sheet does not do is agree with itself. Three findings, none
+corrected.
+
+### 1. Two definitions of sleep deficit, and they are not the same function
+
+| | O3.1 `SDS` | O3.5 `sleep_def` |
+|---|---|---|
+| formula | `(7 - sleep_hrs)/7 * quality_factor` | `0` if `7≤h≤9`; `min(1,(7-h)/2)`; `min(1,(h-9)/2)` |
+| at 9 h | `-0.29 × quality_factor` | `0` |
+| oversleeping | **negative** | positive |
+| declared range | 0–1 | 0–1 |
+
+SDS is signed and unclamped, so it breaks its own declared range above the
+target. `sleep_def` is two-sided and clamped, and treats 7–9 hours as the
+healthy window. Both are implemented under their own names —
+`sleep_deficit_score` and `sleep_deficit_index` — so a caller cannot take one
+for the other.
+
+### 2. O3.1's quality weighting reaches none of its declared consumers
+
+This is the one that costs something. O3.1's Engine Target column reads
+`O3.2, O3.3, O3.4, O11`. The first three are on this same sheet, and **not
+one of them mentions SDS**. All three compute from
+`deficit_hrs = max(0, 7 - sleep_hrs)` — the raw clock shortfall, with no
+quality weighting whatsoever.
+
+So two users who both sleep five hours, one rating their sleep 1/5 and the
+other 5/5, get **identical** Z3 inflammation, Z6 insulin-resistance and Z10
+sarcopenia modifiers. Their SDS values are `2/7` and `0` — the full range of
+the score — and nothing on this sheet consumes the difference.
+
+It compounds with the quality factor's own shape: `quality_factor =
+1 - (rating-1)/4` is **zero** at rating 5, so `SDS = 0` for *any* sleep
+duration a user rates 5/5. Two hours and eight hours both score zero.
+
+Either O3.2–O3.4 should read SDS and do not, or O3.1's engine target names
+consumers it does not have. Which of those is true decides whether sleep
+quality affects Layer C at all. O11 is unimported and may yet be SDS's only
+real consumer.
+
+### 3. O3.7 mixes two badness indices with one goodness index
+
+`mu_sleep = 0.5*sleep_def + 0.3*e_sleepqual + 0.2*e_sched`
+
+| term | best case | worst case | direction |
+|---|---|---|---|
+| `sleep_def` (O3.5) | 0.0 | 1.0 | high = worse |
+| `e_sleepqual` | 0.0 | 1.0 | high = worse |
+| `e_sched` (O3.6) | **1.0** | **0.0** | **high = better** |
+
+O3.6 is `(consistency_score - 1)/3` over `Very Inconsistent=1 … Very
+Consistent=4`, so a perfectly regular sleeper scores 1.0 on a term that is
+added to two penalties. The best possible sleeper therefore scores **0.2**
+and the worst **0.8**: the declared 0–1 range is unreachable at both ends,
+and improving your schedule *raises* your sleep-badness prior.
+
+Flipping the term would change what a Layer E state prior means, so it is
+asserted rather than corrected — in `build_onboarding_o3.check()` and in
+`test_o3_7_mixes_two_badness_indices_with_one_goodness_index`.
+
+### How findings 2 and 3 were found
+
+Neither came from reading the sheet. Both came from writing a test that had
+to state what the best and worst cases were, and finding the arithmetic would
+not produce them. That is the fourth time in three days that the check found
+what the reading did not — and unlike the previous three, this one needed no
+new tool, just a test that refused to be written vaguely.
+
+### For Dr. Ali — three questions
+
+1. **Should O3.2, O3.3 and O3.4 read SDS or `deficit_hrs`?** As written they
+   read `deficit_hrs`, and sleep *quality* reaches Layer C nowhere. If that
+   is intended, O3.1's engine target should not name them.
+2. **Which shortfall measure is canonical above 9 hours** — SDS's negative
+   value, or `sleep_def`'s zero?
+3. **Is O3.6's polarity intended in O3.7?** As written, better schedule
+   consistency increases `mu_sleep`.

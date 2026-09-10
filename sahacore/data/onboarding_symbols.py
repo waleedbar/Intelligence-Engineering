@@ -39,12 +39,34 @@ DATA_DIR = Path(__file__).parent
 FUNCTIONS = {"min", "max", "exp", "sqrt", "ln", "log", "abs", "I",
              "MifflinStJeor", "DualHill", "SUMXMY2", "SUMSQ"}
 
+# English the sheets write inside formula cells. 'O3.5' reads
+# "0 if 7<=h<=9; min(1,(7-h)/2) if h<7" and 'O3.1' continues on a second
+# line with "where quality_factor = 1 - (quality_rating - 1)/4". These are
+# prose, not quantities, and a tokeniser that took them for symbols would
+# report five holes per sheet and be switched off within a week.
+KEYWORDS = {"where", "if", "else", "and", "or", "for", "otherwise", "each",
+            "from", "per", "with", "of", "the", "to"}
+
 # Version tags the workbook appends to cells: '[v39l F-DM]', '[v39s QA]'.
 _TAG = re.compile(r"\[[^\]]*\]")
 
 # An identifier not preceded by a digit, so '40cm' does not yield 'cm' and
 # '6.25*height_cm' still yields 'height_cm'.
 _IDENTIFIER = re.compile(r"(?<![0-9A-Za-z_.])([A-Za-z_][A-Za-z0-9_]*)")
+
+# A right-hand side that states a value or a rule rather than describing one:
+# it carries a digit or an arithmetic operator.
+#
+# The hyphen has to be removed from English compounds first. "HR_Arem =
+# hazard ratio from dose-response curve" is a description, and the hyphen in
+# "dose-response" read as a minus sign made it look computable -- which
+# silently un-reported one of the holes this file exists to find.
+_WORD_HYPHEN = re.compile(r"(?<=[A-Za-z])-(?=[A-Za-z])")
+_COMPUTABLE = re.compile(r"[0-9]|[+\-*/^()]")
+
+
+def _states_a_value(right: str) -> bool:
+    return bool(_COMPUTABLE.search(_WORD_HYPHEN.sub("", right)))
 
 # What the onboarding screens collect, read off the Variables columns of the
 # O-sheets and 'P1 DataMap' section B. Written by hand because "this is an
@@ -59,11 +81,18 @@ DECLARED_INPUTS = {
     "f_mod", "f_vig", "dur", "sitting_hrs",
     # O2.5 abbreviates PA_benefit as PA in its own formula.
     "PA",
+    # O3, step 9
+    "sleep_hrs", "h", "quality_rating", "quality", "consistency_score",
+    # O3.2 defines deficit_hrs in its own formula and O3.3/O3.4 read it; the
+    # analyser sees the definition on the second line of O3.2's cell, but
+    # 'deficit' is O3.4's own abbreviation for it.
+    "deficit",
 }
 
 SHEETS = {
     "O1": ("onboarding_o1.json", "O·O1 Anthropometrics"),
     "O2": ("onboarding_o2.json", "O·O2 MVPA Prior"),
+    "O3": ("onboarding_o3.json", "O·O3 Sleep Deficit"),
 }
 
 # Symbols already reported, with what each one is missing. Anything the
@@ -84,23 +113,82 @@ KNOWN_UNRESOLVED = {
 }
 
 
-def formula_parts(formula: str) -> tuple[set[str], set[str]]:
-    """The left-hand sides an equation defines and the symbols it reads."""
+def formula_parts(formula: str, variables: str = "",
+                  ordinal_options: set[str] | None = None
+                  ) -> tuple[set[str], set[str]]:
+    """The symbols an equation defines and the symbols it reads.
+
+    Three things the sheets do that a plain split on '=' gets wrong:
+
+      * A continuation line begins with 'where': O3.1's second line is
+        "where quality_factor = 1 - (quality_rating - 1)/4", which DEFINES
+        quality_factor. Stripping the keyword is what turns that from a
+        hole into a definition.
+      * The Variables column also defines things. O3.7 says
+        "e_sleepqual=(5-quality)/4" there and nowhere else.
+      * An inline ordinal scale -- "Very Inconsistent=1, Somewhat=2" --
+        looks like four assignments to four symbols. The option names are
+        passed in so they can be excluded; they are data, not quantities.
+    """
+    excluded = (ordinal_options or set()) | KEYWORDS | FUNCTIONS
     defined: set[str] = set()
     used: set[str] = set()
-    text = _TAG.sub(" ", formula)
-    for statement in re.split(r"[;\n]", text):
-        if not statement.strip():
-            continue
-        left, sep, right = statement.partition("=")
-        if sep and _IDENTIFIER.fullmatch(left.strip() or "x"):
-            defined.add(left.strip())
+
+    def statements(text: str):
+        for statement in re.split(r"[;\n,]", _TAG.sub(" ", text)):
+            statement = statement.strip()
+            if not statement:
+                continue
+            # 'where x = ...' and 'else x = ...' still define x.
+            for keyword in ("where", "else"):
+                if statement.lower().startswith(keyword + " "):
+                    statement = statement[len(keyword) + 1:].strip()
+            left, sep, right = statement.partition("=")
+            yield statement, left.strip(), sep, right
+
+    for statement, left, sep, right in statements(formula):
+        if sep and _IDENTIFIER.fullmatch(left) and left not in excluded:
+            defined.add(left)
             source = right
         else:
             source = statement
         used |= {name for name in _IDENTIFIER.findall(source)
-                 if name not in FUNCTIONS}
-    return defined, used
+                 if name not in excluded}
+
+    # THE VARIABLES COLUMN CONTRIBUTES DEFINITIONS AND NOTHING ELSE.
+    #
+    # Its job is to say what each symbol is, and it does so two ways: with a
+    # formula -- O3.7's "e_sleepqual=(5-quality)/4", the only place that is
+    # written -- or with a gloss: "BW=weight (kg)", "k_IR=5 (sigmoid slope)",
+    # "deficit_hrs = hours below 7h threshold". Both are statements that the
+    # symbol has a stated meaning, so both count as defining it.
+    #
+    # The RIGHT-hand side is deliberately not read. Half of these are English,
+    # and tokenising them reported sixty words -- GENERIC, PRIOR, sigmoid,
+    # slope, kg -- as missing symbols, which is how a useful check becomes one
+    # nobody reads. The cost is that a symbol appearing ONLY inside a
+    # Variables-column formula would be missed; the user's own answers, which
+    # is what those are, are covered by DECLARED_INPUTS.
+    #
+    # AN EQUALS SIGN IS NOT ENOUGH. O2.4's column reads "HR_Arem = hazard
+    # ratio from dose-response curve" and O2.5's "rho_pop = population mean
+    # repair". Those are DESCRIPTIONS: nothing can be computed from them, and
+    # both are holes this file exists to report. An earlier version of this
+    # rule counted any `x = ...` as a definition and silently swallowed both.
+    #
+    # So the right-hand side must look like a value or a formula -- it must
+    # contain a digit or an arithmetic operator. That admits
+    # "e_sleepqual=(5-quality)/4" and "k_IR=5 (sigmoid slope)", and refuses
+    # the two above. "BW=weight (kg)" is refused too and is covered by
+    # DECLARED_INPUTS, where a user's own answer belongs.
+    for _, left, sep, right in statements(variables):
+        if not (sep and _IDENTIFIER.fullmatch(left) and left not in excluded):
+            continue
+        if _states_a_value(right):
+            defined.add(left)
+
+    # A symbol a statement defines is not also a symbol it needs supplied.
+    return defined, used - defined
 
 
 def analyse() -> dict:
@@ -115,7 +203,11 @@ def analyse() -> dict:
             # the symbol used in a formula is the part before any bracket.
             parameters.add(parameter["name"].split("(")[0].strip())
         for equation in data["equations"]:
-            defined, used = formula_parts(equation["formula"])
+            options = {word
+                       for option in equation.get("ordinal_scale", [])
+                       for word in option["option"].split()}
+            defined, used = formula_parts(
+                equation["formula"], equation.get("variables") or "", options)
             equations.append({
                 "equation_id": equation["equation_id"],
                 "sheet": sheet,
