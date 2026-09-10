@@ -1,0 +1,180 @@
+{
+  "sheet": "O·O10 Goal Priority Wts",
+  "goals": [
+    {
+      "goal_area": "Heart Health",
+      "source_row": 10,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "Omega-3 >= 1g, K 4700mg, Na < 2300mg, CoQ10 100-200mg",
+      "z_pathways_text": "Z7, Z12, Z13",
+      "z_pathways": [
+        "Z7",
+        "Z12",
+        "Z13"
+      ],
+      "source": "AHA; REDUCE-IT",
+      "ui_status": "MATCHES_STEP_11_EXACTLY"
+    },
+    {
+      "goal_area": "Metabolism & Diabetes",
+      "source_row": 11,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "Fiber >= 30g, Mg 400mg, Cr 200ug",
+      "z_pathways_text": "Z1, Z6, Z8",
+      "z_pathways": [
+        "Z1",
+        "Z6",
+        "Z8"
+      ],
+      "source": "ADA 2024",
+      "ui_status": "MATCHES_STEP_11_EXACTLY"
+    },
+    {
+      "goal_area": "Longevity & Anti-Aging",
+      "source_row": 12,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "VitD 2-5K IU, Omega-3 2-3.5g, Creatine 5g",
+      "z_pathways_text": "Z4, Z5, Z10, Z11",
+      "z_pathways": [
+        "Z4",
+        "Z5",
+        "Z10",
+        "Z11"
+      ],
+      "source": "Geroscience",
+      "ui_status": "MATCHES_STEP_11_EXACTLY"
+    },
+    {
+      "goal_area": "Bone Health",
+      "source_row": 13,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "Ca 1200mg, VitD 2000IU, K2 100ug, Mg 400mg",
+      "z_pathways_text": "Z11, Z15",
+      "z_pathways": [
+        "Z11",
+        "Z15"
+      ],
+      "source": "NOF/IOF",
+      "ui_status": "MATCHES_STEP_11_EXACTLY"
+    },
+    {
+      "goal_area": "Immunity & Inflammation",
+      "source_row": 14,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "VitD 2000IU, Zinc 15mg, VitC 500mg, Selenium 55ug",
+      "z_pathways_text": "Z2, Z3",
+      "z_pathways": [
+        "Z2",
+        "Z3"
+      ],
+      "source": "EFSA",
+      "ui_status": "PREFIX_OF_A_STEP_11_OPTION"
+    },
+    {
+      "goal_area": "Gut Health",
+      "source_row": 15,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "Fiber 30g+, Probiotics, Glutamine 5g",
+      "z_pathways_text": "Z3, Z14",
+      "z_pathways": [
+        "Z3",
+        "Z14"
+      ],
+      "source": "WGO",
+      "ui_status": "MATCHES_STEP_11_EXACTLY"
+    },
+    {
+      "goal_area": "Fertility & Hormone",
+      "source_row": 16,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "Folate 800ug, Zinc 15mg, VitD 2000IU, CoQ10 200mg",
+      "z_pathways_text": "Z2, Z5, Z6",
+      "z_pathways": [
+        "Z2",
+        "Z5",
+        "Z6"
+      ],
+      "source": "ASRM",
+      "ui_status": "PREFIX_OF_A_STEP_11_OPTION"
+    },
+    {
+      "goal_area": "Stress & Mental Health",
+      "source_row": 17,
+      "weight_text": "2.5 (if Primary)",
+      "weight": 2.5,
+      "priority_level": "Primary",
+      "key_nutrient_targets": "Mg 400mg, B-complex, Omega-3 2g, Ashwagandha",
+      "z_pathways_text": "Z3, Z5, Z4",
+      "z_pathways": [
+        "Z3",
+        "Z5",
+        "Z4"
+      ],
+      "source": "APA",
+      "ui_status": "MATCHES_STEP_11_EXACTLY"
+    }
+  ],
+  "rules": [
+    {
+      "priority_level": "Primary (1st selected)",
+      "source_row": 23,
+      "weight": 2.5,
+      "assignment_rule": "Highest priority goal from Step 4/11",
+      "engine_equation": "H1: r_t^pi = SUM(pi_k * r_k)"
+    },
+    {
+      "priority_level": "Secondary (2nd selected)",
+      "source_row": 24,
+      "weight": 2.0,
+      "assignment_rule": "Second priority from Step 11",
+      "engine_equation": "H1: reward weighting"
+    },
+    {
+      "priority_level": "Tertiary (3rd selected)",
+      "source_row": 25,
+      "weight": 1.5,
+      "assignment_rule": "Third priority from Step 11",
+      "engine_equation": "H1: reward weighting"
+    },
+    {
+      "priority_level": "Unselected",
+      "source_row": 26,
+      "weight": 1.0,
+      "assignment_rule": "All other health areas",
+      "engine_equation": "H1: baseline weight"
+    }
+  ],
+  "step_11_options": [
+    "Heart Health",
+    "Metabolism & Diabetes",
+    "Longevity & Anti-Aging",
+    "Bone Health",
+    "Immunity & Inflammation Control",
+    "Gut Health",
+    "Fertility & Hormone Health",
+    "Stress & Mental Health"
+  ],
+  "step_4_options": [
+    "Weight Loss",
+    "Muscle Gain",
+    "Energy Levels",
+    "Digestive Health",
+    "Chronic Condition",
+    "Manage Benefits",
+    "Healthy Aging"
+  ]
+}

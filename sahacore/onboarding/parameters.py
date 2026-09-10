@@ -160,6 +160,24 @@ def load_o7_patterns() -> tuple[dict, ...]:
 
 
 @lru_cache(maxsize=1)
+def _o10() -> dict:
+    return json.loads((DATA_DIR / "onboarding_o10.json").read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def load_o10_goals() -> tuple[dict, ...]:
+    """The eight goal areas of 'O·O10 Goal Priority Wts', each citing the
+    guideline its nutrient targets come from."""
+    return tuple(_o10()["goals"])
+
+
+@lru_cache(maxsize=1)
+def load_o10_rules() -> tuple[dict, ...]:
+    """The four-rung pi_k ladder, in the sheet's order (2.5 down to 1.0)."""
+    return tuple(_o10()["rules"])
+
+
+@lru_cache(maxsize=1)
 def _o9() -> dict:
     return json.loads((DATA_DIR / "onboarding_o9.json").read_text(encoding="utf-8"))
 

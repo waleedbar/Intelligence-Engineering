@@ -2414,3 +2414,78 @@ I wrote that HIGH is "a third" of the VETO registry. It is 111 of 339 —
    registry's largest category.
 3. **What happens for the seven medications with no row** — and for warfarin,
    which the interface cannot record?
+
+---
+
+## 2026-09-10: ONB-010 — the cleanest UI alignment yet, and one weight from nowhere
+
+`O·O10 Goal Priority Wts` (manifest 80) turns a user's ranked health goals
+into the `pi_k` weights Layers D and F use.
+
+### What it gets right
+
+**It cites its sources** — AHA and REDUCE-IT for heart health, ADA 2024 for
+metabolism, NOF/IOF for bone, EFSA for immunity, ASRM for fertility. Only
+`O·O6 Family History` does the same. Two sheets out of ten.
+
+**It agrees with itself.** Every goal row states `2.5 (if Primary)` and the
+rules table gives `Primary = 2.5` independently.
+
+**The ladder is monotone and its baseline is exactly 1.0:**
+
+| rung | pi_k |
+|---|---|
+| Primary (1st selected) | 2.5 |
+| Secondary (2nd selected) | 2.0 |
+| Tertiary (3rd selected) | 1.5 |
+| Unselected | **1.0** |
+
+The baseline being *exactly* one is what makes `pi_k` a multiplier on a reward
+term rather than a rescaling of everything — a user who ranks nothing gets the
+unweighted reward, not a shrunken one.
+
+**And Step 11 lines up completely** — the best agreement any O-sheet has had
+with the interface. Its eight options are this sheet's eight rows: six
+exactly, and two where the sheet truncates the UI's label ("Immunity &
+Inflammation Control" → "Immunity & Inflammation"). Nothing unmatched in
+either direction, for the first time.
+
+### The finding: the heaviest weight is assigned from a question whose answers are not goal areas
+
+The rules table says the Primary goal — `pi_k = 2.5`, the top rung — is the
+*"Highest priority goal from **Step 4/11**"*.
+
+| | options |
+|---|---|
+| **Step 11** `goal_areas[]` | Heart Health · Metabolism & Diabetes · Longevity & Anti-Aging · Bone Health · Immunity & Inflammation Control · Gut Health · Fertility & Hormone Health · Stress & Mental Health |
+| **Step 4** `primary_goal` | Weight Loss · Muscle Gain · Energy Levels · Digestive Health · Chronic Condition · Manage Benefits · Healthy Aging |
+
+Step 11's eight **are** this sheet's rows. Step 4's seven are **none of
+them**. "Weight Loss" has no `pi_k`, no nutrient targets and no Z-pathways —
+and it is the answer to the question literally called *primary_goal*.
+
+So either Step 4 does not supply the Primary goal and the rule should say
+Step 11 alone, or Step 4's answers need a mapping into these eight that no
+sheet provides. `weight_for` therefore takes a **rank**, not a goal name, and
+`goal_for_ui_option` raises on a Step 4 answer rather than returning a silent
+1.0.
+
+### What these weights multiply is an open founder decision
+
+The rules table names its engine equation: **`H1: r_t^pi = SUM(pi_k · r_k)`**.
+
+Layer H is the conservative bandit, and `★ Scoped Builds — LTMLE Bandit`
+lists the bandit's reward proxy as **OPEN FOUNDER DECISION 5**, with its own
+note calling it *"the single biggest decision"*.
+
+So this sheet settles `pi_k` precisely — to one decimal, with a monotone
+ladder and a clean baseline — for a sum whose terms `r_k` are undecided.
+`weighted_reward` composes them and makes the caller supply `r_k`, so the
+undecided half stays visible rather than being defaulted.
+
+### For Dr. Ali — two questions
+
+1. **Does the Primary weight come from Step 4 or Step 11?** The rule says
+   both; only Step 11's answers are goal areas.
+2. **What is `r_k`?** `pi_k` is fully specified and the reward it weights is
+   still open founder decision 5.
