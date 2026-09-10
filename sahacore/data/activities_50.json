@@ -1,0 +1,954 @@
+{
+  "sheet": "P1 Activities 50",
+  "banner": "50-Activity Catalog — MET Values + 12-Cluster Impact Weights",
+  "clusters_declared": 12,
+  "clusters_present": 6,
+  "cluster_ids": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "C6"
+  ],
+  "activities": [
+    {
+      "activity_id": "sleep",
+      "source_row": 11,
+      "number": 1,
+      "name": "Sleeping",
+      "met": 1,
+      "intensity": "Sedentary",
+      "typical_duration": 480,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.05,
+        "C3": 0.1,
+        "C4": 0.05,
+        "C5": 0.1,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "sedentary",
+      "source_row": 12,
+      "number": 2,
+      "name": "Sitting quietly",
+      "met": 1,
+      "intensity": "Sedentary",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": -0.05,
+        "C2": -0.1,
+        "C3": -0.05,
+        "C4": -0.05,
+        "C5": -0.15,
+        "C6": -0.1
+      }
+    },
+    {
+      "activity_id": "desk_work",
+      "source_row": 13,
+      "number": 3,
+      "name": "Office/desk work",
+      "met": 1.5,
+      "intensity": "Sedentary",
+      "typical_duration": 480,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": -0.03,
+        "C2": -0.08,
+        "C3": -0.03,
+        "C4": -0.03,
+        "C5": -0.1,
+        "C6": -0.08
+      }
+    },
+    {
+      "activity_id": "walk_slow",
+      "source_row": 14,
+      "number": 4,
+      "name": "Walking slow (<2 mph)",
+      "met": 2.3,
+      "intensity": "Light",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.08,
+        "C3": 0.02,
+        "C4": 0.02,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "walk_mod",
+      "source_row": 15,
+      "number": 5,
+      "name": "Walking moderate (3 mph)",
+      "met": 3.8,
+      "intensity": "Moderate",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.08,
+        "C2": 0.12,
+        "C3": 0.03,
+        "C4": 0.03,
+        "C5": 0.08,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "walk_brisk",
+      "source_row": 16,
+      "number": 6,
+      "name": "Walking brisk (4 mph)",
+      "met": 4.8,
+      "intensity": "Moderate",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.15,
+        "C3": 0.05,
+        "C4": -0.02,
+        "C5": 0.1,
+        "C6": 0.08
+      }
+    },
+    {
+      "activity_id": "walk_very_brisk",
+      "source_row": 17,
+      "number": 7,
+      "name": "Walking very brisk (4.5 mph)",
+      "met": 5.5,
+      "intensity": "Moderate",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.12,
+        "C2": 0.18,
+        "C3": 0.06,
+        "C4": -0.03,
+        "C5": 0.12,
+        "C6": 0.1
+      }
+    },
+    {
+      "activity_id": "hiking",
+      "source_row": 18,
+      "number": 8,
+      "name": "Hiking cross-country",
+      "met": 6,
+      "intensity": "Vigorous",
+      "typical_duration": 120,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.15,
+        "C2": 0.15,
+        "C3": 0.05,
+        "C4": -0.05,
+        "C5": 0.1,
+        "C6": 0.08
+      }
+    },
+    {
+      "activity_id": "jog_general",
+      "source_row": 19,
+      "number": 9,
+      "name": "Jogging general",
+      "met": 7.5,
+      "intensity": "Vigorous",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.18,
+        "C2": 0.2,
+        "C3": 0.05,
+        "C4": -0.05,
+        "C5": -0.03,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "run_easy",
+      "source_row": 20,
+      "number": 10,
+      "name": "Running 5 mph (12 min/mi)",
+      "met": 8.5,
+      "intensity": "Vigorous",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.2,
+        "C2": 0.22,
+        "C3": 0.05,
+        "C4": -0.08,
+        "C5": -0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "run_fast",
+      "source_row": 21,
+      "number": 11,
+      "name": "Running 11 mph (5.5 min/mi)",
+      "met": 16.8,
+      "intensity": "Vigorous",
+      "typical_duration": 15,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.25,
+        "C2": 0.25,
+        "C3": 0.08,
+        "C4": -0.15,
+        "C5": -0.1,
+        "C6": -0.05
+      }
+    },
+    {
+      "activity_id": "cycle_leisure",
+      "source_row": 22,
+      "number": 12,
+      "name": "Cycling leisure (<10 mph)",
+      "met": 4,
+      "intensity": "Moderate",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.15,
+        "C3": 0.03,
+        "C4": -0.03,
+        "C5": 0.08,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "cycle_mod",
+      "source_row": 23,
+      "number": 13,
+      "name": "Cycling moderate (12-14 mph)",
+      "met": 8,
+      "intensity": "Vigorous",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.18,
+        "C2": 0.22,
+        "C3": 0.05,
+        "C4": -0.06,
+        "C5": -0.04,
+        "C6": 0.02
+      }
+    },
+    {
+      "activity_id": "cycle_stat",
+      "source_row": 24,
+      "number": 14,
+      "name": "Stationary cycling light",
+      "met": 3.5,
+      "intensity": "Light",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.08,
+        "C2": 0.12,
+        "C3": 0.02,
+        "C4": -0.02,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "swim_leisure",
+      "source_row": 25,
+      "number": 15,
+      "name": "Swimming laps recreational",
+      "met": 5.8,
+      "intensity": "Moderate",
+      "typical_duration": 45,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.15,
+        "C2": 0.15,
+        "C3": 0.08,
+        "C4": -0.05,
+        "C5": 0.08,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "swim_breast",
+      "source_row": 26,
+      "number": 16,
+      "name": "Swimming breaststroke",
+      "met": 10.3,
+      "intensity": "Vigorous",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.2,
+        "C2": 0.2,
+        "C3": 0.1,
+        "C4": -0.08,
+        "C5": -0.03,
+        "C6": 0.02
+      }
+    },
+    {
+      "activity_id": "swim_butterfly",
+      "source_row": 27,
+      "number": 17,
+      "name": "Swimming butterfly",
+      "met": 13.8,
+      "intensity": "Vigorous",
+      "typical_duration": 15,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.22,
+        "C2": 0.22,
+        "C3": 0.12,
+        "C4": -0.12,
+        "C5": -0.08,
+        "C6": -0.02
+      }
+    },
+    {
+      "activity_id": "weights_mod",
+      "source_row": 28,
+      "number": 18,
+      "name": "Weight training moderate",
+      "met": 3.5,
+      "intensity": "Moderate",
+      "typical_duration": 45,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.1,
+        "C3": 0.25,
+        "C4": 0.02,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "weights_vig",
+      "source_row": 29,
+      "number": 19,
+      "name": "Weight training vigorous",
+      "met": 6,
+      "intensity": "Vigorous",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.08,
+        "C2": 0.15,
+        "C3": 0.3,
+        "C4": 0.03,
+        "C5": -0.03,
+        "C6": -0.02
+      }
+    },
+    {
+      "activity_id": "calisthenics",
+      "source_row": 30,
+      "number": 20,
+      "name": "Calisthenics vigorous",
+      "met": 7.5,
+      "intensity": "Vigorous",
+      "typical_duration": 20,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.18,
+        "C3": 0.2,
+        "C4": -0.05,
+        "C5": -0.03,
+        "C6": 0
+      }
+    },
+    {
+      "activity_id": "yoga_hatha",
+      "source_row": 31,
+      "number": 21,
+      "name": "Yoga Hatha",
+      "met": 2.3,
+      "intensity": "Light",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.05,
+        "C3": 0.05,
+        "C4": 0.03,
+        "C5": 0.1,
+        "C6": 0.08
+      }
+    },
+    {
+      "activity_id": "yoga_power",
+      "source_row": 32,
+      "number": 22,
+      "name": "Yoga Power",
+      "met": 4,
+      "intensity": "Moderate",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.08,
+        "C2": 0.1,
+        "C3": 0.1,
+        "C4": 0.02,
+        "C5": 0.08,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "hiit",
+      "source_row": 33,
+      "number": 23,
+      "name": "HIIT vigorous",
+      "met": 11,
+      "intensity": "Vigorous",
+      "typical_duration": 20,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.2,
+        "C2": 0.25,
+        "C3": 0.15,
+        "C4": -0.1,
+        "C5": -0.08,
+        "C6": -0.05
+      }
+    },
+    {
+      "activity_id": "basketball",
+      "source_row": 34,
+      "number": 24,
+      "name": "Basketball game",
+      "met": 8,
+      "intensity": "Vigorous",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.15,
+        "C2": 0.2,
+        "C3": 0.1,
+        "C4": -0.08,
+        "C5": -0.03,
+        "C6": 0
+      }
+    },
+    {
+      "activity_id": "tennis",
+      "source_row": 35,
+      "number": 25,
+      "name": "Tennis doubles",
+      "met": 6,
+      "intensity": "Moderate",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.12,
+        "C2": 0.15,
+        "C3": 0.08,
+        "C4": -0.05,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "soccer",
+      "source_row": 36,
+      "number": 26,
+      "name": "Soccer casual",
+      "met": 7,
+      "intensity": "Vigorous",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.15,
+        "C2": 0.18,
+        "C3": 0.08,
+        "C4": -0.08,
+        "C5": -0.03,
+        "C6": 0
+      }
+    },
+    {
+      "activity_id": "volleyball",
+      "source_row": 37,
+      "number": 27,
+      "name": "Volleyball beach",
+      "met": 8,
+      "intensity": "Vigorous",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.12,
+        "C2": 0.18,
+        "C3": 0.08,
+        "C4": -0.08,
+        "C5": -0.03,
+        "C6": 0
+      }
+    },
+    {
+      "activity_id": "clean_heavy",
+      "source_row": 38,
+      "number": 28,
+      "name": "Heavy cleaning",
+      "met": 3.5,
+      "intensity": "Moderate",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.08,
+        "C3": 0.05,
+        "C4": 0,
+        "C5": 0.03,
+        "C6": 0.02
+      }
+    },
+    {
+      "activity_id": "vacuum",
+      "source_row": 39,
+      "number": 29,
+      "name": "Vacuuming",
+      "met": 3,
+      "intensity": "Light",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.03,
+        "C2": 0.06,
+        "C3": 0.03,
+        "C4": 0,
+        "C5": 0.02,
+        "C6": 0.01
+      }
+    },
+    {
+      "activity_id": "mow_lawn",
+      "source_row": 40,
+      "number": 30,
+      "name": "Mowing lawn",
+      "met": 5.5,
+      "intensity": "Moderate",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.08,
+        "C2": 0.12,
+        "C3": 0.05,
+        "C4": -0.03,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "garden",
+      "source_row": 41,
+      "number": 31,
+      "name": "Gardening moderate",
+      "met": 4.5,
+      "intensity": "Moderate",
+      "typical_duration": 45,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.1,
+        "C3": 0.05,
+        "C4": -0.02,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "standing_work",
+      "source_row": 42,
+      "number": 32,
+      "name": "Standing work moderate",
+      "met": 3.3,
+      "intensity": "Light",
+      "typical_duration": 240,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.02,
+        "C2": 0.05,
+        "C3": 0.02,
+        "C4": 0,
+        "C5": 0.02,
+        "C6": 0.01
+      }
+    },
+    {
+      "activity_id": "custodial",
+      "source_row": 43,
+      "number": 33,
+      "name": "Custodial work moderate",
+      "met": 3.8,
+      "intensity": "Moderate",
+      "typical_duration": 120,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.08,
+        "C3": 0.03,
+        "C4": 0,
+        "C5": 0.03,
+        "C6": 0.02
+      }
+    },
+    {
+      "activity_id": "farming",
+      "source_row": 44,
+      "number": 34,
+      "name": "Farming moderate",
+      "met": 4.8,
+      "intensity": "Moderate",
+      "typical_duration": 240,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.08,
+        "C2": 0.12,
+        "C3": 0.05,
+        "C4": -0.02,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "carry_heavy",
+      "source_row": 45,
+      "number": 35,
+      "name": "Carrying heavy loads",
+      "met": 8,
+      "intensity": "Vigorous",
+      "typical_duration": 120,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.15,
+        "C3": 0.2,
+        "C4": -0.1,
+        "C5": -0.05,
+        "C6": -0.02
+      }
+    },
+    {
+      "activity_id": "dance_fast",
+      "source_row": 46,
+      "number": 36,
+      "name": "Ballroom dancing fast",
+      "met": 5.5,
+      "intensity": "Moderate",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.12,
+        "C3": 0.05,
+        "C4": -0.03,
+        "C5": 0.08,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "handball",
+      "source_row": 47,
+      "number": 37,
+      "name": "Handball general",
+      "met": 12,
+      "intensity": "Vigorous",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.18,
+        "C2": 0.22,
+        "C3": 0.12,
+        "C4": -0.1,
+        "C5": -0.05,
+        "C6": -0.02
+      }
+    },
+    {
+      "activity_id": "rowing_vig",
+      "source_row": 48,
+      "number": 38,
+      "name": "Rowing/kayaking vigorous",
+      "met": 12.5,
+      "intensity": "Vigorous",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.2,
+        "C2": 0.22,
+        "C3": 0.15,
+        "C4": -0.1,
+        "C5": -0.05,
+        "C6": -0.02
+      }
+    },
+    {
+      "activity_id": "ski_xc",
+      "source_row": 49,
+      "number": 39,
+      "name": "Cross-country skiing brisk",
+      "met": 11.3,
+      "intensity": "Vigorous",
+      "typical_duration": 90,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.2,
+        "C2": 0.22,
+        "C3": 0.1,
+        "C4": -0.1,
+        "C5": -0.05,
+        "C6": -0.02
+      }
+    },
+    {
+      "activity_id": "rollerblade",
+      "source_row": 50,
+      "number": 40,
+      "name": "Rollerblading moderate",
+      "met": 9.8,
+      "intensity": "Vigorous",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.15,
+        "C2": 0.2,
+        "C3": 0.08,
+        "C4": -0.08,
+        "C5": -0.03,
+        "C6": 0
+      }
+    },
+    {
+      "activity_id": "rope_skip",
+      "source_row": 51,
+      "number": 41,
+      "name": "Rope skipping",
+      "met": 11,
+      "intensity": "Vigorous",
+      "typical_duration": 15,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.18,
+        "C2": 0.22,
+        "C3": 0.1,
+        "C4": -0.1,
+        "C5": -0.05,
+        "C6": -0.03
+      }
+    },
+    {
+      "activity_id": "elliptical",
+      "source_row": 52,
+      "number": 42,
+      "name": "Elliptical trainer moderate",
+      "met": 5,
+      "intensity": "Moderate",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.15,
+        "C3": 0.05,
+        "C4": -0.03,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "rowing_stat",
+      "source_row": 53,
+      "number": 43,
+      "name": "Rowing stationary moderate",
+      "met": 5,
+      "intensity": "Moderate",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.1,
+        "C2": 0.15,
+        "C3": 0.08,
+        "C4": -0.03,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "stair_climb",
+      "source_row": 54,
+      "number": 44,
+      "name": "Stair climbing fast",
+      "met": 9.3,
+      "intensity": "Vigorous",
+      "typical_duration": 15,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.15,
+        "C2": 0.2,
+        "C3": 0.1,
+        "C4": -0.08,
+        "C5": -0.03,
+        "C6": 0
+      }
+    },
+    {
+      "activity_id": "play_animals",
+      "source_row": 55,
+      "number": 45,
+      "name": "Playing with animals moderate",
+      "met": 4,
+      "intensity": "Moderate",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.08,
+        "C3": 0.03,
+        "C4": 0,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "play_children",
+      "source_row": 56,
+      "number": 46,
+      "name": "Playing with children vigorous",
+      "met": 5.8,
+      "intensity": "Moderate",
+      "typical_duration": 30,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.08,
+        "C2": 0.12,
+        "C3": 0.05,
+        "C4": -0.03,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "pilates",
+      "source_row": 57,
+      "number": 47,
+      "name": "Pilates general",
+      "met": 3,
+      "intensity": "Light",
+      "typical_duration": 45,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.08,
+        "C3": 0.1,
+        "C4": 0.02,
+        "C5": 0.08,
+        "C6": 0.05
+      }
+    },
+    {
+      "activity_id": "tai_chi",
+      "source_row": 58,
+      "number": 48,
+      "name": "Tai Chi general",
+      "met": 3,
+      "intensity": "Light",
+      "typical_duration": 45,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.05,
+        "C2": 0.05,
+        "C3": 0.05,
+        "C4": 0.02,
+        "C5": 0.1,
+        "C6": 0.08
+      }
+    },
+    {
+      "activity_id": "stretching",
+      "source_row": 59,
+      "number": 49,
+      "name": "Stretching mild",
+      "met": 2.3,
+      "intensity": "Light",
+      "typical_duration": 15,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.03,
+        "C2": 0.03,
+        "C3": 0.03,
+        "C4": 0.01,
+        "C5": 0.05,
+        "C6": 0.03
+      }
+    },
+    {
+      "activity_id": "martial_arts",
+      "source_row": 60,
+      "number": 50,
+      "name": "Martial arts moderate",
+      "met": 5,
+      "intensity": "Moderate",
+      "typical_duration": 60,
+      "duration_unit": "min",
+      "cluster_impact": {
+        "C1": 0.12,
+        "C2": 0.15,
+        "C3": 0.12,
+        "C4": -0.05,
+        "C5": 0.05,
+        "C6": 0.02
+      }
+    }
+  ],
+  "outside_compendium_bands": [
+    {
+      "activity_id": "cycle_stat",
+      "met": 3.5,
+      "sheet_intensity": "Light",
+      "compendium_intensity": "Moderate"
+    },
+    {
+      "activity_id": "tennis",
+      "met": 6,
+      "sheet_intensity": "Moderate",
+      "compendium_intensity": "Vigorous"
+    },
+    {
+      "activity_id": "vacuum",
+      "met": 3,
+      "sheet_intensity": "Light",
+      "compendium_intensity": "Moderate"
+    },
+    {
+      "activity_id": "standing_work",
+      "met": 3.3,
+      "sheet_intensity": "Light",
+      "compendium_intensity": "Moderate"
+    },
+    {
+      "activity_id": "pilates",
+      "met": 3,
+      "sheet_intensity": "Light",
+      "compendium_intensity": "Moderate"
+    },
+    {
+      "activity_id": "tai_chi",
+      "met": 3,
+      "sheet_intensity": "Light",
+      "compendium_intensity": "Moderate"
+    }
+  ]
+}

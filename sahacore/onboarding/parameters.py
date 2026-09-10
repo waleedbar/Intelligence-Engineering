@@ -29,3 +29,23 @@ def load_o1() -> O1Parameters:
     """
     data = json.loads((DATA_DIR / "onboarding_o1.json").read_text(encoding="utf-8"))
     return O1Parameters(**{p["key"]: p["value"] for p in data["parameters"]})
+
+
+@lru_cache(maxsize=1)
+def load_o2_encoding() -> dict[tuple[str, str], float]:
+    """'O·O2 MVPA Prior' input encoding, keyed (field, option).
+
+    'Frequency: 3-4' -> 3.5; 'Duration: <30 min' -> 20. The sheet calls the
+    duration mappings conservative midpoints rather than arithmetic ones, so
+    they are read rather than derived.
+    """
+    data = json.loads((DATA_DIR / "onboarding_o2.json").read_text(encoding="utf-8"))
+    return {(row["field"], row["option"]): row["numeric_value"]
+            for row in data["input_encoding"]}
+
+
+@lru_cache(maxsize=1)
+def load_activity_mets() -> dict[str, float]:
+    """Activity id -> MET, from 'P1 Activities 50'."""
+    data = json.loads((DATA_DIR / "activities_50.json").read_text(encoding="utf-8"))
+    return {row["activity_id"]: row["met"] for row in data["activities"]}

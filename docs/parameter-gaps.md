@@ -1155,3 +1155,84 @@ O1.7's declared range is `1.0-8.5`. `CRP_mult = 1 + 0.3·max(BMI−25, 0)`
 reaches exactly **8.5** at BMI = 50 — which is the top of O1.3's own declared
 BMI range of `15-50`. The two ranges were derived together rather than
 written independently, and that is pinned.
+
+## 2026-09-10: ONB-002 — PA_benefit has two definitions and neither resolves
+
+`O·O2 MVPA Prior` (manifest 72) is ONB-002's authority. Eight equations;
+**six are implemented, two cannot be.**
+
+### The conflict
+
+| source | formula for `PA_benefit` |
+|---|---|
+| `O·O2 MVPA Prior` O2.4 — **the authority** | `PA_benefit = 100 * (1 − HR_Arem)` |
+| `O · Onboarding Canonical` ONB-002 | `PA_benefit = 100*(1−exp(−MET_min_week/K_PA))` |
+| `EQ · Canonical Build Rows` ONB-002 | *identical to the row above* |
+
+These are **different functions**. One is an epidemiological hazard ratio
+"anchored at 150-300 min/wk zone"; the other is a saturating exponential in
+MET-minutes. Neither reduces to the other.
+
+**And neither is computable:**
+
+- `HR_Arem` is described on the authority sheet and **never given** — no
+  formula, no table, no parameter row. Searched the whole workbook: it
+  appears only inside O2.4 and in the copy of O2.4 on `P1 Onboarding`.
+- `K_PA` appears in **exactly two cells** — the two consolidated rows above —
+  and in neither the 192-parameter registry nor the +20 extension.
+
+O2.5 (`rho_modified`) then needs O2.4's output **and** `rho_pop`, "population
+mean repair", which appears twice in the workbook, both times inside O2.5
+itself, and is in neither registry.
+
+Not implemented. `PA_benefit` feeds Layer C's repair rate through
+`O·Engine Connections` r17, so a guessed dose-response curve would not stay
+contained. Recorded as `computable = false` with the missing symbol named, and
+CI asserts `onboarding_o2_gaps` returns exactly two rows.
+
+**For Dr. Ali:** which definition of `PA_benefit` is current, and where is
+its constant — the Arem hazard-ratio curve, or `K_PA`?
+
+## 2026-09-10: `P1 Activities 50` promises twelve cluster columns and has six
+
+Its banner reads:
+
+> 50-Activity Catalog — MET Values + **12-Cluster** Impact Weights
+
+and its section heading *"COMPLETE ACTIVITY CATALOG WITH CLUSTER IMPACTS"*.
+
+The columns are `C1 Membrane`, `C2 Glucose`, `C3 Protein`, `C4 Electro`,
+`C5 Inflamm`, `C6 Oxidative` — and then the row ends. Not blank cells: **no
+columns at all**. Every one of the 51 rows stops at column 15.
+
+So an activity's impact is computable for half the clusters. Loaded as it
+stands, with `clusters_declared = 12` and `clusters_present = 6` recorded.
+**Not padded with zeros** — a zero would read as "this activity does not
+affect methylation", which is a physiological claim the sheet does not make.
+
+### And six intensity labels disagree with the Compendium
+
+The sheet cites *"2024 Compendium of Physical Activities (Herrmann et al.
+2024)"* as the source of its MET values. Six rows carry an intensity label
+outside the Compendium's own bands:
+
+| activity | MET | sheet | Compendium |
+|---|---|---|---|
+| `vacuum`, `pilates`, `tai_chi` | 3.0 | Light | Moderate |
+| `standing_work` | 3.3 | Light | Moderate |
+| `cycle_stat` | 3.5 | Light | Moderate |
+| `tennis` | 6.0 | Moderate | Vigorous |
+
+**Recorded, not enforced.** The sheet cites the Compendium for its MET
+*values* and never says its *labels* follow the Compendium's bands, so a
+check that failed on this would be imposing a rule the source does not claim.
+My first version of that check did exactly that and was wrong; it now tests
+only that the bands are internally ordered.
+
+It still matters: O2.6 splits activity by these labels while weighting with
+**4.5 and 7.5** — the midpoints of the Compendium's bands, not of this
+catalogue's, whose Light band runs to 3.5 and whose Vigorous band runs to
+16.8.
+
+**For Dr. Ali:** are the six missing cluster columns pending, and are the
+intensity labels meant to follow the Compendium's boundaries?

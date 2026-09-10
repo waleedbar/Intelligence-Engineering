@@ -80,6 +80,7 @@ jobs:
           python -m sahacore.data.load_scoped_builds
           python -m sahacore.data.load_onboarding_canonical
           python -m sahacore.data.load_onboarding_o1
+          python -m sahacore.data.load_onboarding_o2
 
       # Every registry gets the version a derived packet must cite, and the
       # recorder refuses to version content the loader did not actually write.
@@ -159,7 +160,7 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 48, f'expected 48 versioned registries, got {versioned}'
+              assert versioned == 51, f'expected 51 versioned registries, got {versioned}'
               # The twelve per-cluster ceilings on the scarring feedback loop,
               # each confirmed by the sheet's own section-8 audit receipt.
               cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
@@ -233,6 +234,29 @@ jobs:
               cur.execute('SELECT count(*) FROM engine_internal.onboarding_declared_elsewhere')
               de = cur.fetchone()[0]
               assert de == 1, f'expected 1 equation declared elsewhere, got {de}'
+              # ONB-002. Six of eight equations implemented; O2.4 waits on
+              # HR_Arem and O2.5 on rho_pop, neither of which the workbook
+              # ever defines.
+              cur.execute('SELECT count(*), count(*) FILTER (WHERE computable) FROM engine_internal.onboarding_o2_equation')
+              o2e, o2c = cur.fetchone()
+              assert (o2e, o2c) == (8, 6), f'O2 equations: {(o2e, o2c)}'
+              cur.execute('SELECT count(*) FROM engine_internal.onboarding_o2_gaps')
+              o2g = cur.fetchone()[0]
+              assert o2g == 2, f'expected 2 O2 gaps, got {o2g}'
+              cur.execute('SELECT count(*) FROM engine_internal.onboarding_o2_encoding')
+              enc = cur.fetchone()[0]
+              assert enc == 11, f'expected 11 O2 encodings, got {enc}'
+              # The MET catalogue: 50 activities, and 6 of the 12 cluster
+              # columns the sheet's own banner promises.
+              cur.execute('SELECT count(*) FROM engine_internal.activity_catalogue')
+              acts50 = cur.fetchone()[0]
+              assert acts50 == 50, f'expected 50 activities, got {acts50}'
+              cur.execute('SELECT count(*), count(DISTINCT cluster_id) FROM engine_internal.activity_cluster_impact')
+              imp, clusters = cur.fetchone()
+              assert (imp, clusters) == (300, 6), f'activity impacts: {(imp, clusters)}'
+              cur.execute('SELECT count(*) FROM engine_internal.activity_intensity_disagreement')
+              band = cur.fetchone()[0]
+              assert band == 6, f'expected 6 intensity disagreements, got {band}'
               # 48 organ-pathway links over 13 pathways: none for D14/D15,
               # which is gate d14_d15_fail_closed agreeing with the data.
               cur.execute('SELECT count(*), count(DISTINCT pathway_id) FROM engine_internal.organ_pathway_weight')
@@ -298,7 +322,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), 48 versioned registries')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 51 versioned registries')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event

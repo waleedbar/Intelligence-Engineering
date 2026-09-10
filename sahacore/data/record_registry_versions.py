@@ -133,6 +133,12 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("onboarding_o1.json", "equations", "O·O1 Anthropometrics"),
     "engine_internal.onboarding_o1_parameter":
         ("onboarding_o1.json", "parameters", "O·O1 Anthropometrics"),
+    "engine_internal.onboarding_o2_equation":
+        ("onboarding_o2.json", "equations", "O·O2 MVPA Prior"),
+    "engine_internal.onboarding_o2_encoding":
+        ("onboarding_o2.json", "input_encoding", "O·O2 MVPA Prior"),
+    "engine_internal.activity_catalogue":
+        ("activities_50.json", "activities", "P1 Activities 50"),
 }
 
 

@@ -1,0 +1,221 @@
+{
+  "sheet": "O·O2 MVPA Prior",
+  "input_encoding": [
+    {
+      "source_row": 10,
+      "ui_selection": "Frequency: 0",
+      "field": "Frequency",
+      "option": "0",
+      "mapped_value": "0 sessions/wk",
+      "numeric_value": 0,
+      "variable": "f_mod or f_vig",
+      "source": "Direct"
+    },
+    {
+      "source_row": 11,
+      "ui_selection": "Frequency: 1-2",
+      "field": "Frequency",
+      "option": "1-2",
+      "mapped_value": "1.5 sessions/wk",
+      "numeric_value": 1.5,
+      "variable": "f_mod or f_vig",
+      "source": "Midpoint"
+    },
+    {
+      "source_row": 12,
+      "ui_selection": "Frequency: 3-4",
+      "field": "Frequency",
+      "option": "3-4",
+      "mapped_value": "3.5 sessions/wk",
+      "numeric_value": 3.5,
+      "variable": "f_mod or f_vig",
+      "source": "Midpoint"
+    },
+    {
+      "source_row": 13,
+      "ui_selection": "Frequency: 5+",
+      "field": "Frequency",
+      "option": "5+",
+      "mapped_value": "5.5 sessions/wk",
+      "numeric_value": 5.5,
+      "variable": "f_mod or f_vig",
+      "source": "Midpoint"
+    },
+    {
+      "source_row": 14,
+      "ui_selection": "Duration: <30 min",
+      "field": "Duration",
+      "option": "<30 min",
+      "mapped_value": "20 min/session",
+      "numeric_value": 20,
+      "variable": "dur",
+      "source": "Conservative midpoint"
+    },
+    {
+      "source_row": 15,
+      "ui_selection": "Duration: 30-60 min",
+      "field": "Duration",
+      "option": "30-60 min",
+      "mapped_value": "45 min/session",
+      "numeric_value": 45,
+      "variable": "dur",
+      "source": "Midpoint"
+    },
+    {
+      "source_row": 16,
+      "ui_selection": "Duration: >60 min",
+      "field": "Duration",
+      "option": ">60 min",
+      "mapped_value": "75 min/session",
+      "numeric_value": 75,
+      "variable": "dur",
+      "source": "Conservative midpoint"
+    },
+    {
+      "source_row": 17,
+      "ui_selection": "Activity: Sedentary",
+      "field": "Activity",
+      "option": "Sedentary",
+      "mapped_value": "eta_sed = 0.15 (penalty active)",
+      "numeric_value": 0.15,
+      "variable": "eta_sed",
+      "source": "If sitting > 6h"
+    },
+    {
+      "source_row": 18,
+      "ui_selection": "Activity: Lightly Active",
+      "field": "Activity",
+      "option": "Lightly Active",
+      "mapped_value": "eta_sed = 0",
+      "numeric_value": 0,
+      "variable": "eta_sed",
+      "source": "No penalty"
+    },
+    {
+      "source_row": 19,
+      "ui_selection": "Activity: Active",
+      "field": "Activity",
+      "option": "Active",
+      "mapped_value": "eta_sed = 0",
+      "numeric_value": 0,
+      "variable": "eta_sed",
+      "source": "No penalty"
+    },
+    {
+      "source_row": 20,
+      "ui_selection": "Activity: Very Active",
+      "field": "Activity",
+      "option": "Very Active",
+      "mapped_value": "eta_sed = 0",
+      "numeric_value": 0,
+      "variable": "eta_sed",
+      "source": "No penalty"
+    }
+  ],
+  "equations": [
+    {
+      "equation_id": "O2.1",
+      "source_row": 26,
+      "name": "MVPA minutes/week",
+      "formula": "MVPA_wk = (f_mod * dur) + 2 * (f_vig * dur)",
+      "variables": "f_mod, f_vig (sessions/wk), dur (min/session)",
+      "units": "min/wk",
+      "value_range": "0-1000+",
+      "computable": true,
+      "unresolved": null
+    },
+    {
+      "equation_id": "O2.2",
+      "source_row": 27,
+      "name": "MVPA minutes/day",
+      "formula": "MVPA_day = MVPA_wk / 7",
+      "variables": "MVPA_wk from O2.1",
+      "units": "min/day",
+      "value_range": "0-150+",
+      "computable": true,
+      "unresolved": null
+    },
+    {
+      "equation_id": "O2.3",
+      "source_row": 28,
+      "name": "MVPA deficit index",
+      "formula": "e_MVPA = 1 - min(1, MVPA_wk / 300)",
+      "variables": "MVPA_wk from O2.1; 300 = WHO upper target",
+      "units": "dimensionless",
+      "value_range": "0-1",
+      "computable": true,
+      "unresolved": null
+    },
+    {
+      "equation_id": "O2.4",
+      "source_row": 29,
+      "name": "PA benefit (Arem 2015)",
+      "formula": "PA_benefit = 100 * (1 - HR_Arem)",
+      "variables": "HR_Arem = hazard ratio from dose-response curve\nAnchored at 150-300 min/wk zone",
+      "units": "%",
+      "value_range": "0-100",
+      "computable": false,
+      "unresolved": {
+        "missing_symbol": "HR_Arem",
+        "reason": "The authority sheet describes HR_Arem as a 'hazard ratio from dose-response curve, Anchored at 150-300 min/wk zone' and never gives it -- no formula, no table, no parameter row anywhere in the workbook.",
+        "conflicting_definition": {
+          "formula": "PA_benefit = 100*(1-exp(-MET_min_week/K_PA))",
+          "declared_by": [
+            "O · Onboarding Canonical",
+            "EQ · Canonical Build Rows"
+          ],
+          "missing_symbol": "K_PA",
+          "note": "A saturating exponential in MET-minutes, not a hazard ratio anchored at a dose zone; the two are different functions. K_PA appears exactly twice in the workbook -- in these two cells -- and in neither parameter registry."
+        }
+      }
+    },
+    {
+      "equation_id": "O2.5",
+      "source_row": 30,
+      "name": "Modified repair rate",
+      "formula": "rho_modified = rho_pop * (1 + 0.5*(PA/100 - 0.5))",
+      "variables": "rho_pop = population mean repair, PA = PA_benefit",
+      "units": "1/day",
+      "value_range": "varies",
+      "computable": false,
+      "unresolved": {
+        "missing_symbol": "rho_pop",
+        "reason": "Needs O2.4's output and rho_pop, 'population mean repair'. rho_pop appears twice in the workbook: in O2.5 and in the copy of O2.5 on 'P1 Onboarding'. It is in neither parameter registry.",
+        "conflicting_definition": null
+      }
+    },
+    {
+      "equation_id": "O2.6",
+      "source_row": 31,
+      "name": "MET-minutes/week",
+      "formula": "METmin_wk = 4.5*(f_mod*dur) + 7.5*(f_vig*dur)",
+      "variables": "4.5 MET = moderate midpoint, 7.5 MET = vigorous midpoint",
+      "units": "MET-min/wk",
+      "value_range": "0-5000+",
+      "computable": true,
+      "unresolved": null
+    },
+    {
+      "equation_id": "O2.7",
+      "source_row": 32,
+      "name": "MET-minutes/day",
+      "formula": "METmin_day = METmin_wk / 7",
+      "variables": "METmin_wk from O2.6",
+      "units": "MET-min/day",
+      "value_range": "0-700+",
+      "computable": true,
+      "unresolved": null
+    },
+    {
+      "equation_id": "O2.8",
+      "source_row": 33,
+      "name": "Sedentary penalty",
+      "formula": "eta_sed = I(sitting_hrs > 6) * 0.15",
+      "variables": "sitting_hrs from Step 2 UI; 0.15 = penalty magnitude",
+      "units": "dimensionless",
+      "value_range": "0 or 0.15",
+      "computable": true,
+      "unresolved": null
+    }
+  ]
+}
