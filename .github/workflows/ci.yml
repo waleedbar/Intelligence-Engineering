@@ -504,8 +504,15 @@ jobs:
       # The suite with no database configured, exactly as a bare
       # `docker run` would: this is the equation layer proving it still
       # needs nothing but Python.
+      #
+      # -p no:cacheprovider because /app belongs to root and the container
+      # runs as uid 10001. The alternative -- making the application
+      # directory writable by the user that serves it -- is a worse trade
+      # than losing a cache no one reads.
       - name: Run the suite inside the image, with no database
-        run: docker run --rm -e DATABASE_URL= sahacore:ci python -m pytest tests/ -q
+        run: |
+          docker run --rm -e DATABASE_URL= sahacore:ci \
+            python -m pytest tests/ -q -p no:cacheprovider
 
       - name: Apply migrations from inside the image
         run: |
@@ -517,7 +524,7 @@ jobs:
         run: |
           docker run --rm --network host \
             -e DATABASE_URL=postgresql://sahacore_ci:sahacore_ci@127.0.0.1:5432/sahacore_ci \
-            sahacore:ci python -m pytest tests/ -q
+            sahacore:ci python -m pytest tests/ -q -p no:cacheprovider
 
       # The image must serve, not merely contain code that imports. This
       # starts the real CMD and probes the endpoint the HEALTHCHECK uses.
