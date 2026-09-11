@@ -2741,3 +2741,73 @@ from cohort data — i.e. the 219-state warm start was always meant to be
 or adjust wᵢ / F_bio / γᵢⱼ with the baseline coming from the servings
 questions (`P1 DataMap` row 125)? If the second, O7.1 should be rewritten and
 the 648-number gap closes without a single new number.
+
+
+## 2026-09-11: the SIGDB workbook — a formal audit nobody imported, and what it settles
+
+Searching for the 648 means turned up a file this build had never opened:
+`…_v39sEng2SIGDB.xlsx`, 27 sheets. It is not a spec — it is a **signed
+adjudication** of the whole system, and it answers the question directly.
+
+### What settles the 648
+
+`01_SOURCE_COVERAGE` row 2, verbatim:
+
+> *"Every populated cell in all five XLSX workbooks and every page of all four
+> UI PDFs was extracted and visually reviewed."* — 263 XLSX sheets + 20 PDF
+> pages.
+
+Row 82 of that ledger is `O·O7 Diet Pattern Priors`:
+
+| used_range | populated_cells | formulas | render_status | content_review |
+|---|---|---|---|---|
+| **B1:I26** | **77** | 0 | **PASS** | `CELL_LEVEL_EXTRACTED_AND_VISUALLY_REVIEWED` |
+
+**The entire O7 sheet is 77 cells.** A 648-number table cannot be hiding in
+it, and a cell-level review passed it.
+
+That review produced **68 numbered gaps** (`18_GAPS`) with severities,
+evidence cells, decisions and release gates, and **16 LOCKED canonical
+decisions** (`21_DECISIONS`). *"The onboarding diet-pattern priors have no
+numbers"* is **not among them** — while far smaller things are, down to
+clipped row heights in a rendered sheet (GAP043).
+
+Its own caveat, kept because it matters: *"The coverage ledger is evidence of
+review, not evidence that every source assertion is scientifically valid."*
+So this settles that the numbers are **not written down anywhere**, and that
+their absence was **not treated as a defect**. It does not settle whether the
+O7.1 design or the DataMap design is the right one — that is still the
+question for the sheet's author.
+
+### It independently confirms four things this build chose
+
+| this build | SIGDB |
+|---|---|
+| two schemas, `engine_internal` vs `client_render`, RLS (`sql/010_firewall.sql`) | **DEC11** *"Use two schemas. engine_internal is inaccessible to mobile"* — LOCKED |
+| 219 states, 81+81+12+12+24+9 | **DEC05** *"Lock 219 states"* — LOCKED |
+| 127 actions with exactly 1 activation hold | **DEC08** *"127 registered, 126 activatable; action 127 is [held]"* — LOCKED |
+| state 195 `meal_timing_reg`, 196 `meal_freq_smooth` | **DEC06** *"Reject stale 195/196 mapping… 195=meal timing; 196=meal frequency"* — LOCKED |
+
+### And it independently confirms two findings made here this week
+
+- **GAP068**: *"P1 Variables 219 column-B variable IDs 177–200 are not [state
+  indices]… Use explicit state_index from this registry; **never infer** from
+  variable ID."* — that is exactly the `sitting_hrs` error corrected earlier
+  today (the entry cited "slot 185", a row number, where the state index is
+  188).
+- **GAP059** (BLOCKER): stale lifestyle state indices in Twin/Plan — the same
+  family as the `P1 UKF State Detail` Section D v12/v33 unit trap recorded
+  above.
+
+### What the build should do with it
+
+`13_DB_TABLES` (38 rows), `14_DB_COLUMNS` (70), `17_FIREWALL` (22),
+`10_ENDPOINTS` (74), `12_STATE_BLOCKS` (the canonical 219-state partition
+with Rao–Blackwell LINEAR/NONLINEAR flags and `api_exposure`), `02_SIGNAL_CATALOG`
+(400 rows) and `04_API_ALLOWLIST` (300 rows) are a **database and API
+contract** — the layer this build is about to write by hand. It should be
+imported before, not after.
+
+**For Dr. Ali:** is `SIG-DB-v1.0/v1.1` the binding contract for the backend?
+If so its 16 LOCKED decisions should be loaded as runtime invariants, and the
+68 gaps tracked in the build rather than in a spreadsheet.
