@@ -59,8 +59,37 @@ THE INTERFACE OFFERS A PATTERN THE SHEET HAS NEVER HEARD OF. Step 3 lists
 six options; this sheet describes eight; 'P1 DataMap' row 125 says "Radio (8
 options)". The sheet's own UI Label column marks DASH and Carnivore "Not in
 current UI" -- it knows about those. Nothing anywhere mentions that the
-interface also offers **Intermittent Fasting**, for which no pattern, no
-nutrient shift and no prior exists. A user selecting it gets nothing.
+interface also offers **Intermittent Fasting**, which has no row here, no
+nutrient shift and no prior. A user selecting it gets no O7 prior.
+
+BUT IT IS NOT UNMODELLED, AND THIS MODULE USED TO SAY IT WAS. The engine
+tracks intermittent fasting in several places, none of them O7:
+
+    state 207    fasting_state, "hours since last meal"
+    state 208    fasting_pattern, "fasting pattern regularity"
+    action 125   "Intermittent fasting 14-16h window"
+    action 126   "Time-restricted eating (8-10h window)"
+
+-- two of the canonical 219 states and two of the 127 bandit arms, plus
+'04 Data & Registries' naming the "intermittent-fasting window" as one of the
+lifestyle block's 12 pairs. So the real finding is narrower and sharper than
+"the engine does not model it": intermittent fasting is a question of WHEN a
+person eats, the other seven options are questions of WHAT they eat, and
+Step 3 asks for both with one radio button. The fix is a UI question, not a
+missing model -- and O7 giving it no prior is correct behaviour, because a
+fasting window is not a nutrient composition.
+
+O7.4'S SERVING BANDS, AND WHY THE ENCODING IS A CHOICE RATHER THAN AN
+OVERSIGHT. Step 3 asks for fruit and vegetable servings as '0 / 1-2 / 3-4 /
+5+'. The workbook encodes that EXACT band set twice, differently:
+
+    O2 (sessions/wk)    1-2 -> 1.5    3-4 -> 3.5    5+ -> 5.5   "Midpoint"
+    O5.5 (SSB servings) 1-2 -> 0.5    3-4 -> 1.75   5+ -> 3
+
+and gives no encoding at all for fruit or vegetables. Two incompatible
+answers already exist for the same question, so picking one here would be
+choosing between the sheet's own authors. `diet_quality_index` takes
+servings, not a band.
 """
 from dataclasses import dataclass
 

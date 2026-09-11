@@ -47,9 +47,41 @@ medications across five category rows. Three are the same drug spelled
 differently -- "ACE Inhibitors & ARBs" against "ACE inhibitors/ARBs",
 "Insulin & Sulfonylureas" against "Insulin/sulfonylureas", "Oral
 Contraceptives" against "Oral contraceptives" -- and normalising case and the
-choice of '&' or '/' bridges those without changing a word. Eight remain:
-seven with no row of any kind, plus "Diuretics", which is a BROADER class
-than the sheet's "Thiazide/loop diuretics" and so a different question.
+choice of '&' or '/' bridges those without changing a word. Eight remain
+with no row ON THIS SHEET: Antibiotics, Antiplatelet, Beta Blockers,
+Magnesium, SNRIs, Theophylline, Vitamin E, and "Diuretics" -- the last a
+BROADER class than the sheet's "Thiazide/loop diuretics".
+
+THIS SHEET IS NOT THE ENGINE, AND AN EARLIER VERSION OF THIS HEADER FORGOT
+THAT. It said those eight had "no row of any kind". Every one of them is
+modelled elsewhere:
+
+    Beta Blockers    'Beta Blockers', in the 339-rule VETO registry
+    Theophylline     'Theophylline', likewise
+    Vitamin E        a NUTRIENT -- 'Vitamin E (alpha-tocopherol)' is one of
+                     the 81, and 'Vitamin E (high-dose)' is the nutrient side
+                     of several VETO rules
+    Magnesium        also a nutrient, also in the supplement registry
+    Antibiotics      Tetracycline, Aminoglycosides and Fluoroquinolones all
+                     carry rules
+    Antiplatelet     Clopidogrel (Plavix) and Aspirin (low-dose, daily)
+    SNRIs            Venlafaxine (Effexor) and Duloxetine (Cymbalta)
+    Diuretics        declared covered under 'Antihypertensives'
+
+and 'VETO Canonical 339' rows 233-251 say so in the author's own words -- a
+COVERAGE block listing "Antibiotics (15 rules)", "Anticoagulants /
+antiplatelets — DOACs, warfarin, aspirin, clopidogrel (15 rules)",
+"SSRIs/SNRIs / antidepressants / lithium (17 rules)" and "Antihypertensives —
+ACE-I, ARBs, CCBs, diuretics, β-blockers (18 rules)".
+
+SO THE GAP IS A NAMING LEVEL, NOT A COVERAGE HOLE. Step 7 asks for drug
+CLASSES; the registry stores individual drugs and brand names. "SNRIs" has no
+row because the registry writes "Venlafaxine (Effexor)". Nothing maps one to
+the other in a form code can read -- the COVERAGE block is prose, and it
+gives counts rather than rule ids. That is a bridge for the sheet's author to
+declare, one class at a time, exactly as this build refuses to infer
+elsewhere.
+
 And one drug goes the other way -- Warfarin is modelled, with a CRITICAL
 Vitamin K veto, and is not among the 22 the interface names. Step 7's first
 row is a free-text "Search bar + categories", so the named ones are examples

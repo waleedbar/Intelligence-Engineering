@@ -200,7 +200,13 @@ def test_the_two_severity_scales_do_not_match(sheet, veto):
 
 # --- against the UI contract ---------------------------------------------
 
-def test_eight_medications_the_interface_names_have_no_row(sheet, ):
+def test_eight_medications_the_interface_names_have_no_row_ON_THIS_SHEET(sheet):
+    """Note the emphasis. This sheet has 20 rows; the engine has rather more.
+
+    An earlier version of this test carried the same assertion under the name
+    "have no row" and the build reported it as "no row of any kind". See the
+    test below for why that was wrong.
+    """
     ui = _load("step_questions.json")
     named = {option for q in ui["questions"]
              if q["step_number"] == 7 and q["is_choice"]
@@ -213,6 +219,49 @@ def test_eight_medications_the_interface_names_have_no_row(sheet, ):
     assert set(unmatched) >= {"Antibiotics", "Antiplatelet", "Beta Blockers",
                               "Magnesium", "SNRIs", "Theophylline",
                               "Vitamin E"}
+
+
+def test_none_of_those_eight_is_actually_unmodelled(sheet):
+    """THE CORRECTION, and it is the largest one this build has had to make.
+
+    "No row on O9" was reported as "no row of any kind". Every one of the
+    eight is modelled somewhere -- two as drugs in the 339-rule VETO
+    registry, two as NUTRIENTS (they are supplements the interface files
+    under "Medications"), and the rest as the specific drugs their class
+    contains.
+
+    So the gap is a NAMING LEVEL, not a coverage hole: Step 7 asks for drug
+    classes and the registry stores individual drugs and brand names. "SNRIs"
+    has no row because the registry writes "Venlafaxine (Effexor)".
+
+    The lesson, which is why this test exists rather than a comment: a gap
+    found by comparing against ONE sheet is a gap in that sheet until the
+    other registries have been checked.
+    """
+    veto = _load("veto_drug_nutrient_339.json")
+    drugs = {r["drug_or_class"] for r in veto}
+    nutrient_side = {r["nutrient_or_food"] for r in veto}
+    nutrients = {n["name"] for n in _load("nutrients_81.json")}
+
+    # Named outright in the VETO registry.
+    assert "Beta Blockers" in drugs
+    assert "Theophylline" in drugs
+
+    # Not drugs at all -- nutrients the engine tracks by name.
+    assert "Magnesium" in nutrients
+    assert any(n.startswith("Vitamin E") for n in nutrients)
+    assert any("Vitamin E" in n for n in nutrient_side)
+
+    # Present as their members rather than as the class the interface names.
+    for member in ("Clopidogrel (Plavix)", "Aspirin (low-dose, daily)",
+                   "Venlafaxine (Effexor)", "Duloxetine (Cymbalta)"):
+        assert member in drugs, member
+    assert any("Fluoroquinolone" in d for d in drugs)
+
+    # And the class the interface DOES name has no row under that spelling,
+    # which is the whole shape of the finding.
+    for class_name in ("Antiplatelet", "SNRIs", "Antibiotics", "Diuretics"):
+        assert class_name not in drugs, class_name
 
 
 def test_warfarin_is_modelled_and_the_interface_never_names_it(sheet):

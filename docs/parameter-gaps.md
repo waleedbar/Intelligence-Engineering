@@ -2251,10 +2251,18 @@ and `B12` carry digits in their **names**. Same shape as the hyphen in
 1. **Where do the 648 nutrient prior means come from?** This is the single
    largest missing thing in the build: the initial condition of 81 of 219
    states. Without it, ONB-007 cannot initialise Layer E at all.
-2. **What happens when a user selects Intermittent Fasting?** The interface
-   offers it and the engine has no pattern for it.
+2. **Should Intermittent Fasting be a Step 3 answer at all?** It is the only
+   one of the six that describes *when* a person eats rather than *what*. The
+   engine already models it — states **207** `fasting_state` and **208**
+   `fasting_pattern`, action arms **125** "Intermittent fasting 14-16h window"
+   and **126** "Time-restricted eating (8-10h window)" — just never as a diet
+   pattern. O7 giving it no prior looks correct; the radio button looks wrong.
 3. **What are Step 3's fruit and vegetable bands worth numerically?** O7.4
-   divides their sum by 10 and nothing says what `1-2` means.
+   divides their sum by 10 and nothing says what `1-2` means. The workbook
+   encodes that **exact** band set twice and incompatibly — O2 as midpoints
+   (1-2 → 1.5, 3-4 → 3.5, 5+ → 5.5) and O5.5 for sugary drinks (0 / 0.5 /
+   1.75 / 3) — so this is a **choice between the sheet's own authors**, not an
+   oversight.
 
 ---
 
@@ -2347,8 +2355,14 @@ defaulting silently converts the first into the second.
 ### The interface offers a condition with no row — again
 
 Step 5's gastrointestinal question names **"IBS, GERD, Celiac, UC, NAFLD"**.
-There is no **UC** row. Same shape as O7's Intermittent Fasting, one sheet
-later.
+There is no **UC** row in O8.
+
+> **Narrowed 2026-09-11.** UC is not absent from the engine. `MERGE·Water
+> Conditions` rows 23–24 carry **"IBD (Crohn's / UC)"** with hydration targets
+> for active flare (2.5 / 3 / 5 L) and remission (2 / 2.7 / 5 L), cited to ACG
+> 2018. So the precise finding is that UC has **no O8 η modifier and no
+> Z-pathway**, while it does have a fluid-target rule — not that the engine
+> has never heard of it.
 
 And the condition set cannot be checked properly at all: of Step 5's five
 questions only **two** name any condition, one of those trails off with
@@ -2457,10 +2471,42 @@ Step 7 names 22 medications. Three are the same drug spelled differently —
 against "Oral contraceptives" — and normalising case and `&`/`/` bridges those
 without changing a word. **Eight remain:**
 
-- **seven with no row of any kind**: Antibiotics, Antiplatelet, Beta Blockers,
+- **seven with no row on this sheet**: Antibiotics, Antiplatelet, Beta Blockers,
   Magnesium, SNRIs, Theophylline, Vitamin E
 - **"Diuretics"**, which is a *broader* class than the sheet's "Thiazide/loop
   diuretics" — a different question from a drug with no row, and kept separate
+
+> **CORRECTED 2026-09-11.** This read *"seven with no row of any kind"*. That
+> was wrong: **this sheet is not the engine**, and every one of the eight is
+> modelled somewhere else.
+>
+> | Step 7 says | where it actually lives |
+> |---|---|
+> | Beta Blockers | `Beta Blockers`, in the 339-rule VETO registry |
+> | Theophylline | `Theophylline`, likewise |
+> | Vitamin E | a **nutrient** — `Vitamin E (alpha-tocopherol)` is one of the 81 |
+> | Magnesium | also a nutrient, and in the supplement registry |
+> | Antibiotics | Tetracycline, Aminoglycosides, Fluoroquinolones |
+> | Antiplatelet | Clopidogrel (Plavix), Aspirin (low-dose, daily) |
+> | SNRIs | Venlafaxine (Effexor), Duloxetine (Cymbalta) |
+> | Diuretics | declared covered under *Antihypertensives* |
+>
+> And the workbook says so itself. `VETO Canonical 339` rows 233–251 are a
+> **COVERAGE block** in the author's own words: *"Antibiotics (15 rules)"*,
+> *"Anticoagulants / antiplatelets — DOACs, warfarin, aspirin, clopidogrel
+> (15 rules)"*, *"SSRIs/SNRIs / antidepressants / lithium (17 rules)"*,
+> *"Antihypertensives — ACE-I, ARBs, CCBs, diuretics, β-blockers (18 rules)"*.
+>
+> **So the gap is a naming level, not a coverage hole.** Step 7 asks for drug
+> *classes*; the registry stores individual drugs and brand names. "SNRIs" has
+> no row because the registry writes "Venlafaxine (Effexor)". What is missing
+> is a machine-readable class → member map — the COVERAGE block is prose and
+> gives counts, not rule ids. That is a bridge for the author to declare, one
+> class at a time.
+>
+> **How the miss happened:** the comparison was made against O9's 20 rows and
+> the conclusion was then stated about the whole build. A gap found in one
+> sheet is a gap *in that sheet* until the other registries have been checked.
 
 And it runs the other way too: **Warfarin is modelled, with a CRITICAL Vitamin
 K veto, and the interface never names it.** Step 7's first row is a free-text

@@ -167,6 +167,43 @@ def test_the_interface_offers_a_pattern_the_sheet_never_heard_of(sheet, ui):
         o7.pattern_for_ui_option("Intermittent Fasting")
 
 
+def test_intermittent_fasting_is_modelled_just_not_as_a_diet_pattern():
+    """THE CORRECTION. This build reported that the interface "collects what
+    the engine does not model" and named Intermittent Fasting. The engine
+    models it -- in the state vector we have already loaded.
+
+        state 207   fasting_state     hours since last meal
+        state 208   fasting_pattern   fasting pattern regularity
+
+    plus action arms 125 ("Intermittent fasting 14-16h window") and 126
+    ("Time-restricted eating (8-10h window)"), and '04 Data & Registries'
+    naming the "intermittent-fasting window" among the lifestyle block's 12
+    pairs.
+
+    So the real finding is sharper: IF describes WHEN a person eats and the
+    other seven options describe WHAT, and Step 3 asks for both with one
+    radio button. O7 giving it no prior is correct behaviour -- a fasting
+    window is not a nutrient composition -- and the fix is a UI question
+    rather than a missing model.
+
+    Read from the loaded registry rather than asserted, so if the state
+    vector ever stops carrying these this fails.
+    """
+    states = _load("state_vector_219.json")
+    by_idx = {s["idx"]: s for s in states}
+
+    assert by_idx[207]["symbol"] == "fasting_state"
+    assert by_idx[207]["unit"] == "hours"
+    assert by_idx[208]["symbol"] == "fasting_pattern"
+    assert by_idx[207]["block"] == by_idx[208]["block"] == "lifestyle"
+
+    actions = _load("action_space_127.json")["actions"]
+    fasting_arms = [a for a in actions
+                    if "fasting" in str(a).lower()
+                    or "time-restricted" in str(a).lower()]
+    assert len(fasting_arms) >= 2, fasting_arms
+
+
 def test_two_more_labels_are_near_misses_and_are_not_bridged(sheet):
     """'Mediterranean Diet' plainly means the interface's 'Mediterranean',
     and 'Low-carb/Ketogenic' its 'Low-carb/Keto'. Matching on "plainly means"
