@@ -2604,3 +2604,61 @@ undecided half stays visible rather than being defaulted.
    both; only Step 11's answers are goal areas.
 2. **What is `r_k`?** `pi_k` is fully specified and the reward it weights is
    still open founder decision 5.
+
+
+## 2026-09-11: `P1 UKF State Detail` holds most of the filter's constants, and is not imported
+
+Found while auditing the O7 correction — O13.5 says *"Use per-state priors
+from **P1 UKF State Detail** / parameter registry"* for states [187..219], so
+the sheet was opened to see what it actually holds. It holds a great deal,
+and none of it is in the build.
+
+**Manifest order 34, CORE_ENGINE, "Backend implementation source", import
+YES, backend Yes.** 413 rows.
+
+| section | what it carries |
+|---|---|
+| A | process noise per block — `C_fast` **(0.05·C)²**, `C_slow` **(0.03·C)²**, ξ_hi/ξ_lo `σ_ξ² (constant)` |
+| B | the **complete UKF sigma-point set with values** — n=219, α=1 (LOCKED), κ=0, β=2, λ=0, W₀ᵐ=0, W₀ᶜ=2, Wᵢ=0.00228310502283105, β_innov=0.1, β_Q=0.05, Student-t ν=5, η_ν=0.01, gate χ²(0.999, m) |
+| C | the square-root covariance decision, with the rejected form and why |
+| D | **Q_diag per lifestyle state**, all 12 pairs, with CV% |
+| E | the measurement contract — R_diag and CV% per sensor (CGM 5%, HR 3%, HRV 10%, lab 3–5%) |
+| — | a 219-row observability classification: `DIRECTLY_ANCHORED` / `DYNAMICALLY_INFERRED` / `LOG_DAMAGE_STATE` |
+
+### The trap inside it
+
+**The sheet disagrees with itself about the lifestyle block, and only one half
+is safe to use.**
+
+Its Section D is a **v12-era** table — its own row 53 says *"★ Yellow rows =
+v11→v12 changes"* — and the same sheet's later 219-row table (rows 292–412)
+states the **v33** layout, which is what this build loads from `★ State Vector
+v33 (219)`. The pair *categories* agree in both and the same order; the second
+member of most pairs, and the **units**, do not:
+
+| slot | v33 — what the build loads | Section D — what the Q_diag belongs to |
+|---|---|---|
+| 187–188 | `MVPA_smooth` min/**week**, `SED_smooth` min/day | MET-minutes daily, MVPA minutes/day |
+| 193–194 | `hydration_smooth` **L/day**, trend | Intake volume **mL**, adequacy ratio |
+| 201–202 | `alcohol_smooth` **g/day**, binge flag | Units per **week**, binge frequency |
+| 203–204 | `smoking_status` **pack-yr**, days since quit | **Cigarettes per day**, pack-years history |
+
+So Section D's hydration `Q_diag = 10000` is **(100 mL)²**. Attached to the
+canonical `hydration_smooth`, which is in L/day, it would be **(100 L/day)²** —
+wrong by a factor of 10⁶, and wrong in the direction that makes the filter
+ignore every hydration measurement it ever sees.
+
+### What this means for the build
+
+1. The sheet should be imported — it is the named source for O13.5 and it
+   carries Layer E's tuning constants, which nothing else in the build has.
+2. It must be imported **sectioned**, not as one table, with Section D marked
+   as superseded-layout and NOT joined to canonical state indices.
+3. The v12→v33 lifestyle mapping is a **declared bridge** for the workbook's
+   author, one slot at a time. It cannot be inferred: "MVPA minutes/day" and
+   `MVPA_smooth` in min/week are the same concept at different periods, and
+   picking a conversion here would be inventing a number.
+
+**For Dr. Ali:** Section D's `Q_diag` values — do they still apply to the v33
+lifestyle states, and if so in which units? Or were they retired with the v12
+layout?
