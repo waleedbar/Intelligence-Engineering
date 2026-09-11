@@ -636,13 +636,54 @@ So the rule mandates a referral and the template that renders it drops one —
 on the two interactions where a carbohydrate swing is a hypoglycaemia risk.
 
 This build does not rewrite it. Regulated wording is not an engineering
-decision. It is loaded as written, reported by
-`engine_internal.critical_message_without_referral`, asserted in CI to be
-exactly one row, and pinned by name in the extractor so a second such
-template stops the build.
+decision.
 
-**For Dr. Ali:** should `MSG-CRITICAL-STABLE` carry the prescriber referral
-its two rules already specify?
+### RESOLVED BY DECISION — 2026-09-11, Dr. Ali Charanek
+
+> "Use the hardest safety rule that include consulting health provider in the
+> mes[sage]"
+
+One sentence is appended to `MSG-CRITICAL-STABLE`:
+
+> Your prescriber can advise on what's right for you.
+
+It is `MSG-CRITICAL-AVOID`'s own closing sentence rather than new wording —
+the only edit is the capital Y, since there it follows an em dash and here it
+begins a sentence. Not a word of the workbook's clinical text is altered and
+no dosing guidance is added.
+
+**The change is carried as a change, not as a transcription.** The row keeps
+the workbook's own text in `source_body_template` and records
+`overridden_by`, `overridden_on` and `override_reason`; a CHECK constraint
+refuses a changed row that is missing any of them, and one refuses an
+"override" that changed nothing. `engine_internal.veto_message_override`
+shows the workbook text and the rendered text side by side. Anyone auditing
+this — the workbook's author included — can see exactly what differs from the
+source and on whose authority.
+
+CI now asserts that **no** CRITICAL template names nobody, that the
+templates which do are exactly `['MSG-MODERATE-STABLE']`, and that the
+override is attributed to Dr. Ali Charanek.
+
+### STILL OPEN — `MSG-MODERATE-STABLE`
+
+The other template that names no professional, and deliberately not
+overridden. Its single rule, `VETO-DN-0107` (diuretic + ACE inhibitor ×
+potassium), has the action **BALANCE** and mandates no referral — so the
+decision above, which applies where a rule demands one, does not reach it.
+Stretching an authorisation past what it authorised is how a declared
+override becomes an undeclared editorial habit.
+
+It is reported by `engine_internal.message_without_referral` — the CRITICAL
+view widened past CRITICAL, since its CRITICAL half is now empty by design
+and the question "which messages name nobody" should stay answerable.
+
+**For Dr. Ali:** the rule's own rationale reads *"Loop loses K while ACE-I
+retains K; **may** balance effects"*. The word is *may*. If the two effects
+do not balance in a given person, potassium moves — in one direction or the
+other — and the message they read says only to keep intake steady. Should
+`MSG-MODERATE-STABLE` name a clinician too, or is BALANCE the right posture
+for a MODERATE rule?
 
 ## 2026-09-09: two sheets disagree about the organ namespace
 

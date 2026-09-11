@@ -1,7 +1,14 @@
 """Seeds engine_internal.veto_message from veto_messages.json.
-Requires sql/025_veto_messages.sql to already be applied.
+Requires sql/025_veto_messages.sql and sql/045_veto_message_override.sql to
+already be applied.
 
     python -m sahacore.data.load_veto_messages
+
+The last five columns carry the one authorised change to a regulated message
+-- see sahacore/data/build_veto_messages.py. They are loaded like any other
+column rather than applied here: the decision belongs in the build, and a row
+that reached the database without its attribution would be exactly the thing
+the columns exist to make impossible.
 """
 import json
 from pathlib import Path
@@ -11,7 +18,9 @@ from sahacore.db import get_connection
 DATA_FILE = Path(__file__).parent / "veto_messages.json"
 
 _COLUMNS = ["message_id", "source_row", "severity", "action", "title",
-            "body_template", "cta"]
+            "body_template", "cta",
+            "source_body_template", "overridden_field", "overridden_by",
+            "overridden_on", "override_reason"]
 
 
 def load_veto_messages() -> int:

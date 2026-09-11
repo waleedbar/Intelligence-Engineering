@@ -6,7 +6,12 @@
   "action": "AVOID",
   "title": "Left out for now",
   "body_template": "Safety first — we've left {nutrient} out of your suggestions, since it doesn't pair well with {medication}. This is general wellness guidance — your prescriber can advise on what's right for you.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 7,
@@ -15,7 +20,12 @@
   "action": "MONITOR",
   "title": "We're watching this",
   "body_template": "Safety first — because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 8,
@@ -24,7 +34,12 @@
   "action": "NOTE",
   "title": "Good to know",
   "body_template": "Safety first — {nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 9,
@@ -33,7 +48,12 @@
   "action": "PAUSE",
   "title": "Adjusted for your medication",
   "body_template": "Safety first — we've paused the {nutrient} suggestion in your plan, because it can interact with {medication}. Please check with your prescriber or pharmacist before changing your {nutrient} intake.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 10,
@@ -42,7 +62,12 @@
   "action": "SEPARATE",
   "title": "Timing tip",
   "body_template": "Safety first — it helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 11,
@@ -50,8 +75,13 @@
   "severity": "CRITICAL",
   "action": "STABLE",
   "title": "Keep it steady",
-  "body_template": "Safety first — with {medication}, keeping your {nutrient} intake steady day to day helps things stay consistent — aim for a similar amount rather than big swings.",
-  "cta": "Learn more"
+  "body_template": "Safety first — with {medication}, keeping your {nutrient} intake steady day to day helps things stay consistent — aim for a similar amount rather than big swings. Your prescriber can advise on what's right for you.",
+  "cta": "Learn more",
+  "source_body_template": "Safety first — with {medication}, keeping your {nutrient} intake steady day to day helps things stay consistent — aim for a similar amount rather than big swings.",
+  "overridden_field": "body_template",
+  "overridden_by": "Dr Ali Charanek",
+  "overridden_on": "2026-09-11",
+  "override_reason": "Both rules that render it (VETO-DN-0265 insulin x carbohydrate, VETO-DN-0267 sulfonylureas x carbohydrate) carry the action 'STABLE PATTERN — discuss with prescriber' and are hypoglycaemia risks; the template named no professional at all."
  },
  {
   "source_row": 12,
@@ -60,7 +90,12 @@
   "action": "SUPPORT",
   "title": "Food-first support",
   "body_template": "Safety first — {medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 13,
@@ -69,7 +104,12 @@
   "action": "AVOID",
   "title": "Left out for now",
   "body_template": "We've left {nutrient} out of your suggestions, since it doesn't pair well with {medication}. This is general wellness guidance — your prescriber can advise on what's right for you.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 14,
@@ -78,7 +118,12 @@
   "action": "MONITOR",
   "title": "We're watching this",
   "body_template": "Because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 15,
@@ -87,7 +132,12 @@
   "action": "NOTE",
   "title": "Good to know",
   "body_template": "{nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 16,
@@ -96,7 +146,12 @@
   "action": "PAUSE",
   "title": "Adjusted for your medication",
   "body_template": "We've paused the {nutrient} suggestion in your plan, because it can interact with {medication}. Please check with your prescriber or pharmacist before changing your {nutrient} intake.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 17,
@@ -105,7 +160,12 @@
   "action": "SEPARATE",
   "title": "Timing tip",
   "body_template": "It helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 18,
@@ -114,7 +174,12 @@
   "action": "SUPPORT",
   "title": "Food-first support",
   "body_template": "{medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 19,
@@ -123,7 +188,12 @@
   "action": "AVOID",
   "title": "Left out for now",
   "body_template": "A gentle heads-up. we've left {nutrient} out of your suggestions, since it doesn't pair well with {medication}. This is general wellness guidance — your prescriber can advise on what's right for you.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 20,
@@ -132,7 +202,12 @@
   "action": "MONITOR",
   "title": "We're watching this",
   "body_template": "A gentle heads-up. because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 21,
@@ -141,7 +216,12 @@
   "action": "NOTE",
   "title": "Good to know",
   "body_template": "A gentle heads-up. {nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 22,
@@ -150,7 +230,12 @@
   "action": "PAUSE",
   "title": "Adjusted for your medication",
   "body_template": "A gentle heads-up. we've paused the {nutrient} suggestion in your plan, because it can interact with {medication}. Please check with your prescriber or pharmacist before changing your {nutrient} intake.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 23,
@@ -159,7 +244,12 @@
   "action": "SEPARATE",
   "title": "Timing tip",
   "body_template": "A gentle heads-up. it helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 24,
@@ -168,7 +258,12 @@
   "action": "STABLE",
   "title": "Keep it steady",
   "body_template": "A gentle heads-up. with {medication}, keeping your {nutrient} intake steady day to day helps things stay consistent — aim for a similar amount rather than big swings.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 25,
@@ -177,7 +272,12 @@
   "action": "SUPPORT",
   "title": "Food-first support",
   "body_template": "A gentle heads-up. {medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 26,
@@ -186,7 +286,12 @@
   "action": "MONITOR",
   "title": "We're watching this",
   "body_template": "Just so you know — because you take {medication}, your plan keeps an eye on your {nutrient} pattern. If it drifts outside your typical range we'll surface it, and your clinician is the best person to review it.",
-  "cta": "Discuss with your prescriber"
+  "cta": "Discuss with your prescriber",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 27,
@@ -195,7 +300,12 @@
   "action": "NOTE",
   "title": "Good to know",
   "body_template": "Just so you know — {nutrient} and {medication} can influence each other, and your plan already accounts for this. Your prescriber or pharmacist can tell you more if you'd like.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 28,
@@ -204,7 +314,12 @@
   "action": "SEPARATE",
   "title": "Timing tip",
   "body_template": "Just so you know — it helps to space {nutrient}-rich foods and {medication} apart during the day, so they don't get in each other's way. Your pharmacist can confirm the best spacing for you.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  },
  {
   "source_row": 29,
@@ -213,6 +328,11 @@
   "action": "SUPPORT",
   "title": "Food-first support",
   "body_template": "Just so you know — {medication} can affect your {nutrient} levels over time, so your plan gently favours {nutrient}-rich foods. Discuss any supplement changes with your clinician.",
-  "cta": "Learn more"
+  "cta": "Learn more",
+  "source_body_template": null,
+  "overridden_field": null,
+  "overridden_by": null,
+  "overridden_on": null,
+  "override_reason": null
  }
 ]

@@ -407,11 +407,20 @@ jobs:
               cur.execute('SELECT count(*) FROM engine_internal.veto_rule_message')
               vm = cur.fetchone()[0]
               assert vm == 339, f'expected all 339 rules to render a message, got {vm}'
-              # One CRITICAL template refers the reader to nobody. A finding,
-              # reported in docs/parameter-gaps.md, not a tolerance.
-              cur.execute('SELECT count(*) FROM engine_internal.critical_message_without_referral')
+              # NO CRITICAL template may refer the reader to nobody. The one
+              # that did carries Dr Ali Charanek's authorised override.
+              cur.execute(\"SELECT count(*) FROM engine_internal.message_without_referral WHERE severity = 'CRITICAL'\")
               cw = cur.fetchone()[0]
-              assert cw == 1, f'expected exactly 1 referral-less CRITICAL template, got {cw}'
+              assert cw == 0, f'a CRITICAL template names no professional: {cw}'
+              # One MODERATE template still does, deliberately: its only rule
+              # mandates no referral. A finding in docs/parameter-gaps.md.
+              cur.execute('SELECT message_id FROM engine_internal.message_without_referral')
+              silent = [r[0] for r in cur.fetchall()]
+              assert silent == ['MSG-MODERATE-STABLE'], f'referral-less templates: {silent}'
+              # And the override is recorded as one, with its attribution.
+              cur.execute('SELECT message_id, overridden_by FROM engine_internal.veto_message_override')
+              ov = cur.fetchall()
+              assert ov == [('MSG-CRITICAL-STABLE', 'Dr Ali Charanek')], f'overrides: {ov}'
               # The state vector may not grow: four candidates refused.
               cur.execute('SELECT count(*) FROM engine_internal.refused_state_candidates')
               rc = cur.fetchone()[0]
