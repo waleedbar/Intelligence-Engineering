@@ -2662,3 +2662,82 @@ ignore every hydration measurement it ever sees.
 **For Dr. Ali:** Section D's `Q_diag` values — do they still apply to the v33
 lifestyle states, and if so in which units? Or were they retired with the v12
 layout?
+
+
+## 2026-09-11: O7.1 and the DataMap disagree about what a diet pattern *does*
+
+Waleed was sure the 648 means were in the workbook and told me to search
+properly. The exhaustive search is below, and they are not. But it turned up
+something better: **the workbook's own data map never asks for them.**
+
+### The search, this time exhaustive
+
+Every file available, not just the master workbook:
+
+| checked | result |
+|---|---|
+| **21 `.xlsx` workbooks** — including `v39k` (244 sheets, 39 more than our master) and three other ~205-sheet masters | no pattern×nutrient matrix |
+| **4 `.csv` files** — `layer_a_results`, `layer_b_results`, `layer_c_damage`, `layer_d_scoring` | 128-row simulation time series; **0** diet-pattern mentions |
+| **2 `.docx`**, **6 `.pdf`** | **0** diet-pattern mentions |
+| **4 WhatsApp images** | UI mockups (SahaTwin / Pulse / Atlas / Plan) |
+
+Three structural tests, run across all 21 workbooks:
+
+1. **No row anywhere contains 3+ diet-pattern names in separate cells** — so
+   no table has the patterns as column headers.
+2. **No row anywhere holds ≥40 numbers**, except `Live Verification Lab`'s
+   53-wide worked examples — so no pattern row carries an 81-vector.
+3. **No sheet mentions a diet pattern more than 13 times.** A long-format
+   `(pattern, nutrient, mean)` table would need 648 mentions.
+4. No hidden or very-hidden sheets in any workbook.
+
+The widest per-nutrient matrix that exists anywhere is `P1 Clusters 81x12`
+(81 × 12 = 972 cells), which this build already loads.
+
+### What the DataMap actually says
+
+`P1 DataMap` rows 125–129, the Step 3 block, verbatim in its "feeds" column:
+
+| field | equations | what it feeds |
+|---|---|---|
+| `diet_type` — Radio (8 options) | A2, A5, B4 | **"Adjusts wᵢ, F_bio, γᵢⱼ defaults"** |
+| `fruit_servings` | A2, B2, C1 | **"Baseline VitC, fiber, antioxidant intake"** |
+| `veg_servings` | A2, B2, C1 | **"Baseline fiber, folate, mineral intake"** |
+| `sugar_drinks` | C2 | "Glucose cluster baseline damage" |
+| `processed_food` | C2, C4 | "Sodium, inflammation cluster impact" |
+
+- **A2** Mass-Conserving Multi-Meal Absorption · **A5** Gastric Emptying
+  (Weibull) · **B4** Total Clearance
+- **B2** Fast Compartment ODE (Plasma) — *the very states O7.1 initialises*
+
+So the DataMap routes the **servings questions** into B2 as the baseline
+intake, and routes the **pattern** into absorption, emptying and clearance
+parameters. In its account, a diet pattern is a **modifier on wᵢ, F_bio and
+γᵢⱼ** — not a lookup table of 648 means.
+
+### The finding
+
+**O7.1 says the pattern supplies the mean. The DataMap says the pattern
+adjusts weights and bioavailability, and the four food-frequency answers
+supply the baseline.** Two sheets, two different jobs for the same answer.
+
+That reframes the largest gap in the build. It is not "648 numbers are
+missing from a table someone forgot to fill in". It is:
+
+> Which of the two designs is the real one? If the DataMap's, then O7.1's
+> `mu_pattern_i` is the wrong shape for the question, the baseline comes from
+> `fruit_servings` / `veg_servings` (and their band encoding — still
+> undefined, see above), and what the pattern needs is **8 sets of
+> adjustments to wᵢ / F_bio / γᵢⱼ**, which is a far smaller ask than 648
+> means and is the same shape as O8's and O9's Δlogit modifiers, which the
+> workbook does supply.
+
+`★ Regime & Population Priors` points the same way: its BHM2 produces "a
+canonical 219-state initialization **candidate**", `OFFLINE_SHADOW`, learned
+from cohort data — i.e. the 219-state warm start was always meant to be
+**estimated**, never written down.
+
+**For Dr. Ali:** does the dietary pattern set the 81 nutrient means (O7.1),
+or adjust wᵢ / F_bio / γᵢⱼ with the baseline coming from the servings
+questions (`P1 DataMap` row 125)? If the second, O7.1 should be rewritten and
+the 648-number gap closes without a single new number.
