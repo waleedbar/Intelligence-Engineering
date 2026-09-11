@@ -2811,3 +2811,39 @@ imported before, not after.
 **For Dr. Ali:** is `SIG-DB-v1.0/v1.1` the binding contract for the backend?
 If so its 16 LOCKED decisions should be loaded as runtime invariants, and the
 68 gaps tracked in the build rather than in a spreadsheet.
+
+
+## 2026-09-11: five extractors have never had their headers checked
+
+Found while importing SIGDB: the new extractor showed up as **SKIPPED** in
+`tests/test_extractors_take_whole_tables.py`, the file whose entire purpose is
+to make the shared header check non-optional.
+
+That test triggered on a module-level `HEADER_ROW` constant. An extractor that
+keeps its header row somewhere else — inside a dict, a loop, a local — declared
+none, so it skipped. **Five do**, and they have skipped for as long as they
+have existed:
+
+| extractor | reads |
+|---|---|
+| `build_organ_registries.py` | SYS registry, organ×pathway, target registry |
+| `build_parameter_registry.py` | the 192-row parameter registry |
+| `build_state_admission.py` | admission gates and the behaviour sidecar |
+| `build_state_vector_219.py` | the canonical 219-state vector |
+| `build_validation_battery.py` | the 71-test validation battery |
+
+None of them calls `check_header`, so none of them refuses a sheet that grew a
+column. That is exactly the defect the shared check exists to stop, and it has
+already happened three times in this build — `O·O1` and `O·O2` lost their
+"Engine Target" column, `TVMCD · 15 Pathways Build` lost two.
+
+**A safety net that reports SKIPPED is worse than no net**, because it reads as
+coverage. The rule is now "must call `check_header`", the five are pinned by
+name and marked `xfail` so they are visible in every run, and a sixth fails the
+build instead of joining them.
+
+**Still to do:** audit the five against the workbook — for each, read the real
+header row and confirm no column was dropped. Until that is done, five of the
+build's registries are transcribed on trust. `build_state_vector_219.py` is the
+one to do first: the 219-state vector is cited by SIGDB's `12_STATE_BLOCKS`,
+by `DEC05`, and by every other registry that indexes into it.

@@ -32,6 +32,26 @@ NO_TABULAR_HEADER = {
     "build_state_vector.py",
 }
 
+# READ TABLES AND DO NOT USE THE SHARED CHECK. Not exceptions -- unaudited.
+#
+# The rule below used to trigger on a module-level HEADER_ROW, and these five
+# keep their header rows somewhere else: inside a dict, a loop, or a local.
+# So they SKIPPED, silently, for as long as they have existed -- which is the
+# same shape of failure the whole file was written to stop. The test found
+# nothing because it was asking the wrong question.
+#
+# Each of these reads at least one tabular sheet and could be dropping a
+# trailing column exactly as build_onboarding_o1 and build_tvmcd_pathways did.
+# They are pinned by name so a SIXTH cannot join them quietly; auditing the
+# five against the workbook is its own job. See docs/parameter-gaps.md.
+UNVERIFIED_HEADERS = {
+    "build_organ_registries.py",
+    "build_parameter_registry.py",
+    "build_state_admission.py",
+    "build_state_vector_219.py",
+    "build_validation_battery.py",
+}
+
 
 def _extractors() -> list[pathlib.Path]:
     return sorted(p for p in DATA.glob("build_*.py")
@@ -43,21 +63,37 @@ def test_there_are_extractors_to_check():
     assert len(_extractors()) >= 20
 
 
+def test_the_unverified_set_is_exactly_what_it_claims():
+    """THE HOLE THIS FILE HAD. The rule below triggered on a module-level
+    HEADER_ROW, so an extractor that kept its header row in a dict skipped
+    the check entirely -- and five of them do. A skip is the one outcome a
+    safety net must never produce quietly.
+
+    So the set is pinned. A sixth extractor that reads a table without
+    check_header fails here instead of joining them in silence, and each of
+    the five stops being listed the moment it starts using the shared check.
+    """
+    unverified = set()
+    for path in _extractors():
+        source = path.read_text(encoding="utf-8")
+        if "check_header(" not in source:
+            unverified.add(path.name)
+
+    assert unverified == UNVERIFIED_HEADERS, (
+        "extractors reading tables without the shared header check are "
+        f"{sorted(unverified)}, not {sorted(UNVERIFIED_HEADERS)}")
+
+
 @pytest.mark.parametrize("path", _extractors(), ids=lambda p: p.name)
-def test_an_extractor_with_a_header_row_uses_the_shared_check(path):
-    """If a module declares a HEADER_ROW it is reading a table, and it must
-    use check_header -- which refuses a header wider than the labels given."""
+def test_an_extractor_that_reads_a_table_uses_the_shared_check(path):
+    """Every extractor must call check_header, which refuses a header wider
+    than the labels it was given. The trigger is no longer whether the module
+    declares a HEADER_ROW -- that question let five through."""
+    if path.name in UNVERIFIED_HEADERS:
+        pytest.xfail(f"{path.name} has never used the shared check")
+
     source = path.read_text(encoding="utf-8")
     tree = ast.parse(source)
-
-    declares_header = any(
-        isinstance(node, ast.Assign)
-        and any(isinstance(t, ast.Name) and t.id.endswith("HEADER_ROW")
-                for t in node.targets)
-        for node in tree.body
-    )
-    if not declares_header:
-        pytest.skip(f"{path.name} declares no HEADER_ROW")
 
     imports_shared = any(
         isinstance(node, ast.ImportFrom)

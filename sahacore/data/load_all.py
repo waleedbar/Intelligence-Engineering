@@ -63,6 +63,10 @@ LOADERS = [
     "load_onboarding_o8",
     "load_onboarding_o9",
     "load_onboarding_o10",
+    # The API/backend contract. Last because it references nothing,
+    # and first in importance: it governs what any of the above may
+    # ever leave the engine as.
+    "load_sigdb_contract",
 ]
 
 

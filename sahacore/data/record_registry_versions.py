@@ -173,6 +173,16 @@ REGISTRIES: dict[str, tuple[str, str | None, str]] = {
         ("onboarding_o10.json", "goals", "O·O10 Goal Priority Wts"),
     "engine_internal.onboarding_o10_weight_rule":
         ("onboarding_o10.json", "rules", "O·O10 Goal Priority Wts"),
+    "engine_internal.sigdb_state_block":
+        ("sigdb_contract.json", "state_blocks", "SIGDB 12_STATE_BLOCKS"),
+    "engine_internal.sigdb_firewall_control":
+        ("sigdb_contract.json", "firewall_controls", "SIGDB 17_FIREWALL"),
+    "engine_internal.sigdb_gap":
+        ("sigdb_contract.json", "gaps", "SIGDB 18_GAPS"),
+    "engine_internal.sigdb_qa_gate":
+        ("sigdb_contract.json", "qa_gates", "SIGDB 19_QA_GATES"),
+    "engine_internal.sigdb_decision":
+        ("sigdb_contract.json", "decisions", "SIGDB 21_DECISIONS"),
 }
 
 

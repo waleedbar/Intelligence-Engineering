@@ -136,7 +136,33 @@ jobs:
               # Every registry a packet could cite has exactly one ACTIVE version.
               cur.execute('SELECT count(*) FROM engine_internal.registry_current')
               versioned = cur.fetchone()[0]
-              assert versioned == 68, f'expected 68 versioned registries, got {versioned}'
+              assert versioned == 73, f'expected 73 versioned registries, got {versioned}'
+              # SIG-DB-v1.1: the contract governing what may leave the engine.
+              cur.execute('SELECT contract_version, api_posture FROM engine_internal.sigdb_contract')
+              ver, posture = cur.fetchone()
+              assert ver == 'SIG-DB-v1.1', f'contract is {ver}'
+              assert 'default deny' in posture.lower(), posture
+              # The 219 states are tiled exactly once by 10 HIDDEN blocks.
+              cur.execute('SELECT count(*) FROM engine_internal.sigdb_state_partition_break')
+              brk = cur.fetchone()[0]
+              assert brk == 0, f'the 219-state partition has {brk} breaks'
+              cur.execute(\"SELECT sum(state_count), count(*) FILTER (WHERE api_exposure <> 'HIDDEN') FROM engine_internal.sigdb_state_block\")
+              total, exposed = cur.fetchone()
+              assert (total, exposed) == (219, 0), f'state blocks: {(total, exposed)}'
+              # 16 decisions, every one still LOCKED_FOR_THIS_CONTRACT.
+              cur.execute(\"SELECT count(*), count(*) FILTER (WHERE status = 'LOCKED_FOR_THIS_CONTRACT') FROM engine_internal.sigdb_decision\")
+              dec, locked = cur.fetchone()
+              assert dec == locked == 16, f'decisions: {(dec, locked)}'
+              # 17 firewall controls; exactly 3 carry no owner and no status.
+              cur.execute('SELECT count(*) FROM engine_internal.sigdb_firewall_control')
+              fw = cur.fetchone()[0]
+              cur.execute('SELECT count(*) FROM engine_internal.sigdb_unowned_control')
+              unowned = cur.fetchone()[0]
+              assert (fw, unowned) == (17, 3), f'firewall: {(fw, unowned)}'
+              # 43 of the 68 audited gaps still hold a release.
+              cur.execute('SELECT count(*) FROM engine_internal.sigdb_release_blocker')
+              blockers = cur.fetchone()[0]
+              assert blockers == 43, f'expected 43 open release blockers, got {blockers}'
               # The twelve per-cluster ceilings on the scarring feedback loop,
               # each confirmed by the sheet's own section-8 audit receipt.
               cur.execute('SELECT count(*) FROM engine_internal.bistability_cap')
@@ -438,7 +464,7 @@ jobs:
               cur.execute(\"SELECT kind, count(*) FROM engine_internal.eq_build_row_inputs GROUP BY kind\")
               kinds = dict(cur.fetchall())
               assert kinds == {'SYMBOL': 8, 'AMBIGUOUS': 3, 'OTHER_LAYER': 8, 'PROSE': 316}, kinds
-          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), ONB-004 live (9 eq/10 PSS-10 items/3 bands), 12 onboarding steps (73 questions), ONB-005 live (7 eq/18 encoded answers), ONB-006 live (11 eq/6 sourced risks), ONB-007 partial (4 eq/8 patterns, 648 prior means absent), ONB-008 live (10 conditions/20 links, 9 quantified), ONB-009 live (20 rows, 5 shifts = ln(m), 2 VETO disagreements), ONB-010 live (8 sourced goals/4-rung ladder), 68 versioned registries')
+          print('OK: 81 nutrients, 219 state vector rows, 12 cluster params, 357 weights, 108 damage rows, 12 layer M params, 5 QSSA ATP complexes, 1 replay lag policy, 192 parameters, 10 critical gaps, 126 FK rows, 5 missing FKs, 119 build rows, 5 uncovered FK rows, 8 resolved input tokens, VETO-01 pass (339/339/319), 94 hard vetoes, 127 actions (1 held), 7 info actions, 12 bistability caps, 6 verification labs, 71 battery tests (6 enforced/7 partial/41 blocking-open), 8 open founder decisions, Layer 0 contract 12 buildable/2 blocked, ONB-001 live (10 eq/12 params), ONB-002 live (6 of 8 eq), 50 activities (6 of 12 cluster cols), 15 TVMCD pathways, ONB-003 live (8 of 8 eq), ONB-004 live (9 eq/10 PSS-10 items/3 bands), 12 onboarding steps (73 questions), ONB-005 live (7 eq/18 encoded answers), ONB-006 live (11 eq/6 sourced risks), ONB-007 partial (4 eq/8 patterns, 648 prior means absent), ONB-008 live (10 conditions/20 links, 9 quantified), ONB-009 live (20 rows, 5 shifts = ln(m), 2 VETO disagreements), ONB-010 live (8 sourced goals/4-rung ladder), 73 versioned registries, SIG-DB-v1.1 (43 open blockers)')
           "
 
       # Step 1's acceptance tests -- "duplicate event no-op; late event
