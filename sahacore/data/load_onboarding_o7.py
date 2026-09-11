@@ -3,8 +3,10 @@ Requires sql/041_onboarding_o7.sql to already be applied.
 
     python -m sahacore.data.load_onboarding_o7
 
-There is no prior table to load. O7.1 needs 8 x 81 x 2 = 1,296 numbers and
-the workbook supplies none of them -- see the migration's header.
+There is no prior table to load. O7.1 needs 8 x 81 = 648 means and the
+workbook supplies none of them -- see the migration's header. (Its variances
+are not the gap: 'O·O12-O14 State Init' O13.2 gives one rule for all 162 PK
+states, and it arrives with ONB-012-014.)
 """
 import json
 from pathlib import Path

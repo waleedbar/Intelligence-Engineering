@@ -32,15 +32,18 @@ def ui():
 
 # --- the headline finding -------------------------------------------------
 
-def test_o7_1_specifies_81_states_and_gives_no_numbers(sheet):
+def test_o7_1_specifies_81_states_and_gives_no_means(sheet):
     """THE FINDING, and it is the largest gap in the build.
 
     O7.1 is C_f(0)_i ~ N(mu_pattern_i, sigma2_pattern_i) and its engine
     target is 'Layer E: x_hat(0)[1..81]' -- the starting value of every
-    nutrient the engine tracks. Eight patterns x 81 nutrients x (mean,
-    variance) is 1,296 numbers, and the sheet gives none.
+    nutrient the engine tracks. Eight patterns x 81 nutrients = 648 MEANS,
+    and the sheet gives none.
 
     What it gives is prose, one line per pattern.
+
+    648 rather than 1,296: this test used to count the variances as missing
+    too. They are not -- see the test below. The mean is the gap.
     """
     o7_1 = next(e for e in sheet["equations"] if e["equation_id"] == "O7.1")
     assert o7_1["engine_target"] == "Layer E: x_hat(0)[1..81]"
@@ -49,18 +52,55 @@ def test_o7_1_specifies_81_states_and_gives_no_numbers(sheet):
     # The sheet declining to give a range is itself the evidence.
     assert o7_1["value_range"] == "varies per nutrient"
 
-    # 8 patterns x 81 nutrients x 2 parameters.
+    # 8 patterns x 81 nutrients.
     nutrients = _load("nutrients_81.json")
     rows = nutrients if isinstance(nutrients, list) else next(
         v for v in nutrients.values() if isinstance(v, list))
     assert len(rows) == 81
-    assert len(sheet["patterns"]) * len(rows) * 2 == 1296
+    assert len(sheet["patterns"]) * len(rows) == 648
 
     # And the nutrient registry has no baseline-intake column to hold them.
     columns = set(rows[0])
     for absent in ("mu_pattern", "baseline_intake", "expected_intake",
                    "sigma2_pattern"):
         assert absent not in columns
+
+
+def test_the_variance_half_is_supplied_by_another_module():
+    """THE CORRECTION, pinned so it cannot quietly revert.
+
+    An earlier version of this build reported 1,296 absent numbers -- 8 x 81
+    x (mean, variance). The variance is not absent. 'O·O12-O14 State Init'
+    O13.2 reads:
+
+        "PK state variances | sigma^2 = (0.3-0.5)^2 per typed
+         nutrient/exposure prior unless a stronger source exists | [1..162]"
+
+    One rule for all 162 PK states, pattern-independent -- the width of a
+    prior is a state-initialisation concern that the workbook assigns to O13,
+    never to O7.
+
+    HOW THE MISS HAPPENED, which is the part worth keeping: the search that
+    concluded "none of them" looked for the SYMBOL sigma2_pattern, which
+    really does appear only on O·O7 and its duplicate. O13.2 supplies the
+    same quantity under a different name in another module, so a symbol
+    search could not see it. A name search answers "is this name used
+    elsewhere", not "is this number known".
+
+    This test states the correction rather than reading the sheet, because
+    ONB-012-014 are not imported yet. When they are, it should be rewritten
+    to read O13.2 from the extracted JSON -- and it will fail here first,
+    which is the point.
+    """
+    import sahacore.onboarding.diet_priors as module
+
+    assert "O13.2" in module.__doc__
+    assert "0.3-0.5" in module.__doc__
+    # And the refusal must not claim the variance is missing.
+    with pytest.raises(o7.PriorNotSupplied) as raised:
+        o7.nutrient_prior("Mediterranean", "N01")
+    assert "1,296" not in str(raised.value)
+    assert "648 means" in str(raised.value)
 
 
 def test_nutrient_prior_refuses_rather_than_inventing_one():
@@ -70,7 +110,7 @@ def test_nutrient_prior_refuses_rather_than_inventing_one():
     The refusal is a distinct exception type so it cannot be mistaken for a
     mistyped nutrient id, and so the day it is fixed the fix is greppable.
     """
-    with pytest.raises(o7.PriorNotSupplied, match="1,296 numbers"):
+    with pytest.raises(o7.PriorNotSupplied, match="648 means"):
         o7.nutrient_prior("Mediterranean", "N01")
     with pytest.raises(LookupError):
         o7.nutrient_prior("Vegan", "N42")

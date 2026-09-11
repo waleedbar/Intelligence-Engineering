@@ -2112,8 +2112,27 @@ Those are the starting values of **81 of the engine's 219 states** — every
 nutrient it tracks. To fill them the sheet needs a mean and a variance per
 nutrient per pattern:
 
-**8 patterns × 81 nutrients × 2 parameters = 1,296 numbers. The workbook has
-none of them.**
+**8 patterns × 81 nutrients = 648 means. The workbook has none of them.**
+
+> **CORRECTED 2026-09-11.** This section previously read *"1,296 numbers —
+> 8 × 81 × 2"*, counting the variances as missing too. They are not.
+> `O·O12-O14 State Init`, equation **O13.2**, reads verbatim:
+>
+> > PK state variances | σ² = (0.3–0.5)² per typed nutrient/exposure prior
+> > unless a stronger source exists | [1..162] | 81 fast + 81 slow states
+>
+> One rule for all 162 PK states, **pattern-independent** — the width of a
+> prior is a state-initialisation concern the workbook assigns to O13, never
+> to O7. It still leaves a choice inside 0.3–0.5, and it reaches this build
+> only when ONB-012–014 are imported.
+>
+> **Why the miss is worth recording.** The search that concluded "none of
+> them" looked for the *symbols* `mu_pattern` and `sigma2_pattern` — which
+> genuinely appear nowhere else. O13.2 supplies the same *quantity* under a
+> different name, in another module, so a symbol search could not see it.
+> Searching for a name answers "is this name used elsewhere", not "is this
+> number known". The mean survives the recount because it was searched for
+> as a quantity as well (below).
 
 What it supplies instead is prose, one line per pattern:
 
@@ -2124,15 +2143,24 @@ What it supplies instead is prose, one line per pattern:
 
 Useful to a dietitian. Uncomputable by anything.
 
-### Searched before concluding
+### Searched before concluding — for the quantity, not only the name
 
-- `mu_pattern` and `sigma2_pattern` appear in the entire workbook **only** on
-  this sheet and its duplicate at `P1 Onboarding` row 328.
+- **All 205 sheets scanned for the eight pattern names** (Mediterranean,
+  Vegan, Keto, Vegetarian, Paleo, DASH, Carnivore). Fourteen sheets mention
+  one; only two carry a pattern table — this sheet and its duplicate at
+  `P1 Onboarding` rows 337–344 — and **both are the same prose**, not
+  numbers.
 - The 81-nutrient registry carries kinetics — gamma shapes, decay constants,
   half-lives, `s_hi_log`, `s_lo_log` — and **no baseline-intake column of any
   kind**.
-- The only other sheet whose name suggests patterns, `M-WPAT Patterns
-  Alarms`, is Layer W's behavioural alarms and has nothing to do with diet.
+- `★ Target Registry (versioned)` holds **6 rows of 81**, and they are DRI
+  *targets* — what a person should get — not what a pattern supplies.
+- `★ Regime & Population Priors` looked like the right place and is not: its
+  BHM2 would produce "a canonical 219-state initialization **candidate**",
+  explicitly `OFFLINE_SHADOW`, with "nothing until version admission".
+- `mu_pattern` and `sigma2_pattern` appear in the entire workbook **only** on
+  this sheet and its duplicate — which is true, and is exactly the search
+  that missed O13.2. Kept here as a record of its limits.
 
 So `nutrient_prior` **raises** rather than returning a number. A stub
 returning zero, or a population average, would put an invented initial
@@ -2141,7 +2169,7 @@ exception is its own type, `PriorNotSupplied`, so it cannot be mistaken for a
 mistyped nutrient id and so the day it is fixed the fix is greppable.
 
 This blocks ONB-007 the way ONB-011 and ONB-012 are blocked — but more
-sharply. Those are missing a *mapping*; this is missing 1,296 *numbers*.
+sharply. Those are missing a *mapping*; this is missing 648 *numbers*.
 
 ### The pattern list is stated three times and the three disagree
 
@@ -2220,7 +2248,7 @@ and `B12` carry digits in their **names**. Same shape as the hyphen in
 
 ### For Dr. Ali — three questions
 
-1. **Where do the 1,296 nutrient priors come from?** This is the single
+1. **Where do the 648 nutrient prior means come from?** This is the single
    largest missing thing in the build: the initial condition of 81 of 219
    states. Without it, ONB-007 cannot initialise Layer E at all.
 2. **What happens when a user selects Intermittent Fasting?** The interface

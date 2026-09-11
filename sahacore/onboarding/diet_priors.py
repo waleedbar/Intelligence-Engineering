@@ -1,4 +1,4 @@
-"""ONB-007 — the diet-pattern priors, and the 1,296 numbers that are missing.
+"""ONB-007 — the diet-pattern priors, and the 648 means that are missing.
 
 Authority: 'O·O7 Diet Pattern Priors', equations O7.1-O7.4, via
 sahacore/data/onboarding_o7.json.
@@ -13,17 +13,38 @@ Onboarding step 3, "81-nutrient Normal priors", feeding Layers A, B and E.
 THIS MODULE CANNOT DO WHAT THE SHEET IS FOR, and says so rather than
 improvising. O7.1's engine target is "Layer E: x_hat(0)[1..81]" -- the
 starting value of every nutrient the engine tracks, 81 of its 219 states. It
-needs a mean and a variance per nutrient per pattern: 8 x 81 x 2 = 1,296
-numbers. The workbook supplies none of them.
+needs a MEAN per nutrient per pattern: 8 x 81 = 648 numbers. The workbook
+supplies none of them.
 
 What it supplies instead is prose, one line per pattern: "High omega-3, olive
 oil, fiber", "B12, Iron (heme), Zinc, Omega-3". Useful to a dietitian,
 uncomputable by anything.
 
-Searched before concluding: `mu_pattern` and `sigma2_pattern` appear only on
-this sheet and its duplicate at 'P1 Onboarding' row 328; the 81-nutrient
-registry carries kinetics and no baseline intake column; and the only other
-"pattern" sheet is Layer W's behavioural alarms.
+THE VARIANCE HALF IS NOT MISSING, AND AN EARLIER VERSION OF THIS MODULE SAID
+IT WAS. It claimed 8 x 81 x 2 = 1,296 absent numbers. The variance is
+supplied -- by 'O·O12-O14 State Init', O13.2, which is a different module:
+
+    "PK state variances | sigma^2 = (0.3-0.5)^2 per typed nutrient/exposure
+     prior unless a stronger source exists | [1..162] | 81 fast + 81 slow"
+
+One rule for all 162 PK states, not one number per pattern per nutrient --
+the width of a prior is a state-initialisation concern and the workbook
+assigns it to O13, never to O7. It still leaves a choice inside 0.3-0.5, and
+it arrives here only when ONB-012-014 are imported.
+
+HOW THE MISS HAPPENED, because the lesson generalises: the search that
+concluded "none of them" looked for the SYMBOLS `mu_pattern` and
+`sigma2_pattern`, which do appear only on this sheet and its duplicate at
+'P1 Onboarding' row 328. O13.2 supplies the same QUANTITY under a different
+name, in another module, so a symbol search could not see it. Searching for a
+name answers "is this name used elsewhere", not "is this number known".
+
+The mean survives that correction: it was searched for as a quantity too --
+all 205 sheets scanned for the eight pattern names, and the only two carrying
+anything are this sheet and its duplicate, both qualitative; the 81-nutrient
+registry has kinetics and no baseline-intake column; '★ Target Registry' has
+6 DRI targets of 81, which are what a person should get rather than what a
+pattern supplies.
 
 So `nutrient_prior` REFUSES rather than returning a made-up number. Returning
 zero, or a population average, would put an invented initial condition into
@@ -96,19 +117,27 @@ def pattern_for_ui_option(option: str) -> DietPattern:
 def nutrient_prior(pattern: str, nutrient_id: str) -> tuple[float, float]:
     """O7.1. The (mean, variance) this nutrient starts at under this pattern.
 
-    ALWAYS RAISES. The sheet states the distribution and gives neither
-    parameter, for any of the 81 nutrients under any of the 8 patterns.
+    ALWAYS RAISES, on the mean. The sheet states the distribution and gives no
+    mu_pattern for any of the 81 nutrients under any of the 8 patterns.
+
+    It raises even though the variance IS obtainable -- O13.2's
+    sigma^2 = (0.3-0.5)^2 -- because a distribution with a known width and an
+    unknown centre is not a usable prior, and returning half of one would let
+    a caller believe it had a prior. The variance is not returned separately
+    here either: it belongs to O13, and this module would be the wrong place
+    to learn it from.
 
     This is not a stub awaiting code -- the code is one line. It is a
-    deliberate refusal to invent 1,296 numbers that would become the initial
+    deliberate refusal to invent 648 numbers that would become the initial
     condition of 81 of the engine's 219 states, with nothing downstream able
     to tell they were guessed.
     """
     raise PriorNotSupplied(
-        f"O7.1 gives no mu_pattern or sigma2_pattern for nutrient "
-        f"{nutrient_id!r} under pattern {pattern!r}, and neither does any "
-        "other sheet in the workbook. 8 patterns x 81 nutrients x (mean, "
-        "variance) = 1,296 numbers, none of them written down. See "
+        f"O7.1 gives no mu_pattern for nutrient {nutrient_id!r} under pattern "
+        f"{pattern!r}, and neither does any other sheet in the workbook: "
+        "8 patterns x 81 nutrients = 648 means, none of them written down. "
+        "(The variance is not the gap -- 'O·O12-O14 State Init' O13.2 gives "
+        "sigma^2 = (0.3-0.5)^2 for states [1..162].) See "
         "docs/parameter-gaps.md.")
 
 

@@ -52,7 +52,9 @@ def test_the_known_holes_are_still_holes(result):
         "g", "e", "threshold", "sigma",
         # O6.10 and O6.11
         "FH_relevant", "eta_hi", "sigma2_base",
-        # O7.1's 1,296 absent numbers, and O7.2's two runtime inputs
+        # O7.1's 648 absent means (its variance is O13.2's, not absent --
+        # unresolved here because it is undefined as a SYMBOL on this sheet),
+        # and O7.2's two runtime inputs
         "mu_pattern_i", "sigma2_pattern_i", "sigma2_prior", "sigma2_obs", "k"}
     assert result["unresolved"]["e_WHtR"] == ["O1.9"]
     assert result["unresolved"]["e_BMI"] == ["O1.9"]

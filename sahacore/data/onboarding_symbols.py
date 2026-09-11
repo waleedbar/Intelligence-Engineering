@@ -295,8 +295,9 @@ KNOWN_UNRESOLVED = {
     # --- O7.1, the largest gap in the build -------------------------------
     #
     # C_f(0)_i ~ N(mu_pattern_i, sigma2_pattern_i), engine target
-    # "Layer E: x_hat(0)[1..81]". Eight patterns x 81 nutrients x two
-    # parameters is 1,296 numbers and the workbook has none of them.
+    # "Layer E: x_hat(0)[1..81]". Eight patterns x 81 nutrients = 648 MEANS,
+    # and the workbook has none of them. The variance is a separate matter:
+    # see sigma2_pattern_i below.
     "mu_pattern_i":
         "O7.1's expected intake of nutrient i under dietary pattern m -- the "
         "STARTING VALUE of 81 of the engine's 219 states. Eight patterns x 81 "
@@ -308,9 +309,17 @@ KNOWN_UNRESOLVED = {
         "intake column; and the only other 'pattern' sheet is Layer W's "
         "behavioural alarms. This is the largest single gap found so far.",
     "sigma2_pattern_i":
-        "O7.1's variance on that same prior -- the other 648 numbers. Same "
-        "absence, and it is what Layer E's P(0) diagonal would be "
-        "initialised from.",
+        "O7.1's variance on that same prior, which Layer E's P(0) diagonal "
+        "would be initialised from. NOT ABSENT, and this entry used to say it "
+        "was: 'O·O12-O14 State Init' O13.2 gives 'sigma^2 = (0.3-0.5)^2 per "
+        "typed nutrient/exposure prior unless a stronger source exists' for "
+        "states [1..162].\n"
+        "             Unresolved here only because it is undefined AS A "
+        "SYMBOL on this sheet, and because O13.2 is pattern-independent -- it "
+        "is one rule for all 162 PK states, so O7's per-pattern subscript has "
+        "nothing behind it. It also still leaves a choice inside 0.3-0.5. The "
+        "earlier claim that it was missing came from searching for the NAME "
+        "sigma2_pattern rather than for the quantity.",
 
     # --- O7.2 -------------------------------------------------------------
     "sigma2_prior":

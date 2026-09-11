@@ -32,9 +32,20 @@ other sheet whose name suggests patterns, 'M-WPAT Patterns Alarms', is Layer
 W behavioural patterns and has nothing to do with diet.
 
 So ONB-007 is substantively blocked in the same way ONB-011 and ONB-012 are,
-and for a sharper reason: those are missing a mapping, this is missing 1,296
+and for a sharper reason: those are missing a mapping, this is missing 648
 numbers. What IS buildable is built -- O7.2's update, O7.4's index, and the
 pattern catalogue -- and O7.1 is transcribed and left as a declared gap.
+
+648, NOT 1,296: AN EARLIER VERSION OF THIS HEADER COUNTED THE VARIANCES AS
+MISSING TOO. They are not. 'O·O12-O14 State Init' O13.2 reads "PK state
+variances | sigma^2 = (0.3-0.5)^2 per typed nutrient/exposure prior unless a
+stronger source exists | [1..162]" -- one rule covering all 162 PK states,
+pattern-independent, in a module this build has not imported yet. The miss
+came from searching for the SYMBOL sigma2_pattern, which really does appear
+nowhere else, rather than for the quantity, which appears under another name.
+The means survive the recount: all 205 sheets were scanned for the eight
+pattern names and only this sheet and its duplicate carry anything, both of
+it prose.
 
 THREE STATEMENTS OF THE DIET PATTERN LIST, AND THEY DISAGREE.
 
@@ -199,9 +210,10 @@ def check(data: dict) -> None:
                     f"{SHEET}: pattern {pattern['pattern']!r} has no {field}.")
 
     # THE HEADLINE FINDING, ASSERTED. O7.1 names two quantities per nutrient
-    # per pattern and the sheet gives neither, for any of them. If a table of
-    # them ever appears this stops the extract, which is the moment to read
-    # it -- 1,296 numbers arriving is not something to absorb silently.
+    # per pattern; the sheet gives no mean for any of them, and its variance
+    # is set elsewhere (O13.2) by a rule that is not per-pattern. If a table
+    # of them ever appears this stops the extract, which is the moment to
+    # read it -- 648 means arriving is not something to absorb silently.
     o7_1 = by_id["O7.1"]
     for symbol in UNSUPPLIED:
         if symbol not in o7_1["formula"] + " " + o7_1["variables"]:
