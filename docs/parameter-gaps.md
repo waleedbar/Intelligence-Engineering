@@ -2847,3 +2847,52 @@ header row and confirm no column was dropped. Until that is done, five of the
 build's registries are transcribed on trust. `build_state_vector_219.py` is the
 one to do first: the 219-state vector is cited by SIGDB's `12_STATE_BLOCKS`,
 by `DEC05`, and by every other registry that indexes into it.
+
+
+## 2026-09-12: six client_render tables are declared and never columned
+
+Building M1's row-level security meant building the tables it protects. SIGDB
+`13_DB_TABLES` declares **thirteen** `client_render` tables (TBL021–TBL033).
+`14_DB_COLUMNS` gives columns for **seven**:
+
+`api_snapshot` · `signal_value_scalar` · `signal_value_vector` ·
+`signal_vector_member` · `signal_time_series_point` · `feature_payload` ·
+`ui_plan`
+
+**Six are named and never columned:**
+
+| table | declared purpose | access class |
+|---|---|---|
+| `signal_availability` | availability/quality/freshness envelope | YES_ALLOWLIST |
+| `science_packet` | approved source/evidence packets | YES_ALLOWLIST |
+| `share_receipt` | share composition/consent receipt | YES_OWNER_ONLY |
+| `consent_receipt` | consent state receipt | YES_OWNER_ONLY |
+| `notification_settings` | tighten-only public settings | YES_OWNER_ONLY |
+| `audit_receipt_public` | opaque public receipt metadata | YES_OWNER_ONLY |
+
+They are **not built**. A table name, a retention policy and an access class
+are not a schema, and these are payload tables that cross the client
+boundary — the one place where inventing a column is least acceptable.
+`signal_availability` matters most: FW08 (FAIL_CLOSED) and FW14 (PROVENANCE)
+both require every public payload to carry freshness and availability, and
+this is the table that would carry it.
+
+`tests/test_client_render_rls.py` pins the six by name, so one appearing
+without a column dictionary fails rather than being quietly improvised.
+
+**For Dr. Ali:** can `14_DB_COLUMNS` be extended to these six, or is another
+sheet their column source? `signal_availability` is the blocking one.
+
+### A defect found while proving the policies
+
+`engine_writer` held `INSERT` and `UPDATE` on `client_render` from migration
+010 and **never `SELECT`**. Its service policy reads `FOR ALL … USING (true)`,
+which looks like full access and is not: **a policy filters a grant, it never
+creates one.** The projection step would have written a snapshot and then
+failed on its first read of it — an upsert, an expiry sweep and an audit all
+read — while the policy looked innocent in the catalogue.
+
+Found by querying as the role rather than by reading the migration. Fixed in
+`sql/047_client_render_rls.sql`, which also adds the `DELETE` that
+"expires_at + bounded audit" retention needs, and pinned by
+`test_the_service_still_sees_the_expired_row`.
