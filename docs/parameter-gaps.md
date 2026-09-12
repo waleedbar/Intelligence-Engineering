@@ -2896,3 +2896,79 @@ Found by querying as the role rather than by reading the migration. Fixed in
 `sql/047_client_render_rls.sql`, which also adds the `DELETE` that
 "expires_at + bounded audit" retention needs, and pinned by
 `test_the_service_still_sees_the_expired_row`.
+
+
+## 2026-09-12: the DataMap's three row counts, and what each gap is
+
+Contract M1 asks for the "full P1 DataMap (229-row input/output contract)
+implemented as Pydantic models and Postgres DDL". The models are
+`sahacore/datamap/`; the DDL has existed since `sql/019_datamap.sql`. Neither
+holds 229 rows, and here is exactly why — all four numbers measured from the
+workbook, not quoted.
+
+| | rows |
+|---|---|
+| the signed contract, M1 | **229** |
+| the sheet's own title, *"227 input-output routings"* | **227** |
+| rows actually present across all five sections | **211** |
+| rows this build extracts (sections A + B) | **159** |
+
+### The three gaps
+
+**229 → 227 (−2).** The contract cites a row count the sheet does not claim
+about itself. The contract also says 208 states where the workbook says 219
+and 80 nutrients where it says 81, so this is one more instance of the same
+contract-versus-current-spec drift already logged. **Needs a written
+amendment or an acknowledgement from Dr. Ali.**
+
+**227 → 211 (−16).** The sheet's title overstates its own contents, and so do
+three of its four section banners:
+
+| section | banner claims | rows present | extracted |
+|---|---|---|---|
+| A engine variables | 158+ | 96 | ✅ |
+| B onboarding fields | 105 | 63 | ✅ |
+| C data source categories | 24 | **24** | ❌ |
+| D registered actions | 127 | 13 | ❌ |
+| E layer interconnections | — | 15 | ❌ |
+
+Only **C** matches its banner. **D** claims 127 over 13 rows because it is a
+*grouped* summary — its last row reads `L06-L20`, one row standing for
+fifteen actions. The real 127 are in `engine_internal.action_space`, loaded
+from `Action_Space` itself. Some **A** rows name two variables at once
+(`k₁, λ₁`), which accounts for part of its gap but nowhere near 62.
+
+**211 → 159 (−52).** Sections C, D and E are deliberately not extracted, and
+this is the one gap that is a decision rather than a defect:
+
+- **D** restates `engine_internal.action_space`, already loaded from its own
+  sheet. Importing it again would create two records that can disagree.
+- **E** restates the inputs and outputs columns of `★ Equation Backbone`,
+  already loaded. Same reason.
+- **C** is integration metadata — APIs, measurement CV% — with no consumer in
+  this build yet.
+
+### Two rows the workbook leaves incomplete
+
+Both typed optional in the models and pinned by source row, so a third cannot
+appear unnoticed:
+
+- **Source row 8** has **no variable name**. Everything else is there: layer
+  A, equation A1, "Gamma shape parameter", dimensionless, range 1–5,
+  "Per-nutrient lookup (81 nutrients)". The 81-nutrient registry carries
+  `gamma_k_shape`, so the intended symbol is not a mystery — but the cell is
+  blank, and writing a name into a contract row because its neighbours imply
+  one is inventing the contract.
+- **Source row 108** has **no step number** (Baseline screen, biological sex).
+
+### A fourth value on a three-value scale
+
+**Source row 164** — Lab Results, metabolic panel — has priority
+**`"P0 Critical"`** where the scale is P0/P1/P2. Kept verbatim;
+`OnboardingField.priority_tier` returns `None` for it rather than P0. Either
+it is P0 written emphatically or a tier above P0, and only the sheet's author
+knows which.
+
+**For Dr. Ali:** three small ones, all one-line answers — (1) is row 8's
+variable `k` / `gamma_k_shape`? (2) is row 108 step 1? (3) is `"P0 Critical"`
+a P0, or a tier above it?
